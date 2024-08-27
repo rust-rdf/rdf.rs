@@ -6,3 +6,9 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+
+#[doc(hidden)]
+pub use rdf_model::prelude;
+
+mod format;
+pub use format::*;

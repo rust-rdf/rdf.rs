@@ -9,7 +9,7 @@
 #![allow(unused)]
 
 #[doc(hidden)]
-mod prelude;
+pub mod prelude;
 
 mod feature;
 pub use feature::*;

@@ -13,6 +13,7 @@ use std as alloc;
 
 pub use alloc::{
     string::{String, ToString},
+    vec,
     vec::Vec,
 };
 

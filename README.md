@@ -11,6 +11,7 @@
 - Supports `no_std` environments from the get-go.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - 100% free and unencumbered public domain software.
+- Adheres to the Rust API Guidelines in its [naming conventions].
 
 ## 🛠️ Prerequisites
 
@@ -46,3 +47,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/rust-rdf/rdf.rs&title=RDF.rs)
 [![Share on Hacker News](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs&t=RDF.rs)
 [![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs)
+
+[naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
