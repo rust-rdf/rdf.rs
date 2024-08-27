@@ -16,8 +16,8 @@ readme = true
 homepage = "https://github.com/rust-rdf"
 repository = "https://github.com/rust-rdf/rdf.rs"
 license = "Unlicense"
-keywords = []
-categories = ["no-std"]
+keywords = ["rdf"]
+categories = ["data-structures", "no-std"]
 publish = true
 
 [workspace.dependencies]

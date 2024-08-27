@@ -21,4 +21,4 @@ serde = ["rdf-model/serde"]
 std = ["rdf-model/std"]
 
 [dependencies]
-rdf-model = { version = "0.0.0", default-features = false }
+rdf-model = { version = "=0.0.0", default-features = false }
