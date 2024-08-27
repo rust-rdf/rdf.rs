@@ -24,3 +24,4 @@ std = ["serde?/std"]
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
+stability = "0.2"
