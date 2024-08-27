@@ -41,6 +41,27 @@ pub use term::*;
 mod vocabulary;
 pub use vocabulary::*;
 
+mod traits {
+    mod countable;
+    pub use countable::*;
+
+    mod durable;
+    pub use durable::*;
+
+    mod enumerable;
+    pub use enumerable::*;
+
+    mod indexable;
+    pub use indexable::*;
+
+    mod mutable;
+    pub use mutable::*;
+
+    mod queryable;
+    pub use queryable::*;
+}
+pub use traits::*;
+
 #[doc = include_str!("../../../README.md")]
 #[cfg(doctest)]
 pub struct ReadmeDoctests;
