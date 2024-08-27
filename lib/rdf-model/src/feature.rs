@@ -2,6 +2,6 @@
 
 /// The set of features that are enabled in this build of the crate.
 pub static FEATURES: &[&str] = &[
-    #[cfg(feature = "all")]
-    "all",
+    #[cfg(feature = "serde")]
+    "serde",
 ];

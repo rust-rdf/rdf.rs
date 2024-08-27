@@ -16,7 +16,8 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
+all = ["serde"]
+serde = ["rdf-model/serde"]
 std = ["rdf-model/std"]
 
 [dependencies]

@@ -16,7 +16,11 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
-std = []
+all = ["serde"]
+serde = ["dep:serde"]
+std = ["serde?/std"]
 
 [dependencies]
+serde = { version = "1.0", default-features = false, features = [
+    "derive",
+], optional = true }

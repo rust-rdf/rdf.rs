@@ -16,8 +16,12 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
-std = ["rdf-model/std"]
+all = ["serde"]
+serde = ["rdf-model/serde", "dep:serde"]
+std = ["rdf-model/std", "serde?/std"]
 
 [dependencies]
 rdf-model = { version = "0.0.0", default-features = false }
+serde = { version = "1.0", default-features = false, features = [
+    "derive",
+], optional = true }
