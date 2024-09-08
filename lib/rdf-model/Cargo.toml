@@ -18,9 +18,11 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["serde"]
 serde = ["dep:serde"]
-std = ["serde?/std"]
+std = ["dogma/std", "serde?/std"]
+unstable = []
 
 [dependencies]
+dogma = { version = "0.1", default-features = false }
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }

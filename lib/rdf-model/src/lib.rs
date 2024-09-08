@@ -6,7 +6,7 @@
 
 #![no_std]
 #![deny(unsafe_code)]
-#![allow(unused)]
+#![allow(unused_imports)]
 
 #[doc(hidden)]
 pub mod prelude;

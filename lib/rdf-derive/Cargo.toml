@@ -21,6 +21,7 @@ proc-macro = true
 default = ["all", "std"]
 all = []
 std = ["rdf-model/std"]
+unstable = ["rdf-model/unstable"]
 
 [dependencies]
 proc-macro2 = { version = "1", default-features = false }
