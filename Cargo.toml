@@ -6,7 +6,7 @@ default-members = ["bin/*", "lib/*"]
 resolver = "2"
 
 [workspace.package]
-version = "0.0.0"
+version = "0.0.1"
 authors = ["Arto Bendiken"]
 edition = "2021"
 rust-version = "1.70"
@@ -16,7 +16,7 @@ readme = true
 homepage = "https://github.com/rust-rdf"
 repository = "https://github.com/rust-rdf/rdf.rs"
 license = "Unlicense"
-keywords = ["rdf"]
+keywords = ["rdf", "knowledge-graph", "linked-data", "semantic-web"]
 categories = ["data-structures", "no-std"]
 publish = true
 
