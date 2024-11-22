@@ -19,11 +19,11 @@ default = ["all"]
 all = []
 
 [build-dependencies]
-shadow-rs = { version = "0.34", features = ["tzdb"], default-features = false }
+shadow-rs = { version = "0.36", features = ["tzdb"], default-features = false }
 
 [dependencies]
 clap = { version = "4.5", default-features = false }
-clientele = { version = "=0.1.4", default-features = true }
+clientele = { version = "0.2", default-features = true }
 rdf-format = { version = "=0.0.1", default-features = true }
 rdf-model = { version = "=0.0.1", default-features = true }
 rdf-query = { version = "=0.0.1", default-features = true }
