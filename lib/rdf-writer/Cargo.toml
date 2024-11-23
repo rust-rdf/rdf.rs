@@ -22,4 +22,5 @@ std = ["rdf-model/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
+rdf-format.workspace = true
 rdf-model.workspace = true

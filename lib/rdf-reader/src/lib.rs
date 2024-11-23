@@ -8,6 +8,11 @@
 #![deny(unsafe_code)]
 
 #[cfg(feature = "std")]
+mod open_options;
+#[cfg(feature = "std")]
+pub use open_options::*;
+
+#[cfg(feature = "std")]
 mod open_path;
 #[cfg(feature = "std")]
 pub use open_path::*;

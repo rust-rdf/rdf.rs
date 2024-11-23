@@ -2,10 +2,13 @@
 
 extern crate std;
 
-use crate::Reader;
-use std::{boxed::Box, io::Result, path::PathBuf};
+use crate::{OpenOptions, Reader};
+use std::{boxed::Box, io::Result, path::Path};
 
 #[stability::unstable]
-pub fn open_path(_path: &PathBuf) -> Result<Box<dyn Reader>> {
+pub fn open_path(
+    _input_path: impl AsRef<Path>,
+    _options: Option<OpenOptions>,
+) -> Result<Box<dyn Reader>> {
     todo!() // TODO
 }

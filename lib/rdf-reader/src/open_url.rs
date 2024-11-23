@@ -2,10 +2,10 @@
 
 extern crate std;
 
-use crate::Reader;
+use crate::{OpenOptions, Reader};
 use std::{boxed::Box, io::Result, string::String};
 
 #[stability::unstable]
-pub fn open_url(_url: &String) -> Result<Box<dyn Reader>> {
+pub fn open_url(_input_url: &String, _options: Option<OpenOptions>) -> Result<Box<dyn Reader>> {
     todo!() // TODO
 }
