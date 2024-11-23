@@ -15,7 +15,7 @@ categories = ["command-line-utilities"]
 publish.workspace = true
 
 [features]
-default = ["all", "std"]
+default = ["all", "std", "unstable"]
 all = [
     "rdf-derive/all",
     "rdf-format/all",
@@ -33,6 +33,15 @@ std = [
     "rdf-reader/std",
     "rdf-vocab/std",
     "rdf-writer/std",
+]
+unstable = [
+    "rdf-derive/unstable",
+    "rdf-format/unstable",
+    "rdf-model/unstable",
+    "rdf-query/unstable",
+    "rdf-reader/unstable",
+    "rdf-vocab/unstable",
+    "rdf-writer/unstable",
 ]
 
 [build-dependencies]
