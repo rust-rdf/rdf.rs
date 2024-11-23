@@ -2,15 +2,17 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
-use rdf_model::{Source, Statement};
+use rdf_format::Format;
+use rdf_model::Source;
 
-pub trait Reader: Source {}
+pub trait Reader: Source {
+    fn format(&self) -> Format;
+}
 
-impl Iterator for dyn Reader {
-    type Item = Box<dyn Statement>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        todo!() // TODO
+impl core::fmt::Debug for dyn Reader {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        f.debug_struct("Reader")
+            .field("format", &self.format())
+            .finish()
     }
 }
