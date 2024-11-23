@@ -22,7 +22,7 @@ std = ["rdf-model/std", "serde?/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
-rdf-model = { version = "=0.0.1", default-features = false }
+rdf-model.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
