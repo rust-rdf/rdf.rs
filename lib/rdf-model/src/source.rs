@@ -1,8 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::traits::{Durable, Mutable};
+use crate::traits::{MaybeDurable, MaybeIndexed, MaybeMutable};
 
 /// An RDF source.
 ///
 /// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-source
-pub trait Source: Durable + Mutable {}
+pub trait Source: MaybeDurable + MaybeIndexed + MaybeMutable {}

@@ -45,17 +45,17 @@ mod traits {
     mod countable;
     pub use countable::*;
 
-    mod durable;
-    pub use durable::*;
-
     mod enumerable;
     pub use enumerable::*;
 
-    mod indexable;
-    pub use indexable::*;
+    mod maybe_durable;
+    pub use maybe_durable::*;
 
-    mod mutable;
-    pub use mutable::*;
+    mod maybe_indexed;
+    pub use maybe_indexed::*;
+
+    mod maybe_mutable;
+    pub use maybe_mutable::*;
 
     mod queryable;
     pub use queryable::*;
