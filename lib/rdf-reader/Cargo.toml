@@ -17,14 +17,13 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
-oxrdf = ["dep:oxrdfxml", "dep:oxttl"]
+oxrdf = ["dep:oxrdfio"]
 serde = ["rdf-model/serde"]
 std = ["rdf-model/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
-oxrdfxml = { version = "0.1", default-features = false, optional = true }
-oxttl = { version = "0.1", default-features = false, optional = true }
+oxrdfio = { version = "0.1", default-features = false, optional = true }
 rdf-format.workspace = true
 rdf-model.workspace = true
 stability = "0.2"

@@ -8,11 +8,6 @@
 #![deny(unsafe_code)]
 
 #[cfg(feature = "std")]
-mod open_options;
-#[cfg(feature = "std")]
-pub use open_options::*;
-
-#[cfg(feature = "std")]
 mod open_path;
 #[cfg(feature = "std")]
 pub use open_path::*;
@@ -24,3 +19,13 @@ pub use open_url::*;
 
 mod reader;
 pub use reader::*;
+
+mod reader_options;
+pub use reader_options::*;
+
+mod providers {
+    #[cfg(feature = "oxrdf")]
+    mod oxrdf;
+    #[cfg(feature = "oxrdf")]
+    pub use oxrdf::*;
+}
