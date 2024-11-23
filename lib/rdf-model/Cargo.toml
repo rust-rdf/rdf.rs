@@ -22,7 +22,7 @@ std = ["dogma/std", "serde?/std"]
 unstable = []
 
 [dependencies]
-dogma = { version = "0.1", default-features = false }
+dogma.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }

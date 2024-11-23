@@ -1,6 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
+extern crate alloc;
+
 use crate::prelude::{vec, Vec};
+use alloc::borrow::Cow;
+use dogma::traits::{Labeled, Named};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -18,19 +22,10 @@ pub enum Format {
     YamlLd,
 }
 
-impl Format {
-    pub fn is_binary(&self) -> bool {
+impl Named for Format {
+    fn name(&self) -> Cow<str> {
         use Format::*;
-        matches!(self, Hdt)
-    }
-
-    pub fn is_text(&self) -> bool {
-        !self.is_binary()
-    }
-
-    pub fn label(&self) -> &str {
-        use Format::*;
-        match self {
+        Cow::Borrowed(match self {
             Hdt => "HDT",
             JsonLd => "JSON-LD",
             Notation3 => "Notation3",
@@ -42,7 +37,24 @@ impl Format {
             TriX => "TriX",
             Turtle => "Turtle",
             YamlLd => "YAML-LD",
-        }
+        })
+    }
+}
+
+impl Labeled for Format {
+    fn label(&self) -> Cow<str> {
+        self.name()
+    }
+}
+
+impl Format {
+    pub fn is_binary(&self) -> bool {
+        use Format::*;
+        matches!(self, Hdt)
+    }
+
+    pub fn is_text(&self) -> bool {
+        !self.is_binary()
     }
 
     pub fn extension(&self) -> &str {
@@ -73,6 +85,6 @@ impl Format {
 
 impl core::fmt::Display for Format {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.write_str(self.label())
+        f.write_str(&self.label())
     }
 }

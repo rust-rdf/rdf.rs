@@ -18,10 +18,11 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["serde"]
 serde = ["rdf-model/serde", "dep:serde"]
-std = ["rdf-model/std", "serde?/std"]
+std = ["dogma/std", "rdf-model/std", "serde?/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
+dogma.workspace = true
 rdf-model.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
