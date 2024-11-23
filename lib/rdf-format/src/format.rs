@@ -124,3 +124,39 @@ impl core::fmt::Display for Format {
         f.write_str(&self.label())
     }
 }
+
+#[cfg(feature = "oxrdf")]
+impl TryFrom<oxrdfio::RdfFormat> for Format {
+    type Error = ();
+
+    fn try_from(format: oxrdfio::RdfFormat) -> Result<Self, Self::Error> {
+        use oxrdfio::RdfFormat;
+        Ok(match format {
+            RdfFormat::N3 => Format::Notation3,
+            RdfFormat::NQuads => Format::NQuads,
+            RdfFormat::NTriples => Format::NTriples,
+            RdfFormat::RdfXml => Format::RdfXml,
+            RdfFormat::TriG => Format::TriG,
+            RdfFormat::Turtle => Format::Turtle,
+            _ => return Err(()),
+        })
+    }
+}
+
+#[cfg(feature = "oxrdf")]
+impl TryInto<oxrdfio::RdfFormat> for Format {
+    type Error = ();
+
+    fn try_into(self) -> Result<oxrdfio::RdfFormat, Self::Error> {
+        use oxrdfio::RdfFormat;
+        Ok(match self {
+            Format::Notation3 => RdfFormat::N3,
+            Format::NQuads => RdfFormat::NQuads,
+            Format::NTriples => RdfFormat::NTriples,
+            Format::RdfXml => RdfFormat::RdfXml,
+            Format::TriG => RdfFormat::TriG,
+            Format::Turtle => RdfFormat::Turtle,
+            _ => return Err(()),
+        })
+    }
+}

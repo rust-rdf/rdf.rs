@@ -17,12 +17,14 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
+oxrdf = ["dep:oxrdfio"]
 serde = ["rdf-model/serde", "dep:serde"]
 std = ["dogma/std", "rdf-model/std", "serde?/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
 dogma.workspace = true
+oxrdfio = { version = "0.1", default-features = false, optional = true }
 rdf-model.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
