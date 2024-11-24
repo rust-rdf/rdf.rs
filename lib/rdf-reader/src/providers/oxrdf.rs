@@ -22,7 +22,7 @@ impl<R: Read> Iterator for OxrdfReader<R> {
     fn next(&mut self) -> Option<Self::Item> {
         match self.parser.next() {
             Some(Err(error)) => Some(Err(error.into())),
-            Some(Ok(_quad)) => None, // TODO
+            Some(Ok(quad)) => Some(Ok(quad.into())),
             None => None,
         }
     }

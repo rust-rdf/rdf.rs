@@ -17,11 +17,13 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
+oxrdf = ["dep:oxrdf"]
 serde = ["dep:serde"]
 std = ["dogma/std", "serde?/std"]
 unstable = []
 
 [dependencies]
+oxrdf = { version = "0.2", default-features = false, optional = true }
 dogma.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",

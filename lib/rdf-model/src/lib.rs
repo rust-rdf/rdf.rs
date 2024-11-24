@@ -62,6 +62,13 @@ mod traits {
 }
 pub use traits::*;
 
+mod providers {
+    #[cfg(feature = "oxrdf")]
+    mod oxrdf;
+    #[cfg(feature = "oxrdf")]
+    pub use oxrdf::*;
+}
+
 #[doc = include_str!("../../../README.md")]
 #[cfg(doctest)]
 pub struct ReadmeDoctests;
