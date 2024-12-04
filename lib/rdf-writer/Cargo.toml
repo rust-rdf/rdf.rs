@@ -17,6 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
+oxrdf = []
 serde = ["rdf-model/serde"]
 std = ["rdf-model/std"]
 unstable = ["rdf-model/unstable"]

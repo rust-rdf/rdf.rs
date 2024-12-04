@@ -1,0 +1,58 @@
+[package]
+name = "rdf_rs"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+#documentation.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = ["oxrdf", "serde"]
+oxrdf = [
+    "rdf-format/oxrdf",
+    "rdf-model/oxrdf",
+    "rdf-reader/oxrdf",
+    "rdf-writer/oxrdf",
+]
+serde = [
+    "rdf-format/serde",
+    "rdf-model/serde",
+    "rdf-reader/serde",
+    "rdf-writer/serde",
+]
+std = [
+    "rdf-derive/std",
+    "rdf-format/std",
+    "rdf-model/std",
+    "rdf-query/std",
+    "rdf-reader/std",
+    "rdf-vocab/std",
+    "rdf-writer/std",
+]
+unstable = [
+    "rdf-derive/unstable",
+    "rdf-format/unstable",
+    "rdf-model/unstable",
+    "rdf-query/unstable",
+    "rdf-reader/unstable",
+    "rdf-vocab/unstable",
+    "rdf-writer/unstable",
+]
+
+[dependencies]
+rdf-derive.workspace = true
+rdf-format.workspace = true
+rdf-model.workspace = true
+rdf-query.workspace = true
+rdf-reader.workspace = true
+rdf-vocab.workspace = true
+rdf-writer.workspace = true
