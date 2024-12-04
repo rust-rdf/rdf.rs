@@ -6,7 +6,7 @@ default-members = ["bin/*", "lib/*"]
 resolver = "2"
 
 [workspace.package]
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Arto Bendiken"]
 edition = "2021"
 rust-version = "1.81"
@@ -22,14 +22,14 @@ publish = true
 
 [workspace.dependencies]
 dogma = { version = "0.1", default-features = false }
-rdf_rs = { version = "=0.0.1", default-features = true }
-rdf-derive = { version = "=0.0.1", default-features = true }
-rdf-format = { version = "=0.0.1", default-features = true }
-rdf-model = { version = "=0.0.1", default-features = true }
-rdf-query = { version = "=0.0.1", default-features = true }
-rdf-reader = { version = "=0.0.1", default-features = true }
-rdf-vocab = { version = "=0.0.1", default-features = true }
-rdf-writer = { version = "=0.0.1", default-features = true }
+rdf_rs = { version = "=0.1.0", default-features = true }
+rdf-derive = { version = "=0.1.0", default-features = true }
+rdf-format = { version = "=0.1.0", default-features = true }
+rdf-model = { version = "=0.1.0", default-features = true }
+rdf-query = { version = "=0.1.0", default-features = true }
+rdf-reader = { version = "=0.1.0", default-features = true }
+rdf-vocab = { version = "=0.1.0", default-features = true }
+rdf-writer = { version = "=0.1.0", default-features = true }
 
 [patch.crates-io]
 rdf-cli = { path = "bin/rdf" }
