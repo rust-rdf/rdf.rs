@@ -4,13 +4,14 @@
 #![allow(unused)]
 
 mod commands;
-use commands::*;
-
 mod exit;
 
 use crate::exit::ExitCode;
 use clientele::{
-    crates::clap::{Parser, Subcommand},
+    crates::{
+        camino::Utf8PathBuf,
+        clap::{Parser, Subcommand},
+    },
     StandardOptions,
 };
 
@@ -32,6 +33,11 @@ enum Command {
     Format {
         #[command(subcommand)]
         command: FormatCommand,
+    },
+
+    Parse {
+        /// The input files
+        files: Vec<Utf8PathBuf>,
     },
 }
 
@@ -66,9 +72,11 @@ pub fn main() -> Result<(), ExitCode> {
         // TODO: configure tracing
     }
 
+    use commands::*;
     match options.command.unwrap() {
         Command::Format { command } => match command {
-            FormatCommand::List {} => format::list::list(),
+            FormatCommand::List {} => format::list::list(&options.flags),
         },
+        Command::Parse { files } => parse::parse(files, &options.flags),
     }
 }
