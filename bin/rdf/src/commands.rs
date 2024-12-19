@@ -4,4 +4,5 @@ pub mod format {
     pub mod list;
 }
 
+pub mod count;
 pub mod parse;

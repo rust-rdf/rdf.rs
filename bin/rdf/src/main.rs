@@ -35,6 +35,13 @@ enum Command {
         command: FormatCommand,
     },
 
+    /// Count RDF statements in input files
+    Count {
+        /// The input files
+        files: Vec<Utf8PathBuf>,
+    },
+
+    /// Parse input files in a given RDF format
     Parse {
         /// The input files
         files: Vec<Utf8PathBuf>,
@@ -77,6 +84,7 @@ pub fn main() -> Result<(), ExitCode> {
         Command::Format { command } => match command {
             FormatCommand::List {} => format::list::list(&options.flags),
         },
+        Command::Count { files } => count::count(files, &options.flags),
         Command::Parse { files } => parse::parse(files, &options.flags),
     }
 }

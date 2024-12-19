@@ -2,7 +2,9 @@
 
 use crate::{exit::ExitCode, StandardOptions, Utf8PathBuf};
 
-pub fn parse(mut input_paths: Vec<Utf8PathBuf>, flags: &StandardOptions) -> Result<(), ExitCode> {
+pub fn count(mut input_paths: Vec<Utf8PathBuf>, flags: &StandardOptions) -> Result<(), ExitCode> {
+    let mut count = 0usize;
+
     input_paths.dedup();
 
     for input_path in input_paths {
@@ -11,14 +13,9 @@ pub fn parse(mut input_paths: Vec<Utf8PathBuf>, flags: &StandardOptions) -> Resu
             eprintln!("{:?}", reader);
         }
 
-        for statement in reader {
-            if flags.debug {
-                eprintln!("{:?}", statement);
-            } else if flags.verbose > 0 {
-                println!("{:?}", statement); // TODO
-            }
-        }
+        count += reader.count();
     }
 
+    println!("{}", count);
     Ok(())
 }
