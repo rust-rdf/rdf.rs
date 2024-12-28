@@ -67,6 +67,10 @@ mod providers {
     mod oxrdf;
     #[cfg(feature = "oxrdf")]
     pub use oxrdf::*;
+    #[cfg(feature = "sophia")]
+    mod sophia;
+    #[cfg(feature = "sophia")]
+    pub use sophia::*;
 }
 
 #[doc = include_str!("../../../README.md")]

@@ -29,6 +29,12 @@ serde = [
     "rdf-reader/serde",
     "rdf-writer/serde",
 ]
+sophia = [
+    "rdf-format/sophia",
+    "rdf-model/sophia",
+    "rdf-reader/sophia",
+    "rdf-writer/sophia",
+]
 std = [
     "rdf-derive/std",
     "rdf-format/std",

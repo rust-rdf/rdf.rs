@@ -6,3 +6,20 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+
+mod writer;
+pub use writer::*;
+
+mod writer_options;
+pub use writer_options::*;
+
+mod providers {
+    #[cfg(feature = "oxrdf")]
+    mod oxrdf;
+    #[cfg(feature = "oxrdf")]
+    pub use oxrdf::*;
+    #[cfg(feature = "sophia")]
+    mod sophia;
+    #[cfg(feature = "sophia")]
+    pub use sophia::*;
+}

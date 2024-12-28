@@ -2,7 +2,7 @@
 
 extern crate std;
 
-use crate::{providers, Reader, ReaderOptions};
+use crate::{Reader, ReaderOptions};
 use rdf_format::Format;
 use std::{
     boxed::Box,
@@ -33,15 +33,16 @@ pub fn open_path(
 #[stability::unstable]
 pub fn for_reader<R: Read + 'static>(reader: R, options: ReaderOptions) -> Result<Box<dyn Reader>> {
     let input_format = options.format.expect("format must be specified");
-    Ok(match input_format {
+    let input = match input_format {
         #[cfg(feature = "oxrdf")]
         Format::Notation3
         | Format::NQuads
         | Format::NTriples
         | Format::RdfXml
         | Format::TriG
-        | Format::Turtle => Box::new(providers::OxrdfReader::new(reader, options)),
+        | Format::Turtle => Box::new(crate::providers::OxrdfReader::new(reader, options)),
 
         _ => unimplemented!(),
-    })
+    };
+    Ok(input)
 }

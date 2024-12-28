@@ -19,6 +19,7 @@ default = ["all", "std"]
 all = ["serde"]
 oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
 serde = ["rdf-model/serde", "dep:serde"]
+sophia = ["rdf-model/sophia", "dep:sophia"]
 std = ["dogma/std", "rdf-model/std", "serde?/std"]
 unstable = ["rdf-model/unstable"]
 
@@ -29,3 +30,4 @@ rdf-model.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
+sophia = { version = "0.9", default-features = false, optional = true }

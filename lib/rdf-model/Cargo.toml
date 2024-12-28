@@ -19,6 +19,7 @@ default = ["all", "std"]
 all = ["serde"]
 oxrdf = ["dep:oxrdf"]
 serde = ["dep:serde"]
+sophia = ["dep:sophia"]
 std = ["dogma/std", "serde?/std"]
 unstable = []
 
@@ -28,4 +29,5 @@ dogma.workspace = true
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
+sophia = { version = "0.9", default-features = false, optional = true }
 stability = "0.2"
