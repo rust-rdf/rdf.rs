@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use rdf_format::Format;
+pub use rdf_format::Format;
 
 pub trait Writer {
     fn format(&self) -> Format;

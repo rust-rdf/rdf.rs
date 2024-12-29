@@ -23,6 +23,7 @@ publish = true
 [workspace.dependencies]
 dogma = { version = "0.1", default-features = false }
 rdf_rs = { version = "=0.1.0", default-features = true }
+rdf-borsh = { version = "=0.1.0", default-features = true }
 rdf-derive = { version = "=0.1.0", default-features = true }
 rdf-format = { version = "=0.1.0", default-features = true }
 rdf-model = { version = "=0.1.0", default-features = true }
@@ -34,6 +35,7 @@ rdf-writer = { version = "=0.1.0", default-features = true }
 [patch.crates-io]
 rdf-cli = { path = "bin/rdf" }
 rdf_rs = { path = "lib/rdf_rs" }
+rdf-borsh = { path = "lib/rdf-borsh" }
 rdf-derive = { path = "lib/rdf-derive" }
 rdf-format = { path = "lib/rdf-format" }
 rdf-model = { path = "lib/rdf-model" }

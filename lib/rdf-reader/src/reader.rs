@@ -2,8 +2,8 @@
 
 extern crate alloc;
 
-use rdf_format::Format;
-use rdf_model::Source;
+pub use rdf_format::Format;
+pub use rdf_model::Source;
 
 pub trait Reader: Source {
     fn format(&self) -> Format;
