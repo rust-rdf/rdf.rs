@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::Term;
+use crate::{Term, TermKind};
 use alloc::borrow::Cow;
 use sophia::api::term::SimpleTerm;
 
@@ -11,6 +11,11 @@ pub struct SophiaTerm<'a> {
 }
 
 impl<'a> Term for SophiaTerm<'a> {
+    fn kind(&self) -> TermKind {
+        use sophia::api::term::Term;
+        self.inner.kind().into()
+    }
+
     fn as_str(&self) -> Cow<str> {
         match &self.inner {
             SimpleTerm::Iri(iri) => Cow::Borrowed(iri.as_str()),

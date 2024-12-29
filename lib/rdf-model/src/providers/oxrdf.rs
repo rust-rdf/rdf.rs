@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::{Statement, Term};
+use crate::{Statement, Term, TermKind};
 use alloc::{borrow::Cow, string::String};
 use oxrdf::Quad;
 
@@ -53,6 +53,14 @@ pub struct OxrdfSubject {
 }
 
 impl Term for OxrdfSubject {
+    fn kind(&self) -> TermKind {
+        use oxrdf::Subject;
+        match &self.inner {
+            Subject::NamedNode(_) => TermKind::Iri,
+            Subject::BlankNode(_) => TermKind::BNode,
+        }
+    }
+
     fn as_str(&self) -> Cow<str> {
         use oxrdf::Subject;
         match &self.inner {
@@ -67,6 +75,10 @@ pub struct OxrdfNamedNode {
 }
 
 impl Term for OxrdfNamedNode {
+    fn kind(&self) -> TermKind {
+        TermKind::Iri
+    }
+
     fn as_str(&self) -> Cow<str> {
         Cow::Borrowed(self.inner.as_str())
     }
@@ -77,6 +89,15 @@ pub struct OxrdfTerm {
 }
 
 impl Term for OxrdfTerm {
+    fn kind(&self) -> TermKind {
+        use oxrdf::Term;
+        match &self.inner {
+            Term::NamedNode(_) => TermKind::Iri,
+            Term::BlankNode(_) => TermKind::BNode,
+            Term::Literal(_) => TermKind::Literal,
+        }
+    }
+
     fn as_str(&self) -> Cow<str> {
         use oxrdf::Term;
         match &self.inner {
@@ -92,6 +113,15 @@ pub struct OxrdfGraphName {
 }
 
 impl Term for OxrdfGraphName {
+    fn kind(&self) -> TermKind {
+        use oxrdf::GraphName;
+        match &self.inner {
+            GraphName::NamedNode(_) => TermKind::Iri,
+            GraphName::BlankNode(_) => TermKind::BNode,
+            GraphName::DefaultGraph => todo!(), // TODO
+        }
+    }
+
     fn as_str(&self) -> Cow<str> {
         use oxrdf::GraphName;
         match &self.inner {

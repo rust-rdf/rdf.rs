@@ -38,6 +38,9 @@ pub use statement::*;
 mod term;
 pub use term::*;
 
+mod term_kind;
+pub use term_kind::*;
+
 mod vocabulary;
 pub use vocabulary::*;
 
