@@ -30,7 +30,7 @@ impl BorshDataset {
         if let Some(&term_id) = self.terms_map.get(&term) {
             return term_id;
         }
-        let term_id = self.terms_dict.len() as BorshTermId;
+        let term_id: BorshTermId = (self.terms_dict.len() + 1).try_into().unwrap();
         self.terms_dict.push(term.clone());
         self.terms_map.insert(term, term_id);
         term_id
