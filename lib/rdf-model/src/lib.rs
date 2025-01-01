@@ -11,6 +11,16 @@
 #[doc(hidden)]
 pub mod prelude;
 
+mod alloc {
+    mod heap_quad;
+    pub use heap_quad::*;
+    mod heap_term;
+    pub use heap_term::*;
+    mod heap_triple;
+    pub use heap_triple::*;
+}
+pub use alloc::*;
+
 mod dataset;
 pub use dataset::*;
 
