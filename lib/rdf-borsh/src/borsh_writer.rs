@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::BorshDataset;
+use crate::{BorshDataset, BorshTermId};
 use alloc::{boxed::Box, vec::Vec};
 use borsh::{
     io::{Result, Write},
@@ -26,23 +26,11 @@ impl BorshWriter {
         }
     }
 
-    pub fn intern_term(&mut self, term: &dyn Term) -> Result<()> {
-        self.dataset.intern_term(term.into());
-        Ok(())
+    pub fn intern_term(&mut self, term: &dyn Term) -> Result<BorshTermId> {
+        Ok(self.dataset.intern_term(term.into()))
     }
 
-    pub fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
-        let s = self.dataset.intern_term(statement.subject().into());
-        let p = self.dataset.intern_term(statement.predicate().into());
-        let o = self.dataset.intern_term(statement.object().into());
-        let c = statement
-            .context()
-            .map(|c| self.dataset.intern_term(c.into()));
-        self.dataset.insert_quad((s, p, o, c).into());
-        Ok(())
-    }
-
-    pub fn finish(&mut self) -> Result<()> {
+    pub fn finish(mut self) -> Result<()> {
         let mut buffer = Vec::new();
         self.dataset.serialize(&mut buffer)?;
         self.sink.write_all(&buffer)?;
@@ -51,7 +39,20 @@ impl BorshWriter {
 }
 
 impl Writer for BorshWriter {
+    type Error = borsh::io::Error;
+
     fn format(&self) -> Format {
         todo!() // TODO
+    }
+
+    fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
+        let s = self.dataset.intern_term(statement.subject().into());
+        let p = self.dataset.intern_term(statement.predicate().into());
+        let o = self.dataset.intern_term(statement.object().into());
+        let c = statement
+            .context()
+            .map(|c| self.dataset.intern_term(c.into()));
+        self.dataset.insert_quad((s, p, o, c).into());
+        Ok(())
     }
 }
