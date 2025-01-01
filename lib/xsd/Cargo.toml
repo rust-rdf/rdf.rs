@@ -1,0 +1,23 @@
+[package]
+name = "xsd"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "XSD.rs"
+#documentation = "https://docs.rs/xsd/"
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords = ["xml", "schema", "xsd"]
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = []
+std = []
+unstable = []
+
+[dependencies]
