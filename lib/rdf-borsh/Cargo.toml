@@ -21,7 +21,7 @@ std = ["borsh/std", "rdf-model/std", "rdf-reader/std", "rdf-writer/std"]
 unstable = ["rdf-model/unstable", "rdf-reader/unstable", "rdf-writer/unstable"]
 
 [dependencies]
-borsh = { version = "1.5", default-features = false }
-rdf-model.workspace = true
+borsh = { version = "1.5", default-features = false, features = ["derive"] }
+rdf-model = { workspace = true, features = ["borsh"] }
 rdf-reader.workspace = true
 rdf-writer.workspace = true
