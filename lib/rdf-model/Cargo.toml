@@ -17,6 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
+borsh = ["dep:borsh"]
 oxrdf = ["dep:oxrdf"]
 serde = ["dep:serde"]
 sophia = ["dep:sophia"]
@@ -24,8 +25,11 @@ std = ["dogma/std", "serde?/std"]
 unstable = []
 
 [dependencies]
-oxrdf = { version = "0.2", default-features = false, optional = true }
+borsh = { version = "1.5", default-features = false, features = [
+    "derive",
+], optional = true }
 dogma.workspace = true
+oxrdf = { version = "0.2", default-features = false, optional = true }
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
