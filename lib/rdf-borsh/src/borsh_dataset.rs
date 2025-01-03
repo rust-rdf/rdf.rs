@@ -26,6 +26,10 @@ impl BorshDataset {
         }
     }
 
+    pub fn quad_count(&self) -> usize {
+        self.quads_set.len()
+    }
+
     pub fn intern_term(&mut self, term: BorshTerm) -> BorshTermId {
         if let Some(&term_id) = self.terms_map.get(&term) {
             return term_id;

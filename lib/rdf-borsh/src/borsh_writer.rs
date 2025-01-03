@@ -3,11 +3,12 @@
 extern crate alloc;
 
 use crate::{BorshDataset, BorshTermId};
-use alloc::{boxed::Box, vec::Vec};
+use alloc::boxed::Box;
 use borsh::{
     io::{Result, Write},
     BorshSerialize,
 };
+use lz4_flex::frame::FrameEncoder;
 use rdf_model::{Statement, Term};
 use rdf_writer::{Format, Writer};
 
@@ -19,21 +20,33 @@ pub struct BorshWriter {
 }
 
 impl BorshWriter {
-    pub fn new(sink: Box<dyn Write>) -> Self {
-        Self {
+    pub fn new(sink: Box<dyn Write>) -> Result<Self> {
+        Ok(Self {
             sink,
             dataset: BorshDataset::new(),
-        }
+        })
+    }
+
+    pub fn quad_count(&self) -> usize {
+        self.dataset.quads_set.len()
     }
 
     pub fn intern_term(&mut self, term: &dyn Term) -> Result<BorshTermId> {
         Ok(self.dataset.intern_term(term.into()))
     }
 
+    #[allow(unused_mut)]
     pub fn finish(mut self) -> Result<()> {
-        let mut buffer = Vec::new();
-        self.dataset.serialize(&mut buffer)?;
-        self.sink.write_all(&buffer)?;
+        let version = 0u8;
+        self.sink.write_all(&[version])?;
+
+        let quad_count = self.dataset.quad_count();
+        self.sink.write_all(quad_count.to_le_bytes().as_ref())?;
+
+        let mut compressor = FrameEncoder::new(self.sink);
+        self.dataset.serialize(&mut compressor)?;
+        compressor.finish()?;
+
         Ok(())
     }
 }
