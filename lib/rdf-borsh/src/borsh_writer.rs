@@ -31,8 +31,10 @@ impl BorshWriter {
         self.dataset.quads_set.len()
     }
 
-    pub fn intern_term(&mut self, term: &dyn Term) -> Result<BorshTermId> {
-        Ok(self.dataset.intern_term(term.into()))
+    pub fn intern_term(&mut self, term: &dyn Term) -> Result<BorshTermId<u16>> {
+        self.dataset
+            .intern_term(term.into())
+            .map_err(|_| borsh::io::Error::other("term dictionary overflow"))
     }
 
     #[allow(unused_mut)]
@@ -59,12 +61,13 @@ impl Writer for BorshWriter {
     }
 
     fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
-        let s = self.dataset.intern_term(statement.subject().into());
-        let p = self.dataset.intern_term(statement.predicate().into());
-        let o = self.dataset.intern_term(statement.object().into());
-        let c = statement
-            .context()
-            .map(|c| self.dataset.intern_term(c.into()));
+        let s = self.intern_term(statement.subject().into())?;
+        let p = self.intern_term(statement.predicate().into())?;
+        let o = self.intern_term(statement.object().into())?;
+        let c = match statement.context() {
+            Some(c) => self.intern_term(c.into())?,
+            None => BorshTermId::default(),
+        };
         self.dataset.insert_quad((s, p, o, c).into());
         Ok(())
     }

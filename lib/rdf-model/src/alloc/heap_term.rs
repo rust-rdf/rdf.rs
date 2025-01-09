@@ -18,8 +18,8 @@ pub enum HeapTerm {
     Iri(String),
     BNode(String),
     Literal(String),
-    LiteralWithLanguage(String, String),
     LiteralWithDatatype(String, String),
+    LiteralWithLanguage(String, String),
 }
 
 impl HeapTerm {

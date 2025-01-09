@@ -2,6 +2,7 @@
 
 use crate::{BorshQuad, BorshTermId};
 use borsh::{BorshDeserialize, BorshSerialize};
+use num_integer::Integer;
 
 #[derive(
     Clone,
@@ -16,14 +17,14 @@ use borsh::{BorshDeserialize, BorshSerialize};
     BorshSerialize,
     BorshDeserialize,
 )]
-pub struct BorshTriple {
-    pub subject: BorshTermId,
-    pub predicate: BorshTermId,
-    pub object: BorshTermId,
+pub struct BorshTriple<T: Integer> {
+    pub subject: BorshTermId<T>,
+    pub predicate: BorshTermId<T>,
+    pub object: BorshTermId<T>,
 }
 
-impl BorshTriple {
-    pub fn new(subject: BorshTermId, predicate: BorshTermId, object: BorshTermId) -> Self {
+impl<T: Integer> BorshTriple<T> {
+    pub fn new(subject: BorshTermId<T>, predicate: BorshTermId<T>, object: BorshTermId<T>) -> Self {
         Self {
             subject,
             predicate,
@@ -32,14 +33,16 @@ impl BorshTriple {
     }
 }
 
-impl From<BorshQuad> for BorshTriple {
-    fn from(triple: BorshQuad) -> Self {
+impl<T: Integer + Default> From<BorshQuad<T>> for BorshTriple<T> {
+    fn from(triple: BorshQuad<T>) -> Self {
         Self::new(triple.subject, triple.predicate, triple.object)
     }
 }
 
-impl From<(BorshTermId, BorshTermId, BorshTermId)> for BorshTriple {
-    fn from((subject, predicate, object): (BorshTermId, BorshTermId, BorshTermId)) -> Self {
+impl<T: Integer> From<(BorshTermId<T>, BorshTermId<T>, BorshTermId<T>)> for BorshTriple<T> {
+    fn from(
+        (subject, predicate, object): (BorshTermId<T>, BorshTermId<T>, BorshTermId<T>),
+    ) -> Self {
         Self::new(subject, predicate, object)
     }
 }

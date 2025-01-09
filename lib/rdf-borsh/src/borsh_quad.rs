@@ -2,6 +2,7 @@
 
 use crate::{BorshTermId, BorshTriple};
 use borsh::{BorshDeserialize, BorshSerialize};
+use num_integer::Integer;
 
 #[derive(
     Clone,
@@ -16,31 +17,31 @@ use borsh::{BorshDeserialize, BorshSerialize};
     BorshSerialize,
     BorshDeserialize,
 )]
-pub struct BorshQuad {
-    pub subject: BorshTermId,
-    pub predicate: BorshTermId,
-    pub object: BorshTermId,
-    pub context: BorshTermId,
+pub struct BorshQuad<T: Integer> {
+    pub context: BorshTermId<T>,
+    pub subject: BorshTermId<T>,
+    pub predicate: BorshTermId<T>,
+    pub object: BorshTermId<T>,
 }
 
-impl BorshQuad {
+impl<T: Integer> BorshQuad<T> {
     pub fn new(
-        subject: BorshTermId,
-        predicate: BorshTermId,
-        object: BorshTermId,
-        context: BorshTermId,
+        subject: BorshTermId<T>,
+        predicate: BorshTermId<T>,
+        object: BorshTermId<T>,
+        context: BorshTermId<T>,
     ) -> Self {
         Self {
+            context,
             subject,
             predicate,
             object,
-            context,
         }
     }
 }
 
-impl From<BorshTriple> for BorshQuad {
-    fn from(triple: BorshTriple) -> Self {
+impl<T: Integer + Default> From<BorshTriple<T>> for BorshQuad<T> {
+    fn from(triple: BorshTriple<T>) -> Self {
         Self::new(
             triple.subject,
             triple.predicate,
@@ -50,27 +51,48 @@ impl From<BorshTriple> for BorshQuad {
     }
 }
 
-impl From<(BorshTermId, BorshTermId, BorshTermId)> for BorshQuad {
-    fn from((subject, predicate, object): (BorshTermId, BorshTermId, BorshTermId)) -> Self {
+impl<T: Integer + Default> From<(BorshTermId<T>, BorshTermId<T>, BorshTermId<T>)> for BorshQuad<T> {
+    fn from(
+        (subject, predicate, object): (BorshTermId<T>, BorshTermId<T>, BorshTermId<T>),
+    ) -> Self {
         Self::new(subject, predicate, object, BorshTermId::default())
     }
 }
 
-impl From<(BorshTermId, BorshTermId, BorshTermId, BorshTermId)> for BorshQuad {
+impl<T: Integer>
+    From<(
+        BorshTermId<T>,
+        BorshTermId<T>,
+        BorshTermId<T>,
+        BorshTermId<T>,
+    )> for BorshQuad<T>
+{
     fn from(
-        (subject, predicate, object, context): (BorshTermId, BorshTermId, BorshTermId, BorshTermId),
+        (subject, predicate, object, context): (
+            BorshTermId<T>,
+            BorshTermId<T>,
+            BorshTermId<T>,
+            BorshTermId<T>,
+        ),
     ) -> Self {
         Self::new(subject, predicate, object, context)
     }
 }
 
-impl From<(BorshTermId, BorshTermId, BorshTermId, Option<BorshTermId>)> for BorshQuad {
+impl<T: Integer + Default>
+    From<(
+        BorshTermId<T>,
+        BorshTermId<T>,
+        BorshTermId<T>,
+        Option<BorshTermId<T>>,
+    )> for BorshQuad<T>
+{
     fn from(
         (subject, predicate, object, context): (
-            BorshTermId,
-            BorshTermId,
-            BorshTermId,
-            Option<BorshTermId>,
+            BorshTermId<T>,
+            BorshTermId<T>,
+            BorshTermId<T>,
+            Option<BorshTermId<T>>,
         ),
     ) -> Self {
         Self::new(subject, predicate, object, context.unwrap_or_default())

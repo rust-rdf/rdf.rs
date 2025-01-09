@@ -1,6 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
 use borsh::{BorshDeserialize, BorshSerialize};
+use num_integer::Integer;
+use num_traits::FromPrimitive;
 
 #[derive(
     Clone,
@@ -15,42 +17,22 @@ use borsh::{BorshDeserialize, BorshSerialize};
     BorshSerialize,
     BorshDeserialize,
 )]
-pub struct BorshTermId(i32);
+pub struct BorshTermId<T: Integer>(T);
 
-impl BorshTermId {
-    pub fn new(term_id: i32) -> Self {
-        Self(term_id)
-    }
-
-    pub fn is_valid(&self) -> bool {
-        !self.is_invalid()
-    }
-
-    pub fn is_invalid(&self) -> bool {
-        self.0 == 0
-    }
-}
-
-impl From<i32> for BorshTermId {
-    fn from(term_id: i32) -> Self {
-        Self(term_id)
-    }
-}
-
-impl Into<i32> for BorshTermId {
-    fn into(self) -> i32 {
-        self.0
-    }
-}
-
-impl TryFrom<usize> for BorshTermId {
-    type Error = ();
-
-    fn try_from(term_id: usize) -> Result<Self, Self::Error> {
-        if term_id <= i32::MAX as usize {
-            Ok(Self(term_id as i32))
+impl FromPrimitive for BorshTermId<u16> {
+    fn from_i64(n: i64) -> Option<Self> {
+        if n <= u16::MAX as _ && n >= 0 {
+            Some(Self(n as u16))
         } else {
-            Err(()) // overflow
+            None // overflow
+        }
+    }
+
+    fn from_u64(n: u64) -> Option<Self> {
+        if n <= u16::MAX as _ {
+            Some(Self(n as u16))
+        } else {
+            None // overflow
         }
     }
 }
