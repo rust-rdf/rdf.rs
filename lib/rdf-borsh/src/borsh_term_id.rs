@@ -19,6 +19,12 @@ use num_traits::FromPrimitive;
 )]
 pub struct BorshTermId<T: Integer>(T);
 
+impl From<u16> for BorshTermId<u16> {
+    fn from(value: u16) -> Self {
+        Self(value)
+    }
+}
+
 impl FromPrimitive for BorshTermId<u16> {
     fn from_i64(n: i64) -> Option<Self> {
         if n <= u16::MAX as _ && n >= 0 {

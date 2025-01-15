@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-std = ["borsh/std", "rdf-model/std", "rdf-reader/std", "rdf-writer/std"]
+std = ["borsh/std", "rdf-model/std", "rdf-reader/std", "rdf-writer/std", "winnow/std"]
 unstable = ["rdf-model/unstable", "rdf-reader/unstable", "rdf-writer/unstable"]
 
 [dependencies]
@@ -28,3 +28,4 @@ num-integer = { version = "0.1", default-features = false }
 rdf-model = { workspace = true, features = ["borsh"] }
 rdf-reader.workspace = true
 rdf-writer.workspace = true
+winnow = { version = "0.6.24", default-features = false, features = ["simd"] }

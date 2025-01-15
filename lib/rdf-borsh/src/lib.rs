@@ -18,6 +18,9 @@ pub use borsh_quad::*;
 mod borsh_reader;
 pub use borsh_reader::*;
 
+mod borsh_statement;
+pub use borsh_statement::*;
+
 mod borsh_term;
 pub use borsh_term::*;
 
@@ -29,3 +32,7 @@ pub use borsh_triple::*;
 
 mod borsh_writer;
 pub use borsh_writer::*;
+
+mod parse;
+pub use parse::parse_dataset;
+pub(crate) use parse::*;

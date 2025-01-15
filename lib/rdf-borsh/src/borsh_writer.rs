@@ -61,11 +61,11 @@ impl Writer for BorshWriter {
     }
 
     fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
-        let s = self.intern_term(statement.subject().into())?;
-        let p = self.intern_term(statement.predicate().into())?;
-        let o = self.intern_term(statement.object().into())?;
+        let s = self.intern_term(statement.subject())?;
+        let p = self.intern_term(statement.predicate())?;
+        let o = self.intern_term(statement.object())?;
         let c = match statement.context() {
-            Some(c) => self.intern_term(c.into())?,
+            Some(c) => self.intern_term(c)?,
             None => BorshTermId::default(),
         };
         self.dataset.insert_quad((s, p, o, c).into());
