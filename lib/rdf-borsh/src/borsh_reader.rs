@@ -3,7 +3,10 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, collections::BTreeMap, vec::Vec};
-use borsh::io::{Read, Result};
+use borsh::{
+    io::{Read, Result},
+    BorshDeserialize,
+};
 use core::error::Error;
 use lz4_flex::frame::FrameDecoder;
 use rdf_model::{
@@ -30,15 +33,10 @@ impl<R: Read> BorshReader<R> {
             parse_header(&mut &buf[..]).unwrap()
         };
 
-        let _term_block_size = {
-            let mut buf = [0u8; 4];
-            source.read_exact(&mut buf)?;
-            u32::from_le_bytes(buf)
-        };
+        let mut decompressor = FrameDecoder::new(source);
 
         let term_dict = {
-            let mut reader = FrameDecoder::new(&mut source);
-            borsh::from_reader::<_, Vec<BorshTerm>>(&mut reader)?
+            Vec::<BorshTerm>::deserialize_reader(&mut decompressor)?
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, term| {
                     let id = BorshTermId::from(acc.len() as u16 + 1);
@@ -47,22 +45,16 @@ impl<R: Read> BorshReader<R> {
                 })
         };
 
-        let _quad_block_size = {
-            let mut buf = [0u8; 4];
-            source.read_exact(&mut buf)?;
-            u32::from_le_bytes(buf)
-        };
-
         let _quad_count = {
             let mut buf = [0u8; 4];
-            source.read_exact(&mut buf)?;
+            decompressor.read_exact(&mut buf)?;
             u32::from_le_bytes(buf)
         };
 
         // rest of `source` is the quads section block
 
         Ok(Self {
-            decompressor: FrameDecoder::new(source),
+            decompressor,
             quad_count: quad_count as _,
             term_dict,
             read_count: 0usize,
@@ -96,7 +88,7 @@ impl<R: Read> Iterator for BorshReader<R> {
             return None;
         }
 
-        let quad = borsh::from_reader::<_, BorshQuad<u16>>(&mut self.decompressor).unwrap();
+        let quad = BorshQuad::<u16>::deserialize_reader(&mut self.decompressor).unwrap();
 
         let s = self.term_dict.get(&quad.subject).unwrap().clone();
         let p = self.term_dict.get(&quad.predicate).unwrap().clone();

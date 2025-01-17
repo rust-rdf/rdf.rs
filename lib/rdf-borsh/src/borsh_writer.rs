@@ -19,6 +19,14 @@ pub struct BorshWriter {
     dataset: BorshDataset,
 }
 
+impl core::fmt::Debug for BorshWriter {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("BorshWriter")
+            .field("dataset", &self.dataset)
+            .finish()
+    }
+}
+
 impl BorshWriter {
     pub fn new(sink: Box<dyn Write>) -> Result<Self> {
         Ok(Self {
@@ -39,10 +47,16 @@ impl BorshWriter {
 
     #[allow(unused_mut)]
     pub fn finish(mut self) -> Result<()> {
-        let version = 0u8;
+        let magic_number = b"RDFB";
+        self.sink.write_all(&magic_number[..])?;
+
+        let version = 0x01u8;
         self.sink.write_all(&[version])?;
 
-        let quad_count = self.dataset.quad_count();
+        let flags = 0b00000111_u8;
+        self.sink.write_all(&[flags])?;
+
+        let quad_count = self.dataset.quad_count() as u32;
         self.sink.write_all(quad_count.to_le_bytes().as_ref())?;
 
         let mut compressor = FrameEncoder::new(self.sink);

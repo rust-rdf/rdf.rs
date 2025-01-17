@@ -29,3 +29,6 @@ rdf-model = { workspace = true, features = ["borsh"] }
 rdf-reader.workspace = true
 rdf-writer.workspace = true
 winnow = { version = "0.6.24", default-features = false, features = ["simd"] }
+
+[dev-dependencies]
+tempfile = { version = "3.15.0", default-features = false }
