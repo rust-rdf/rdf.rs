@@ -88,7 +88,10 @@ impl<R: Read> Iterator for BorshReader<R> {
             return None;
         }
 
-        let quad = BorshQuad::<u16>::deserialize_reader(&mut self.decompressor).unwrap();
+        let quad = match BorshQuad::<u16>::deserialize_reader(&mut self.decompressor) {
+            Ok(q) => q,
+            Err(e) => return Some(Err(Box::new(e))),
+        };
 
         let s = self.term_dict.get(&quad.subject).unwrap().clone();
         let p = self.term_dict.get(&quad.predicate).unwrap().clone();

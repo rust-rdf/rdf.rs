@@ -3,28 +3,36 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
+use borsh::io::Read;
+use lz4_flex::frame::FrameDecoder;
 use rdf_model::HeapTerm;
 use winnow::{
     binary::{le_u16, le_u32, length_take, u8},
-    combinator::{dispatch, fail, opt},
-    error::{StrContext, StrContextValue},
+    combinator::{dispatch, fail},
+    error::{ContextError, ErrMode, StrContext, StrContextValue},
     PResult, Parser,
 };
 
 use crate::{BorshQuad, BorshTerm};
 
-pub fn parse_dataset(input: &mut &[u8]) -> PResult<(Vec<BorshTerm>, Vec<BorshQuad<u16>>)> {
-    let _quad_count = parse_header(input)?;
+#[derive(Debug)]
+pub enum ParseError {
+    Io(borsh::io::Error),
+    Parse(ErrMode<ContextError>),
+}
 
-    let terms = {
-        let buf = lz4_flex::decompress_size_prepended(input).unwrap();
-        parse_term_dictionary(&mut &*buf)?
-    };
+pub fn parse_dataset(
+    input: &mut &[u8],
+) -> Result<(Vec<BorshTerm>, Vec<BorshQuad<u16>>), ParseError> {
+    let _quad_count = parse_header(input).map_err(ParseError::Parse)?;
 
-    let quads = {
-        let buf = lz4_flex::decompress_size_prepended(input).unwrap();
-        parse_quads_section(&mut &*buf)?
-    };
+    let mut decompressor = FrameDecoder::new(input);
+    let mut buf = Vec::new();
+    decompressor.read_to_end(&mut buf).map_err(ParseError::Io)?;
+
+    let mut input = buf.as_slice();
+    let terms = parse_term_dictionary(&mut input).map_err(ParseError::Parse)?;
+    let quads = parse_quads_section(&mut input).map_err(ParseError::Parse)?;
 
     Ok((terms, quads))
 }
@@ -50,8 +58,8 @@ pub fn parse_term_dictionary(input: &mut &[u8]) -> PResult<Vec<BorshTerm>> {
         .context(StrContext::Label("term dictionary count"))
         .parse_next(input)?;
     let mut terms = Vec::with_capacity(term_count as usize);
-    while let Some(term) = opt(parse_term).parse_next(input)? {
-        terms.push(term)
+    for _ in 0..term_count {
+        terms.push(parse_term.parse_next(input)?)
     }
     Ok(terms)
 }
@@ -61,26 +69,29 @@ pub fn parse_quads_section(input: &mut &[u8]) -> PResult<Vec<BorshQuad<u16>>> {
         .context(StrContext::Label("quad count"))
         .parse_next(input)?;
     let mut quads = Vec::with_capacity(quad_count as usize);
-    while let Some(quad) = opt(parse_quad).parse_next(input)? {
-        quads.push(quad)
+    for _ in 0..quad_count {
+        quads.push(parse_quad.parse_next(input)?)
     }
     Ok(quads)
 }
 
 pub fn parse_term(input: &mut &[u8]) -> PResult<BorshTerm> {
     dispatch!(u8;
-        0x01_u8 => parse_iri,
-        0x02_u8 => parse_blank_node,
-        0x03_u8 => parse_plain_literal,
-        0x04_u8 => parse_typed_literal,
-        0x05_u8 => parse_tagged_literal,
+        0x00_u8 => parse_iri,
+        0x01_u8 => parse_blank_node,
+        0x02_u8 => parse_plain_literal,
+        0x03_u8 => parse_typed_literal,
+        0x04_u8 => parse_tagged_literal,
         _ => fail,
     )
+    .context(StrContext::Label("term"))
     .parse_next(input)
 }
 
 pub fn parse_quad(input: &mut &[u8]) -> PResult<BorshQuad<u16>> {
-    let (g, s, p, o) = (le_u16, le_u16, le_u16, le_u16).parse_next(input)?;
+    let (g, s, p, o) = (le_u16, le_u16, le_u16, le_u16)
+        .context(StrContext::Label("quad"))
+        .parse_next(input)?;
 
     Ok(BorshQuad::new(s.into(), p.into(), o.into(), g.into()))
 }

@@ -43,8 +43,9 @@ mod tests {
     extern crate std;
 
     use super::*;
-    use alloc::boxed::Box;
-    use rdf_model::HeapTerm;
+    use alloc::{boxed::Box, collections::BTreeMap, vec, vec::Vec};
+    use borsh::io::Read;
+    use rdf_model::{HeapTerm, Statement};
     use rdf_writer::Writer;
 
     #[test]
@@ -53,43 +54,83 @@ mod tests {
         std::println!("{:?}", temp_file);
         let mut w = BorshWriter::new(Box::new(temp_file.reopen().unwrap()))?;
 
-        w.write_statement(&BorshStatement::from((
-            HeapTerm::from("foo-1").into(),
-            HeapTerm::from("bar-1").into(),
-            HeapTerm::from("baz-1").into(),
-            HeapTerm::from("qux-1").into(),
-        )))
-        .unwrap();
+        let orig_stmts = vec![
+            BorshStatement::from((
+                HeapTerm::from("foo-1").into(),
+                HeapTerm::from("bar-1").into(),
+                HeapTerm::from("baz-1").into(),
+                HeapTerm::from("qux-1").into(),
+            )),
+            BorshStatement::from((
+                HeapTerm::from("foo-2").into(),
+                HeapTerm::from("bar-2").into(),
+                HeapTerm::from("baz-2").into(),
+                HeapTerm::from("qux-2").into(),
+            )),
+        ];
 
-        w.write_statement(&BorshStatement::from((
-            HeapTerm::from("foo-2").into(),
-            HeapTerm::from("bar-2").into(),
-            HeapTerm::from("baz-2").into(),
-            HeapTerm::from("qux-2").into(),
-        )))
-        .unwrap();
+        orig_stmts
+            .iter()
+            .try_for_each(|stmt| w.write_statement(stmt))
+            .unwrap();
 
         std::println!("{:?}", w);
 
         w.finish().unwrap();
 
-        let mut r = BorshReader::new(temp_file).unwrap();
+        let mut buf = Vec::new();
+        temp_file.reopen().unwrap().read_to_end(&mut buf).unwrap();
+        std::println!("{buf:?}");
+        let parser_stmts: Vec<BorshStatement> = {
+            let (terms, quads) = parse_dataset(&mut buf.as_slice()).unwrap();
 
-        assert_eq!(r.len(), 2);
+            let dict = terms.into_iter().fold(BTreeMap::new(), |mut acc, term| {
+                let id = BorshTermId::from(acc.len() as u16 + 1);
+                acc.insert(id, term);
+                acc
+            });
 
-        let stmt = r.next().unwrap().unwrap();
-        assert_eq!(stmt.subject().as_str(), "foo-1");
-        assert_eq!(stmt.predicate().as_str(), "bar-1");
-        assert_eq!(stmt.object().as_str(), "baz-1");
-        assert_eq!(stmt.context().unwrap().as_str(), "qux-1");
-        std::println!("{stmt:?}");
+            std::println!("{dict:?} ; {quads:?}");
 
-        let stmt = r.next().unwrap().unwrap();
-        assert_eq!(stmt.subject().as_str(), "foo-2");
-        assert_eq!(stmt.predicate().as_str(), "bar-2");
-        assert_eq!(stmt.object().as_str(), "baz-2");
-        assert_eq!(stmt.context().unwrap().as_str(), "qux-2");
-        std::println!("{stmt:?}");
+            quads
+                .into_iter()
+                .map(
+                    |BorshQuad {
+                         context,
+                         subject,
+                         predicate,
+                         object,
+                     }| {
+                        BorshStatement::from((
+                            dict.get(&subject).unwrap().clone(),
+                            dict.get(&predicate).unwrap().clone(),
+                            dict.get(&object).unwrap().clone(),
+                            dict.get(&context).unwrap().clone(),
+                        ))
+                    },
+                )
+                .collect()
+        };
+
+        let reader_stmts: Vec<BorshStatement> = {
+            BorshReader::new(temp_file)
+                .unwrap()
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap()
+                .into_iter()
+                .map(|stmt| {
+                    BorshStatement::from((
+                        stmt.subject().into(),
+                        stmt.predicate().into(),
+                        stmt.object().into(),
+                        stmt.context().unwrap().into(),
+                    ))
+                })
+                .collect()
+        };
+
+        assert_eq!(orig_stmts, parser_stmts);
+        assert_eq!(orig_stmts, reader_stmts);
 
         Ok(())
     }
