@@ -3,7 +3,6 @@
 extern crate alloc;
 
 use alloc::{borrow::Cow, string::String};
-use borsh::{BorshDeserialize, BorshSerialize};
 use rdf_model::{HeapTerm, Term, TermKind};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
