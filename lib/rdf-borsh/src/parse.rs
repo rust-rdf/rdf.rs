@@ -13,7 +13,7 @@ use winnow::{
     PResult, Parser,
 };
 
-use crate::{BorshQuad, BorshTerm};
+use crate::{BorshQuad, BorshTerm, FLAGS, MAGIC_NUMBER, VERSION_NUMBER};
 
 #[derive(Debug)]
 pub enum ParseError {
@@ -38,14 +38,14 @@ pub fn parse_dataset(
 }
 
 pub fn parse_header(input: &mut &[u8]) -> PResult<u32> {
-    b"RDFB"
+    MAGIC_NUMBER
         .context(StrContext::Label("magic number"))
         .context(StrContext::Expected(StrContextValue::StringLiteral("RDFB")))
         .parse_next(input)?;
-    b'\x01'
+    VERSION_NUMBER
         .context(StrContext::Label("version number"))
         .parse_next(input)?;
-    0b00000111_u8
+    FLAGS
         .context(StrContext::Label("flags"))
         .parse_next(input)?;
     le_u32

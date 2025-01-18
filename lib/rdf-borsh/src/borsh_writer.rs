@@ -12,6 +12,10 @@ use lz4_flex::frame::FrameEncoder;
 use rdf_model::{Statement, Term};
 use rdf_writer::{Format, Writer};
 
+pub(crate) const MAGIC_NUMBER: [u8; 4] = *b"RDFB";
+pub(crate) const VERSION_NUMBER: u8 = b'1';
+pub(crate) const FLAGS: u8 = 0b00000111;
+
 pub struct BorshWriter {
     #[allow(unused)]
     sink: Box<dyn Write>,
@@ -47,14 +51,9 @@ impl BorshWriter {
 
     #[allow(unused_mut)]
     pub fn finish(mut self) -> Result<()> {
-        let magic_number = b"RDFB";
-        self.sink.write_all(&magic_number[..])?;
-
-        let version = 0x01u8;
-        self.sink.write_all(&[version])?;
-
-        let flags = 0b00000111_u8;
-        self.sink.write_all(&[flags])?;
+        self.sink.write_all(&MAGIC_NUMBER)?;
+        self.sink.write_all(&[VERSION_NUMBER])?;
+        self.sink.write_all(&[FLAGS])?;
 
         let quad_count = self.dataset.quad_count() as u32;
         self.sink.write_all(quad_count.to_le_bytes().as_ref())?;
