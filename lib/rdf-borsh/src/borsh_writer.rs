@@ -12,11 +12,23 @@ use lz4_flex::frame::FrameEncoder;
 use rdf_model::{Statement, Term};
 use rdf_writer::{Format, Writer};
 
+pub(crate) const MAGIC_NUMBER: [u8; 4] = *b"RDFB";
+pub(crate) const VERSION_NUMBER: u8 = b'1';
+pub(crate) const FLAGS: u8 = 0b00000111;
+
 pub struct BorshWriter {
     #[allow(unused)]
     sink: Box<dyn Write>,
     #[allow(unused)]
     dataset: BorshDataset,
+}
+
+impl core::fmt::Debug for BorshWriter {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("BorshWriter")
+            .field("dataset", &self.dataset)
+            .finish()
+    }
 }
 
 impl BorshWriter {
@@ -39,10 +51,11 @@ impl BorshWriter {
 
     #[allow(unused_mut)]
     pub fn finish(mut self) -> Result<()> {
-        let version = 0u8;
-        self.sink.write_all(&[version])?;
+        self.sink.write_all(&MAGIC_NUMBER)?;
+        self.sink.write_all(&[VERSION_NUMBER])?;
+        self.sink.write_all(&[FLAGS])?;
 
-        let quad_count = self.dataset.quad_count();
+        let quad_count = self.dataset.quad_count() as u32;
         self.sink.write_all(quad_count.to_le_bytes().as_ref())?;
 
         let mut compressor = FrameEncoder::new(self.sink);
@@ -61,11 +74,11 @@ impl Writer for BorshWriter {
     }
 
     fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
-        let s = self.intern_term(statement.subject().into())?;
-        let p = self.intern_term(statement.predicate().into())?;
-        let o = self.intern_term(statement.object().into())?;
+        let s = self.intern_term(statement.subject())?;
+        let p = self.intern_term(statement.predicate())?;
+        let o = self.intern_term(statement.object())?;
         let c = match statement.context() {
-            Some(c) => self.intern_term(c.into())?,
+            Some(c) => self.intern_term(c)?,
             None => BorshTermId::default(),
         };
         self.dataset.insert_quad((s, p, o, c).into());
