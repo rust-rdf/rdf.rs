@@ -45,7 +45,7 @@ mod tests {
     use super::*;
     use alloc::{boxed::Box, collections::BTreeMap, vec, vec::Vec};
     use borsh::io::Read;
-    use rdf_model::{HeapTerm, Statement};
+    use rdf_model::HeapTerm;
     use rdf_writer::Writer;
 
     #[test]
