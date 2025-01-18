@@ -16,8 +16,9 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["serde"]
+all = ["rdf-star", "serde"]
 oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
+rdf-star = ["oxrdfio?/rdf-star", "rdf-model/rdf-star"]
 serde = ["rdf-model/serde", "dep:serde"]
 sophia = ["rdf-model/sophia", "dep:sophia"]
 std = ["dogma/std", "rdf-model/std", "serde?/std"]
