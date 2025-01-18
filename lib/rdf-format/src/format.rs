@@ -126,10 +126,10 @@ impl core::fmt::Display for Format {
 }
 
 #[cfg(feature = "oxrdf")]
-impl TryFrom<oxrdfio::RdfFormat> for Format {
+impl TryFrom<&oxrdfio::RdfFormat> for Format {
     type Error = ();
 
-    fn try_from(format: oxrdfio::RdfFormat) -> Result<Self, Self::Error> {
+    fn try_from(format: &oxrdfio::RdfFormat) -> Result<Self, Self::Error> {
         use oxrdfio::RdfFormat;
         Ok(match format {
             RdfFormat::N3 => Format::Notation3,
@@ -145,6 +145,15 @@ impl TryFrom<oxrdfio::RdfFormat> for Format {
 
 #[cfg(feature = "oxrdf")]
 impl TryInto<oxrdfio::RdfFormat> for Format {
+    type Error = ();
+
+    fn try_into(self) -> Result<oxrdfio::RdfFormat, Self::Error> {
+        TryInto::<oxrdfio::RdfFormat>::try_into(&self)
+    }
+}
+
+#[cfg(feature = "oxrdf")]
+impl TryInto<oxrdfio::RdfFormat> for &Format {
     type Error = ();
 
     fn try_into(self) -> Result<oxrdfio::RdfFormat, Self::Error> {
