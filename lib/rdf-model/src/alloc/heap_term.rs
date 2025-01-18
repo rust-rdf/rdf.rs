@@ -6,7 +6,6 @@ use crate::{Term, TermKind};
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
-    vec::Vec,
 };
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
