@@ -19,6 +19,12 @@ use num_traits::FromPrimitive;
 )]
 pub struct BorshTermId<T: Integer>(T);
 
+impl<T: Integer> BorshTermId<T> {
+    pub fn is_zero(&self) -> bool {
+        self.0.is_zero()
+    }
+}
+
 impl From<u16> for BorshTermId<u16> {
     fn from(value: u16) -> Self {
         Self(value)

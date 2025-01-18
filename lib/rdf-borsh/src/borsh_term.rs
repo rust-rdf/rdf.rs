@@ -6,7 +6,7 @@ use alloc::{borrow::Cow, string::String};
 use rdf_model::{HeapTerm, Term, TermKind};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct BorshTerm(HeapTerm);
+pub struct BorshTerm(pub(crate) HeapTerm);
 
 impl Term for BorshTerm {
     fn kind(&self) -> TermKind {

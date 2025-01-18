@@ -10,11 +10,11 @@ use borsh::{
 use core::error::Error;
 use lz4_flex::frame::FrameDecoder;
 use rdf_model::{
-    Countable, Enumerable, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement,
+    Countable, Enumerable, HeapQuad, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement,
 };
 use rdf_reader::{Format, Reader};
 
-use crate::{parse_header, BorshQuad, BorshStatement, BorshTerm, BorshTermId};
+use crate::{parse_header, BorshQuad, BorshTerm, BorshTermId};
 
 pub struct BorshReader<R: Read> {
     decompressor: FrameDecoder<R>,
@@ -96,29 +96,33 @@ impl<R: Read> Iterator for BorshReader<R> {
         let Some(s) = self.term_dict.get(&quad.subject) else {
             return Some(Err(Box::new(borsh::io::Error::new(
                 borsh::io::ErrorKind::InvalidData,
-                "subject has unknown term id",
+                "subject has unknown term ID",
             ))));
         };
         let Some(p) = self.term_dict.get(&quad.predicate) else {
             return Some(Err(Box::new(borsh::io::Error::new(
                 borsh::io::ErrorKind::InvalidData,
-                "predicate has unknown term id",
+                "predicate has unknown term ID",
             ))));
         };
         let Some(o) = self.term_dict.get(&quad.object) else {
             return Some(Err(Box::new(borsh::io::Error::new(
                 borsh::io::ErrorKind::InvalidData,
-                "object has unknown term id",
-            ))));
-        };
-        let Some(g) = self.term_dict.get(&quad.context) else {
-            return Some(Err(Box::new(borsh::io::Error::new(
-                borsh::io::ErrorKind::InvalidData,
-                "context has unknown term id",
+                "object has unknown term ID",
             ))));
         };
 
-        let stmt = BorshStatement::from((s.clone(), p.clone(), o.clone(), g.clone()));
+        let stmt = if quad.context.is_zero() {
+            HeapQuad::from((s.0.clone(), p.0.clone(), o.0.clone()))
+        } else {
+            let Some(g) = self.term_dict.get(&quad.context) else {
+                return Some(Err(Box::new(borsh::io::Error::new(
+                    borsh::io::ErrorKind::InvalidData,
+                    "context has unknown term ID",
+                ))));
+            };
+            HeapQuad::from((s.0.clone(), p.0.clone(), o.0.clone(), g.0.clone()))
+        };
 
         self.read_count += 1;
 

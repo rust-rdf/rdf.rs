@@ -18,9 +18,6 @@ pub use borsh_quad::*;
 mod borsh_reader;
 pub use borsh_reader::*;
 
-mod borsh_statement;
-pub use borsh_statement::*;
-
 mod borsh_term;
 pub use borsh_term::*;
 
@@ -45,7 +42,7 @@ mod tests {
     use super::*;
     use alloc::{boxed::Box, collections::BTreeMap, vec, vec::Vec};
     use borsh::io::Read;
-    use rdf_model::HeapTerm;
+    use rdf_model::{HeapQuad, HeapTerm};
     use rdf_writer::Writer;
 
     #[test]
@@ -55,13 +52,13 @@ mod tests {
         let mut w = BorshWriter::new(Box::new(temp_file.reopen().unwrap()))?;
 
         let orig_stmts = vec![
-            BorshStatement::from((
+            HeapQuad::from((
                 HeapTerm::from("foo-1").into(),
                 HeapTerm::from("bar-1").into(),
                 HeapTerm::from("baz-1").into(),
                 HeapTerm::from("qux-1").into(),
             )),
-            BorshStatement::from((
+            HeapQuad::from((
                 HeapTerm::from("foo-2").into(),
                 HeapTerm::from("bar-2").into(),
                 HeapTerm::from("baz-2").into(),
@@ -81,7 +78,7 @@ mod tests {
         let mut buf = Vec::new();
         temp_file.reopen().unwrap().read_to_end(&mut buf).unwrap();
         std::println!("{buf:?}");
-        let parser_stmts: Vec<BorshStatement> = {
+        let parser_stmts: Vec<HeapQuad> = {
             let (terms, quads) = parse_dataset(&mut buf.as_slice()).unwrap();
 
             let dict = terms.into_iter().fold(BTreeMap::new(), |mut acc, term| {
@@ -101,7 +98,7 @@ mod tests {
                          predicate,
                          object,
                      }| {
-                        BorshStatement::from((
+                        HeapQuad::from((
                             dict.get(&subject).unwrap().clone(),
                             dict.get(&predicate).unwrap().clone(),
                             dict.get(&object).unwrap().clone(),
@@ -112,14 +109,14 @@ mod tests {
                 .collect()
         };
 
-        let reader_stmts: Vec<BorshStatement> = {
+        let reader_stmts: Vec<HeapQuad> = {
             BorshReader::new(temp_file)
                 .unwrap()
                 .collect::<Result<Vec<_>, _>>()
                 .unwrap()
                 .into_iter()
                 .map(|stmt| {
-                    BorshStatement::from((
+                    HeapQuad::from((
                         stmt.subject().into(),
                         stmt.predicate().into(),
                         stmt.object().into(),
