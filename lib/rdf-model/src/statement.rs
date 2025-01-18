@@ -18,7 +18,9 @@ pub trait Statement {
 
     fn object(&self) -> &dyn Term;
 
-    fn context(&self) -> Option<&dyn Term>;
+    fn context(&self) -> Option<&dyn Term> {
+        None
+    }
 }
 
 impl core::fmt::Debug for dyn Statement {

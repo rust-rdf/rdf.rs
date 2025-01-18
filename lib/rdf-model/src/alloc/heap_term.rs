@@ -8,6 +8,7 @@ use alloc::{
     string::{String, ToString},
 };
 
+/// A heap-allocated term.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
