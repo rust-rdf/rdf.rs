@@ -6,13 +6,10 @@ use crate::{Term, TermKind};
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
+    vec::Vec,
 };
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "borsh",
-    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum HeapTerm {
     Iri(String),
@@ -91,5 +88,89 @@ impl From<&str> for HeapTerm {
 impl From<String> for HeapTerm {
     fn from(value: String) -> Self {
         Self::literal(&value)
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshSerialize for HeapTerm {
+    fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> borsh::io::Result<()> {
+        match self {
+            HeapTerm::Iri(value) => writer.write_all(
+                &[
+                    &[0x01],
+                    (value.len() as u32).to_le_bytes().as_slice(),
+                    value.as_bytes(),
+                ]
+                .concat(),
+            ),
+            HeapTerm::BNode(value) => writer.write_all(
+                &[
+                    &[0x02],
+                    (value.len() as u32).to_le_bytes().as_slice(),
+                    value.as_bytes(),
+                ]
+                .concat(),
+            ),
+            HeapTerm::Literal(value) => writer.write_all(
+                &[
+                    &[0x03],
+                    (value.len() as u32).to_le_bytes().as_slice(),
+                    value.as_bytes(),
+                ]
+                .concat(),
+            ),
+            HeapTerm::LiteralWithDatatype(value, datatype) => writer.write_all(
+                &[
+                    &[0x04],
+                    (value.len() as u32).to_le_bytes().as_slice(),
+                    value.as_bytes(),
+                    (datatype.len() as u32).to_le_bytes().as_slice(),
+                    datatype.as_bytes(),
+                ]
+                .concat(),
+            ),
+            HeapTerm::LiteralWithLanguage(value, language) => writer.write_all(
+                &[
+                    &[0x05],
+                    (value.len() as u32).to_le_bytes().as_slice(),
+                    value.as_bytes(),
+                    (language.len() as u32).to_le_bytes().as_slice(),
+                    language.as_bytes(),
+                ]
+                .concat(),
+            ),
+        }
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshDeserialize for HeapTerm {
+    fn deserialize_reader<R: borsh::io::Read>(reader: &mut R) -> borsh::io::Result<Self> {
+        let tag = u8::deserialize_reader(reader)?;
+        Ok(match tag {
+            0x01 => {
+                let value = String::deserialize_reader(reader)?;
+                HeapTerm::Iri(value)
+            }
+            0x02 => {
+                let value = String::deserialize_reader(reader)?;
+                HeapTerm::BNode(value)
+            }
+            0x03 => {
+                let value = String::deserialize_reader(reader)?;
+                HeapTerm::Literal(value)
+            }
+            0x04 => {
+                let value = String::deserialize_reader(reader)?;
+                let datatype = String::deserialize_reader(reader)?;
+                HeapTerm::LiteralWithDatatype(value, datatype)
+            }
+            0x05 => {
+                let value = String::deserialize_reader(reader)?;
+                let language = String::deserialize_reader(reader)?;
+                HeapTerm::LiteralWithLanguage(value, language)
+            }
+            _ => return Err(borsh::io::ErrorKind::InvalidData.into()),
+        })
     }
 }

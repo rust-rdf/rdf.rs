@@ -77,11 +77,11 @@ pub fn parse_quads_section(input: &mut &[u8]) -> PResult<Vec<BorshQuad<u16>>> {
 
 pub fn parse_term(input: &mut &[u8]) -> PResult<BorshTerm> {
     dispatch!(u8;
-        0x00_u8 => parse_iri,
-        0x01_u8 => parse_blank_node,
-        0x02_u8 => parse_plain_literal,
-        0x03_u8 => parse_typed_literal,
-        0x04_u8 => parse_tagged_literal,
+        0x01 => parse_iri,
+        0x02 => parse_blank_node,
+        0x03 => parse_plain_literal,
+        0x04 => parse_typed_literal,
+        0x05 => parse_tagged_literal,
         _ => fail,
     )
     .context(StrContext::Label("term"))
