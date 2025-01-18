@@ -30,7 +30,7 @@ impl<R: Read> BorshReader<R> {
         let quad_count = {
             let mut buf = [0u8; 10];
             source.read_exact(&mut buf)?;
-            parse_header(&mut &buf[..]).unwrap()
+            parse_header(&mut &buf[..]).map_err(|_| borsh::io::ErrorKind::InvalidData)?
         };
 
         let mut decompressor = FrameDecoder::new(source);
@@ -93,12 +93,32 @@ impl<R: Read> Iterator for BorshReader<R> {
             Err(e) => return Some(Err(Box::new(e))),
         };
 
-        let s = self.term_dict.get(&quad.subject).unwrap().clone();
-        let p = self.term_dict.get(&quad.predicate).unwrap().clone();
-        let o = self.term_dict.get(&quad.object).unwrap().clone();
-        let g = self.term_dict.get(&quad.context).unwrap().clone();
+        let Some(s) = self.term_dict.get(&quad.subject) else {
+            return Some(Err(Box::new(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                "subject has unknown term id",
+            ))));
+        };
+        let Some(p) = self.term_dict.get(&quad.predicate) else {
+            return Some(Err(Box::new(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                "predicate has unknown term id",
+            ))));
+        };
+        let Some(o) = self.term_dict.get(&quad.object) else {
+            return Some(Err(Box::new(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                "object has unknown term id",
+            ))));
+        };
+        let Some(g) = self.term_dict.get(&quad.context) else {
+            return Some(Err(Box::new(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                "context has unknown term id",
+            ))));
+        };
 
-        let stmt = BorshStatement::from((s, p, o, g));
+        let stmt = BorshStatement::from((s.clone(), p.clone(), o.clone(), g.clone()));
 
         self.read_count += 1;
 
