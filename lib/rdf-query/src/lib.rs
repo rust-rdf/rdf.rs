@@ -6,3 +6,8 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+
+pub mod pattern;
+pub mod solution;
+pub mod solutions;
+pub mod variable;
