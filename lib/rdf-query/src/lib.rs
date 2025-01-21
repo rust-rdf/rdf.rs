@@ -9,6 +9,11 @@
 
 pub mod matcher;
 pub mod pattern;
+pub mod query;
 pub mod solution;
 pub mod solutions;
 pub mod variable;
+
+mod traits {
+    pub mod queryable;
+}
