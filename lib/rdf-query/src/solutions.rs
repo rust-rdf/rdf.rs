@@ -1,31 +1,36 @@
 extern crate alloc;
 
 use alloc::boxed::Box;
-use rdf_model::Term;
 
-use crate::solution::GenericSolution;
+use crate::solution::Solution;
 
-pub struct GenericSolutions<T: Term> {
-    iter: Box<dyn Iterator<Item = GenericSolution<T>>>,
+pub struct Solutions {
+    iter: Box<dyn Iterator<Item = Solution>>,
 }
 
-impl<T: Term> GenericSolutions<T> {
-    pub fn new(iter: impl Iterator<Item = GenericSolution<T>> + 'static) -> Self {
+impl Solutions {
+    pub fn new(iter: impl Iterator<Item = Solution> + 'static) -> Self {
         Self {
             iter: Box::new(iter),
         }
     }
+
+    pub fn empty() -> Self {
+        Self {
+            iter: Box::new(core::iter::empty()),
+        }
+    }
 }
 
-impl<T: Term> Iterator for GenericSolutions<T> {
-    type Item = GenericSolution<T>;
+impl Iterator for Solutions {
+    type Item = Solution;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next()
     }
 }
 
-impl<T: Term> core::fmt::Debug for GenericSolutions<T> {
+impl core::fmt::Debug for Solutions {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Solutions").finish()
     }

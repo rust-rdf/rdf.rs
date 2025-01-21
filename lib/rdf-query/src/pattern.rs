@@ -1,34 +1,23 @@
-use rdf_model::{HeapTerm, Statement, Term};
+extern crate alloc;
 
-use crate::{matcher::GenericMatcher, variable::GenericVariable};
+use alloc::boxed::Box;
+use rdf_model::{Statement, Term};
 
-pub type Pattern = GenericPattern<HeapTerm>;
+use crate::{matcher::Matcher, solutions::Solutions, traits::queryable::Queryable};
 
-impl<T: Term> From<GenericVariable<T>> for GenericMatcher<T> {
-    fn from(var: GenericVariable<T>) -> Self {
-        Self::Variable(var)
-    }
+pub struct Pattern {
+    subject: Matcher,
+    predicate: Matcher,
+    object: Matcher,
+    graph_name: Option<Box<dyn Term>>,
 }
 
-impl<T: Term> From<T> for GenericMatcher<T> {
-    fn from(term: T) -> Self {
-        Self::Term(term)
-    }
-}
-
-pub struct GenericPattern<T: Term> {
-    subject: GenericMatcher<T>,
-    predicate: GenericMatcher<T>,
-    object: GenericMatcher<T>,
-    graph_name: Option<T>,
-}
-
-impl<T: Term> GenericPattern<T> {
+impl Pattern {
     pub fn new(
-        subject: impl Into<GenericMatcher<T>>,
-        predicate: impl Into<GenericMatcher<T>>,
-        object: impl Into<GenericMatcher<T>>,
-        graph_name: Option<T>,
+        subject: impl Into<Matcher>,
+        predicate: impl Into<Matcher>,
+        object: impl Into<Matcher>,
+        graph_name: Option<Box<dyn Term>>,
     ) -> Self {
         Self {
             subject: subject.into(),
@@ -38,14 +27,21 @@ impl<T: Term> GenericPattern<T> {
         }
     }
 
-    pub fn matches(&self, statement: &dyn Statement) -> bool {
-        self.subject.matches(statement.subject())
-            && self.predicate.matches(statement.predicate())
-            && self.object.matches(statement.object())
+    pub(crate) fn execute(&self, queryable: &impl Queryable) -> Solutions {
+        // queryable.query_pattern(self)
+        todo!()
     }
 }
 
-impl<T: Term + core::fmt::Debug> core::fmt::Debug for GenericPattern<T> {
+impl PartialEq<Box<dyn Statement>> for Pattern {
+    fn eq(&self, statement: &Box<dyn Statement>) -> bool {
+        self.subject == statement.subject()
+            && self.predicate == statement.predicate()
+            && self.object == statement.object()
+    }
+}
+
+impl core::fmt::Debug for Pattern {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Pattern")
             .field("graph_name", &self.graph_name)

@@ -1,28 +1,39 @@
-use rdf_model::{HeapTerm, Term};
+extern crate alloc;
 
-use crate::variable::GenericVariable;
+use alloc::boxed::Box;
+use rdf_model::Term;
 
-pub type Matcher = GenericMatcher<HeapTerm>;
+use crate::variable::Variable;
 
-pub enum GenericMatcher<T: Term> {
-    Any,
-    Variable(GenericVariable<T>),
-    Term(T),
+pub enum Matcher {
+    Variable(Variable),
+    Term(Box<dyn Term>),
 }
 
-impl<T: Term> GenericMatcher<T> {
-    pub fn matches(&self, term: &dyn Term) -> bool {
+impl PartialEq<&dyn Term> for Matcher {
+    fn eq(&self, term: &&dyn Term) -> bool {
         match self {
-            Self::Any | Self::Variable(_) => true,
+            Self::Variable(_) => true,
             Self::Term(t) => t.as_str() == term.as_str(),
         }
     }
 }
 
-impl<T: Term + core::fmt::Debug> core::fmt::Debug for GenericMatcher<T> {
+impl From<Variable> for Matcher {
+    fn from(var: Variable) -> Self {
+        Self::Variable(var)
+    }
+}
+
+impl From<Box<dyn Term>> for Matcher {
+    fn from(term: Box<dyn Term>) -> Self {
+        Self::Term(term)
+    }
+}
+
+impl core::fmt::Debug for Matcher {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
-            Self::Any => f.write_str("Any"),
             Self::Variable(var) => write!(f, "{:?}", var),
             Self::Term(t) => f.write_str(&t.as_str()),
         }

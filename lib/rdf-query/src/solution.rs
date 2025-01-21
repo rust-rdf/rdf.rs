@@ -1,34 +1,34 @@
 extern crate alloc;
 
-use alloc::collections::BTreeMap;
-use rdf_model::{HeapTerm, Term};
+use alloc::{boxed::Box, collections::BTreeMap};
+use rdf_model::Term;
 
-use crate::variable::GenericVariable;
+use crate::variable::Variable;
 
-pub type Solution = GenericSolution<HeapTerm>;
+type Value = Box<dyn Term>;
 
-pub struct GenericSolution<T: Term> {
-    bindings: BTreeMap<GenericVariable<T>, T>,
+pub struct Solution {
+    bindings: BTreeMap<Variable, Value>,
 }
 
-impl<T: Term + Ord> GenericSolution<T> {
-    pub fn new(bindings: BTreeMap<GenericVariable<T>, T>) -> Self {
+impl Solution {
+    pub fn new(bindings: BTreeMap<Variable, Value>) -> Self {
         Self { bindings }
     }
 
-    pub fn binding(&self, var: &GenericVariable<T>) -> Option<&T> {
+    pub fn binding(&self, var: &Variable) -> Option<&Value> {
         self.bindings.get(var)
     }
 
-    pub fn each_binding(&self) -> impl Iterator<Item = (&GenericVariable<T>, &T)> {
+    pub fn each_binding(&self) -> impl Iterator<Item = (&Variable, &Value)> {
         self.bindings.iter()
     }
 
-    pub fn each_name(&self) -> impl Iterator<Item = &GenericVariable<T>> {
+    pub fn each_name(&self) -> impl Iterator<Item = &Variable> {
         self.bindings.keys()
     }
 
-    pub fn each_value(&self) -> impl Iterator<Item = &T> {
+    pub fn each_value(&self) -> impl Iterator<Item = &Value> {
         self.bindings.values()
     }
 }

@@ -1,26 +1,50 @@
 extern crate alloc;
 
-use alloc::string::String;
-use rdf_model::{HeapTerm, Term};
+use alloc::{boxed::Box, string::String};
+use rdf_model::Term;
 
-pub type Variable = GenericVariable<HeapTerm>;
-
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
-pub struct GenericVariable<T: Term> {
+pub struct Variable {
     name: String,
-    value: Option<T>,
+    value: Option<Box<dyn Term>>,
 }
 
-impl<T: Term> GenericVariable<T> {
-    pub fn new(name: impl Into<String>, value: Option<T>) -> Self {
+impl Variable {
+    pub fn bound(name: impl Into<String>, value: impl Term + 'static) -> Self {
         Self {
             name: name.into(),
-            value,
+            value: Some(Box::new(value)),
+        }
+    }
+
+    pub fn unbound(name: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            value: None,
         }
     }
 }
 
-impl<T: Term + core::fmt::Debug> core::fmt::Debug for GenericVariable<T> {
+impl PartialEq for Variable {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+
+impl Eq for Variable {}
+
+impl PartialOrd for Variable {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
+        self.name.partial_cmp(&other.name)
+    }
+}
+
+impl Ord for Variable {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
+        self.name.cmp(&other.name)
+    }
+}
+
+impl core::fmt::Debug for Variable {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Variable")
             .field("name", &self.name)
