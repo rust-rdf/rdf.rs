@@ -10,6 +10,15 @@ pub enum Matcher {
     Term(Box<dyn Term>),
 }
 
+impl Matcher {
+    pub fn as_variable(&self) -> Option<&Variable> {
+        match self {
+            Self::Variable(var) => Some(var),
+            _ => None,
+        }
+    }
+}
+
 impl PartialEq<&dyn Term> for Matcher {
     fn eq(&self, term: &&dyn Term) -> bool {
         match self {
@@ -22,6 +31,12 @@ impl PartialEq<&dyn Term> for Matcher {
 impl From<Variable> for Matcher {
     fn from(var: Variable) -> Self {
         Self::Variable(var)
+    }
+}
+
+impl From<&str> for Matcher {
+    fn from(name: &str) -> Self {
+        name.into()
     }
 }
 

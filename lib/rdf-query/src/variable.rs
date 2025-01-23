@@ -22,6 +22,10 @@ impl Variable {
             value: None,
         }
     }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 impl PartialEq for Variable {
@@ -41,6 +45,12 @@ impl PartialOrd for Variable {
 impl Ord for Variable {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.name.cmp(&other.name)
+    }
+}
+
+impl From<&str> for Variable {
+    fn from(name: &str) -> Self {
+        Variable::unbound(name)
     }
 }
 
