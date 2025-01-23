@@ -5,8 +5,6 @@ use rdf_model::HeapTerm;
 
 use crate::variable::Variable;
 
-// TODO: the use of HeapTerm might be reconsidered. The idea is that the term
-//       stored in the solution must be owned by it, and not a reference.
 pub struct Solution {
     bindings: BTreeMap<Variable, HeapTerm>,
 }
