@@ -10,4 +10,7 @@ use core::error::Error;
 pub trait Enumerable:
     Countable + Iterator<Item = Result<Box<dyn Statement>, Box<dyn Error>>>
 {
+    fn grep(&self, pattern: &impl PartialEq<Box<dyn Statement>>) -> Self
+    where
+        Self: Sized;
 }
