@@ -12,7 +12,12 @@ pub struct Solution {
 }
 
 impl Solution {
-    pub fn new(bindings: BTreeMap<Variable, HeapTerm>) -> Self {
+    pub fn new(bindings: BTreeMap<Variable, impl Into<HeapTerm>>) -> Self {
+        let bindings = bindings
+            .into_iter()
+            .map(|(var, term)| (var, term.into()))
+            .collect();
+
         Self { bindings }
     }
 

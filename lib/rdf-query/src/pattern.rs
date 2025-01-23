@@ -1,7 +1,7 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, collections::BTreeMap};
-use rdf_model::{HeapTerm, Statement, Term};
+use rdf_model::{Statement, Term};
 
 use crate::{
     matcher::Matcher, solution::Solution, traits::queryable::Queryable, variable::Variable,
@@ -47,7 +47,7 @@ impl Pattern {
             .map(Variable::name)
             .map(Variable::unbound)
         {
-            bindings.insert(subject, HeapTerm::from(statement.subject()));
+            bindings.insert(subject, statement.subject());
         }
 
         if let Some(predicate) = self
@@ -56,7 +56,7 @@ impl Pattern {
             .map(Variable::name)
             .map(Variable::unbound)
         {
-            bindings.insert(predicate, HeapTerm::from(statement.predicate()));
+            bindings.insert(predicate, statement.predicate());
         }
 
         if let Some(object) = self
@@ -65,7 +65,7 @@ impl Pattern {
             .map(Variable::name)
             .map(Variable::unbound)
         {
-            bindings.insert(object, HeapTerm::from(statement.object()));
+            bindings.insert(object, statement.object());
         }
 
         Solution::new(bindings)
