@@ -17,16 +17,21 @@ impl Query {
     ///
     /// If the query nas no patterns, it returns a single empty solution as per
     /// SPARQL 1.1 Empty Group Pattern.
-    pub fn execute(&self, queryable: impl Queryable) -> Solutions {
+    pub fn execute<Q: Queryable>(&self, queryable: &Q) -> Solutions {
         if self.empty() {
             return Solutions::empty();
         }
 
-        for pattern in &self.patterns {
-            let _ = pattern.execute(&queryable);
-        }
+        let solutions: Vec<_> = self
+            .patterns
+            .iter()
+            .flat_map(|pattern| {
+                let statements = pattern.execute(queryable);
+                statements.filter_map(|res| res.ok().map(|stmt| pattern.solution(stmt)))
+            })
+            .collect();
 
-        Solutions::empty()
+        Solutions::new(solutions.into_iter())
     }
 
     /// Returns true if the query has no patterns.
