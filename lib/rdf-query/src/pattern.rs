@@ -1,9 +1,11 @@
 extern crate alloc;
 
-use alloc::boxed::Box;
-use rdf_model::{Statement, Term};
+use alloc::{boxed::Box, collections::BTreeMap};
+use rdf_model::{HeapTerm, Statement, Term};
 
-use crate::{matcher::Matcher, solutions::Solutions, traits::queryable::Queryable};
+use crate::{
+    matcher::Matcher, solution::Solution, traits::queryable::Queryable, variable::Variable,
+};
 
 pub struct Pattern {
     subject: Matcher,
@@ -27,9 +29,46 @@ impl Pattern {
         }
     }
 
-    pub(crate) fn execute(&self, queryable: &impl Queryable) -> Solutions {
-        // queryable.query_pattern(self)
-        todo!()
+    pub(crate) fn execute<Q: Queryable>(&self, queryable: &Q) -> Q
+    where
+        Self: Sized,
+    {
+        queryable.query_pattern(self)
+    }
+
+    /// Returns a query solution constructed by binding any variables in this
+    /// pattern with the corresponding terms in the given statement.
+    pub fn solution(&self, statement: Box<dyn Statement>) -> Solution {
+        let mut bindings = BTreeMap::new();
+
+        if let Some(subject) = self
+            .subject
+            .as_variable()
+            .map(Variable::name)
+            .map(Variable::unbound)
+        {
+            bindings.insert(subject, HeapTerm::from(statement.subject()));
+        }
+
+        if let Some(predicate) = self
+            .predicate
+            .as_variable()
+            .map(Variable::name)
+            .map(Variable::unbound)
+        {
+            bindings.insert(predicate, HeapTerm::from(statement.predicate()));
+        }
+
+        if let Some(object) = self
+            .object
+            .as_variable()
+            .map(Variable::name)
+            .map(Variable::unbound)
+        {
+            bindings.insert(object, HeapTerm::from(statement.object()));
+        }
+
+        Solution::new(bindings)
     }
 }
 
