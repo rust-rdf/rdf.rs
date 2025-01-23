@@ -1,26 +1,26 @@
 extern crate alloc;
 
-use alloc::{boxed::Box, collections::BTreeMap};
-use rdf_model::Term;
+use alloc::collections::BTreeMap;
+use rdf_model::HeapTerm;
 
 use crate::variable::Variable;
 
-type Value = Box<dyn Term>;
-
+// TODO: the use of HeapTerm might be reconsidered. The idea is that the term
+//       stored in the solution must be owned by it, and not a reference.
 pub struct Solution {
-    bindings: BTreeMap<Variable, Value>,
+    bindings: BTreeMap<Variable, HeapTerm>,
 }
 
 impl Solution {
-    pub fn new(bindings: BTreeMap<Variable, Value>) -> Self {
+    pub fn new(bindings: BTreeMap<Variable, HeapTerm>) -> Self {
         Self { bindings }
     }
 
-    pub fn binding(&self, var: &Variable) -> Option<&Value> {
+    pub fn binding(&self, var: &Variable) -> Option<&HeapTerm> {
         self.bindings.get(var)
     }
 
-    pub fn each_binding(&self) -> impl Iterator<Item = (&Variable, &Value)> {
+    pub fn each_binding(&self) -> impl Iterator<Item = (&Variable, &HeapTerm)> {
         self.bindings.iter()
     }
 
@@ -28,7 +28,7 @@ impl Solution {
         self.bindings.keys()
     }
 
-    pub fn each_value(&self) -> impl Iterator<Item = &Value> {
+    pub fn each_value(&self) -> impl Iterator<Item = &HeapTerm> {
         self.bindings.values()
     }
 }
