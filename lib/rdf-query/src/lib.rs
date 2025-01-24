@@ -7,6 +7,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 
+pub mod graph_pattern;
 pub mod matcher;
 pub mod pattern;
 pub mod query;
