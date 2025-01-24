@@ -1,6 +1,6 @@
 extern crate alloc;
 
-use alloc::{boxed::Box, collections::BTreeMap};
+use alloc::{boxed::Box, collections::BTreeMap, vec};
 use rdf_model::{Statement, Term};
 
 use crate::{
@@ -39,54 +39,45 @@ impl Pattern {
     /// Returns a query solution constructed by binding any variables in this
     /// pattern with the corresponding terms in the given statement.
     pub fn solution(&self, statement: Box<dyn Statement>) -> Solution {
-        let mut bindings = BTreeMap::new();
+        let mut ans = BTreeMap::new();
 
-        if let Some(subject) = self
-            .subject
-            .as_variable()
-            .map(Variable::name)
-            .map(Variable::unbound)
-        {
-            bindings.insert(subject, statement.subject());
+        let bindings = vec![
+            (self.subject.as_variable(), statement.subject()),
+            (self.predicate.as_variable(), statement.predicate()),
+            (self.object.as_variable(), statement.object()),
+        ];
+
+        for (variable, term) in bindings {
+            if let Some(variable) = variable.map(Variable::name).map(Variable::unbound) {
+                ans.insert(variable, term);
+            }
         }
 
-        if let Some(predicate) = self
-            .predicate
-            .as_variable()
-            .map(Variable::name)
-            .map(Variable::unbound)
-        {
-            bindings.insert(predicate, statement.predicate());
-        }
-
-        if let Some(object) = self
-            .object
-            .as_variable()
-            .map(Variable::name)
-            .map(Variable::unbound)
-        {
-            bindings.insert(object, statement.object());
-        }
-
-        Solution::new(bindings)
+        Solution::new(ans)
     }
 }
 
 impl PartialEq<Box<dyn Statement>> for Pattern {
     fn eq(&self, statement: &Box<dyn Statement>) -> bool {
-        self.subject == statement.subject()
-            && self.predicate == statement.predicate()
-            && self.object == statement.object()
+        let (s, p, o) = (
+            statement.subject(),
+            statement.predicate(),
+            statement.object(),
+        );
+        self.subject == s && self.predicate == p && self.object == o
     }
 }
 
 impl core::fmt::Debug for Pattern {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Pattern")
-            .field("graph_name", &self.graph_name)
             .field("subject", &self.subject)
             .field("predicate", &self.predicate)
             .field("object", &self.object)
+            .field(
+                "graph_name",
+                &self.graph_name.as_ref().map(|gn| gn.as_str()),
+            )
             .finish()
     }
 }
