@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::{BorshDataset, BorshTermId};
+use crate::{BorshDataset, BorshTermId, FLAGS, MAGIC_NUMBER, VERSION_NUMBER};
 use alloc::boxed::Box;
 use borsh::{
     io::{Result, Write},
@@ -11,10 +11,6 @@ use borsh::{
 use lz4_flex::frame::FrameEncoder;
 use rdf_model::{Statement, Term};
 use rdf_writer::{Format, Writer};
-
-pub(crate) const MAGIC_NUMBER: [u8; 4] = *b"RDFB";
-pub(crate) const VERSION_NUMBER: u8 = b'1';
-pub(crate) const FLAGS: u8 = 0b00000111;
 
 pub struct BorshWriter {
     #[allow(unused)]

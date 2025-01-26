@@ -12,6 +12,9 @@
 mod borsh_dataset;
 pub use borsh_dataset::*;
 
+mod borsh_header;
+pub use borsh_header::*;
+
 mod borsh_quad;
 pub use borsh_quad::*;
 

@@ -17,10 +17,10 @@ impl std::process::Termination for ExitCode {
     }
 }
 
-impl std::error::Error for ExitCode {}
+impl core::error::Error for ExitCode {}
 
-impl From<std::boxed::Box<dyn std::error::Error>> for ExitCode {
-    fn from(error: std::boxed::Box<dyn std::error::Error>) -> Self {
+impl From<std::boxed::Box<dyn core::error::Error>> for ExitCode {
+    fn from(error: std::boxed::Box<dyn core::error::Error>) -> Self {
         std::eprintln!("rdf: {:?}", error);
         Self(SysexitsError::from(error))
     }
