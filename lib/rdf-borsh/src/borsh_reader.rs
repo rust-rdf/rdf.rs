@@ -69,7 +69,15 @@ impl<R: Read> Reader for BorshReader<R> {
 }
 
 impl<R: Read> Source for BorshReader<R> {}
-impl<R: Read> Enumerable for BorshReader<R> {}
+
+impl<R: Read> Enumerable for BorshReader<R> {
+    fn grep(&self, pattern: &impl PartialEq<Box<dyn Statement>>) -> Self
+    where
+        Self: Sized,
+    {
+        todo!()
+    }
+}
 impl<R: Read> MaybeDurable for BorshReader<R> {}
 impl<R: Read> MaybeIndexed for BorshReader<R> {}
 impl<R: Read> MaybeMutable for BorshReader<R> {}
