@@ -44,7 +44,12 @@ impl Statement for OxrdfStatement {
     }
 
     fn context(&self) -> Option<&dyn Term> {
-        Some(&self.context)
+        use oxrdf::GraphName;
+        match &self.context.inner {
+            GraphName::NamedNode(_) => Some(&self.context),
+            GraphName::BlankNode(_) => Some(&self.context),
+            GraphName::DefaultGraph => None,
+        }
     }
 }
 
