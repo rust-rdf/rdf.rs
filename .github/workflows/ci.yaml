@@ -1,0 +1,38 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-ubuntu:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+      - name: Build examples
+        run: cargo build --examples
+      - name: Run tests
+        run: cargo test
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+      - name: Build examples
+        run: cargo build --examples
+      - name: Run tests
+        run: cargo test
