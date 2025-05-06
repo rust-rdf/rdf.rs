@@ -16,9 +16,9 @@ publish.workspace = true
 
 [features]
 default = ["all", "std", "unstable"]
-all = ["rdf_rs/all"]
-std = ["rdf_rs/std"]
-unstable = ["rdf_rs/unstable"]
+all = ["rdf/all"]
+std = ["rdf/std"]
+unstable = ["rdf/unstable"]
 
 [build-dependencies]
 shadow-rs = { version = "0.36", default-features = false, features = ["tzdb"] }
@@ -26,7 +26,7 @@ shadow-rs = { version = "0.36", default-features = false, features = ["tzdb"] }
 [dependencies]
 clap = { version = "4.5", default-features = false }
 clientele = { version = "0.2", default-features = true }
-rdf_rs.workspace = true
+rdf.workspace = true
 rdf-borsh.workspace = true
 rdf-derive.workspace = true
 rdf-format.workspace = true

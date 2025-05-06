@@ -13,7 +13,7 @@
 
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports `no_std` environments from the get-go.
-- Supports opting out of any feature using comprehensive feature flags.
+- Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
 - 100% free and unencumbered public domain software.
 
@@ -26,15 +26,29 @@
 ### Installation via Cargo
 
 ```bash
-cargo add rdf_rs
+cargo add rdf_rs --rename rdf
+```
+
+### Installation in `Cargo.toml` (with all features enabled)
+
+```toml
+[dependencies]
+rdf = { package = "rdf_rs", version = "0.2" }
+```
+
+### Installation in `Cargo.toml` (with only specific features enabled)
+
+```toml
+[dependencies]
+rdf = { package = "rdf_rs", version = "0.2", default-features = false, features = ["serde"] }
 ```
 
 ## 👉 Examples
 
 ### Importing the library
 
-```rust
-use rdf_rs::*;
+```rust,compile_fail
+use rdf::*;
 ```
 
 ## 📚 Reference
@@ -47,13 +61,15 @@ https://docs.rs/rdf_rs/
 git clone https://github.com/rust-rdf/rdf.rs.git
 ```
 
-- - -
+---
 
-[![Share on Twitter](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter)](https://twitter.com/share?url=https://github.com/rust-rdf/rdf.rs&text=RDF.rs)
+[![Share on X](https://img.shields.io/badge/share%20on-x-03A9F4?logo=x)](https://x.com/intent/post?url=https://github.com/rust-rdf/rdf.rs&text=RDF.rs)
 [![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/rust-rdf/rdf.rs&title=RDF.rs)
-[![Share on Hacker News](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs&t=RDF.rs)
-[![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs)
+[![Share on Hacker News](https://img.shields.io/badge/share%20on-hn-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs&t=RDF.rs)
+[![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs)
+[![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/rust-rdf/rdf.rs)
 
+[feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf_rs/Cargo.toml
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
