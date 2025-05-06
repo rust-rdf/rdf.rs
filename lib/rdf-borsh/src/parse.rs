@@ -10,7 +10,7 @@ use winnow::{
     binary::{le_u16, le_u32, length_take, u8},
     combinator::{dispatch, fail},
     error::{ContextError, ErrMode, StrContext, StrContextValue},
-    PResult, Parser,
+    ModalResult, Parser,
 };
 
 use crate::{BorshQuad, BorshTerm, FLAGS, MAGIC_NUMBER, VERSION_NUMBER};
@@ -37,7 +37,7 @@ pub fn parse_dataset(
     Ok((terms, quads))
 }
 
-pub fn parse_header(input: &mut &[u8]) -> PResult<u32> {
+pub fn parse_header(input: &mut &[u8]) -> ModalResult<u32> {
     MAGIC_NUMBER
         .context(StrContext::Label("magic number"))
         .context(StrContext::Expected(StrContextValue::StringLiteral("RDFB")))
@@ -53,7 +53,7 @@ pub fn parse_header(input: &mut &[u8]) -> PResult<u32> {
         .parse_next(input)
 }
 
-pub fn parse_term_dictionary(input: &mut &[u8]) -> PResult<Vec<BorshTerm>> {
+pub fn parse_term_dictionary(input: &mut &[u8]) -> ModalResult<Vec<BorshTerm>> {
     let term_count = le_u32
         .context(StrContext::Label("term dictionary count"))
         .parse_next(input)?;
@@ -64,7 +64,7 @@ pub fn parse_term_dictionary(input: &mut &[u8]) -> PResult<Vec<BorshTerm>> {
     Ok(terms)
 }
 
-pub fn parse_quads_section(input: &mut &[u8]) -> PResult<Vec<BorshQuad<u16>>> {
+pub fn parse_quads_section(input: &mut &[u8]) -> ModalResult<Vec<BorshQuad<u16>>> {
     let quad_count = le_u32
         .context(StrContext::Label("quad count"))
         .parse_next(input)?;
@@ -75,7 +75,7 @@ pub fn parse_quads_section(input: &mut &[u8]) -> PResult<Vec<BorshQuad<u16>>> {
     Ok(quads)
 }
 
-pub fn parse_term(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_term(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     dispatch!(u8;
         0x01 => parse_iri,
         0x02 => parse_blank_node,
@@ -88,7 +88,7 @@ pub fn parse_term(input: &mut &[u8]) -> PResult<BorshTerm> {
     .parse_next(input)
 }
 
-pub fn parse_quad(input: &mut &[u8]) -> PResult<BorshQuad<u16>> {
+pub fn parse_quad(input: &mut &[u8]) -> ModalResult<BorshQuad<u16>> {
     let (g, s, p, o) = (le_u16, le_u16, le_u16, le_u16)
         .context(StrContext::Label("quad"))
         .parse_next(input)?;
@@ -96,7 +96,7 @@ pub fn parse_quad(input: &mut &[u8]) -> PResult<BorshQuad<u16>> {
     Ok(BorshQuad::new(s.into(), p.into(), o.into(), g.into()))
 }
 
-pub fn parse_iri(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_iri(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |data| {
         core::str::from_utf8(data)
             .map(HeapTerm::iri)
@@ -106,7 +106,7 @@ pub fn parse_iri(input: &mut &[u8]) -> PResult<BorshTerm> {
     length_take(le_u32).try_map(to_term).parse_next(input)
 }
 
-pub fn parse_blank_node(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_blank_node(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |data| {
         core::str::from_utf8(data)
             .map(HeapTerm::bnode)
@@ -116,7 +116,7 @@ pub fn parse_blank_node(input: &mut &[u8]) -> PResult<BorshTerm> {
     length_take(le_u32).try_map(to_term).parse_next(input)
 }
 
-pub fn parse_plain_literal(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_plain_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |data| {
         core::str::from_utf8(data)
             .map(HeapTerm::literal)
@@ -126,7 +126,7 @@ pub fn parse_plain_literal(input: &mut &[u8]) -> PResult<BorshTerm> {
     length_take(le_u32).try_map(to_term).parse_next(input)
 }
 
-pub fn parse_typed_literal(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_typed_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |(data, datatype)| {
         let data = core::str::from_utf8(data)?;
         let datatype = core::str::from_utf8(datatype)?;
@@ -140,7 +140,7 @@ pub fn parse_typed_literal(input: &mut &[u8]) -> PResult<BorshTerm> {
         .parse_next(input)
 }
 
-pub fn parse_tagged_literal(input: &mut &[u8]) -> PResult<BorshTerm> {
+pub fn parse_tagged_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |(data, tag)| {
         let data = core::str::from_utf8(data)?;
         let tag = core::str::from_utf8(tag)?;
