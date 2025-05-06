@@ -21,7 +21,7 @@ categories = ["data-structures", "no-std"]
 publish = true
 
 [workspace.dependencies]
-dogma = { version = "0.1", default-features = false }
+dogma = { version = "0.1", default-features = false, features = ["traits"] }
 rdf_rs = { version = "=0.2.1", default-features = true }
 rdf-borsh = { version = "=0.2.1", default-features = true }
 rdf-derive = { version = "=0.2.1", default-features = true }
