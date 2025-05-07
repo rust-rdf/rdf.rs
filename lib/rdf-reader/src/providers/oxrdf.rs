@@ -45,7 +45,14 @@ impl<R: Read> Reader for OxrdfReader<R> {
 
 impl<R: Read> Source for OxrdfReader<R> {}
 
-impl<R: Read> Enumerable for OxrdfReader<R> {}
+impl<R: Read> Enumerable for OxrdfReader<R> {
+    fn grep(&self, pattern: &impl PartialEq<Box<dyn Statement>>) -> Self
+    where
+        Self: Sized,
+    {
+        todo!()
+    }
+}
 
 impl<R: Read> Countable for OxrdfReader<R> {
     fn count(&self) -> usize {

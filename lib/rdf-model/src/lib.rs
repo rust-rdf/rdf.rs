@@ -69,9 +69,6 @@ mod traits {
 
     mod maybe_mutable;
     pub use maybe_mutable::*;
-
-    mod queryable;
-    pub use queryable::*;
 }
 pub use traits::*;
 
