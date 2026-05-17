@@ -8,6 +8,11 @@
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 
+extern crate alloc;
+
+#[cfg(feature = "std")]
+extern crate std;
+
 mod store;
 pub use store::*;
 

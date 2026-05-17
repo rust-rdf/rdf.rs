@@ -21,4 +21,5 @@ std = ["rdf-model/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
+async-trait = "0.1"
 rdf-model.workspace = true

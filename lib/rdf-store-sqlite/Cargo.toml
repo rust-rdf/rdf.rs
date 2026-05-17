@@ -21,6 +21,7 @@ std = ["rdf-model/std", "rdf-store/std"]
 unstable = ["rdf-model/unstable", "rdf-store/unstable"]
 
 [dependencies]
+async-trait = "0.1"
 rdf-model.workspace = true
 rdf-store.workspace = true
 turso = { version = "0.6", default-features = false }

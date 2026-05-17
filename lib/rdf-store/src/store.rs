@@ -1,14 +1,15 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use super::Transaction;
 use alloc::boxed::Box;
+use async_trait::async_trait;
+use core::{future::Future, pin::Pin};
 
+#[async_trait]
 pub trait Store {
     type Error;
 
-    fn begin_transaction(
+    async fn begin_transaction(
         &mut self,
     ) -> Result<Box<dyn Transaction<Error = Self::Error>>, Self::Error>;
 }
