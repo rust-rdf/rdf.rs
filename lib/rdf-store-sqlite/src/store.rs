@@ -3,12 +3,8 @@
 use super::{SqliteError, SqliteTransaction};
 use alloc::boxed::Box;
 use async_trait::async_trait;
-use core::{
-    future::Future,
-    pin::{pin, Pin},
-};
 use rdf_store::{Store, Transaction};
-use turso::{Builder, Connection, Database};
+use turso::{transaction::TransactionBehavior, Builder, Connection, Database};
 
 #[allow(unused)]
 pub struct SqliteStore {
@@ -31,7 +27,10 @@ impl Store for SqliteStore {
     async fn begin_transaction(
         &mut self,
     ) -> Result<Box<dyn Transaction<Error = Self::Error>>, Self::Error> {
-        let tx = SqliteTransaction {}; // TODO
-        Ok(Box::new(tx) as Box<dyn Transaction<Error = Self::Error>>)
+        let conn: &'static Connection = Box::leak(Box::new(self.conn.clone())); // obtain 'static lifetime
+        let tx =
+            turso::transaction::Transaction::new_unchecked(conn, TransactionBehavior::Deferred)
+                .await?;
+        Ok(Box::new(SqliteTransaction { tx }) as Box<dyn Transaction<Error = Self::Error>>)
     }
 }

@@ -12,9 +12,9 @@ pub trait Transaction {
 
     async fn remove_statement(&mut self, statement: &dyn Statement) -> Result<(), Self::Error>;
 
-    async fn commit(&mut self) -> Result<(), Self::Error>;
+    async fn commit(self: Box<Self>) -> Result<(), Self::Error>;
 
-    async fn rollback(&mut self) -> Result<(), Self::Error>;
+    async fn rollback(self: Box<Self>) -> Result<(), Self::Error>;
 }
 
 impl core::fmt::Debug for dyn Transaction<Error = core::convert::Infallible> {
