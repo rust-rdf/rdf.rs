@@ -41,6 +41,7 @@ std = [
     "rdf-model/std",
     "rdf-query/std",
     "rdf-reader/std",
+    "rdf-store/std",
     "rdf-vocab/std",
     "rdf-writer/std",
 ]
@@ -50,6 +51,7 @@ unstable = [
     "rdf-model/unstable",
     "rdf-query/unstable",
     "rdf-reader/unstable",
+    "rdf-store/unstable",
     "rdf-vocab/unstable",
     "rdf-writer/unstable",
 ]
@@ -60,5 +62,6 @@ rdf-format.workspace = true
 rdf-model.workspace = true
 rdf-query.workspace = true
 rdf-reader.workspace = true
+rdf-store.workspace = true
 rdf-vocab.workspace = true
 rdf-writer.workspace = true
