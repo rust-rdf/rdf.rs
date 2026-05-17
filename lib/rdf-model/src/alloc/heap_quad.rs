@@ -36,6 +36,17 @@ impl From<(HeapTerm, HeapTerm, HeapTerm)> for HeapQuad {
     }
 }
 
+impl From<(&HeapTerm, &HeapTerm, &HeapTerm)> for HeapQuad {
+    fn from((s, p, o): (&HeapTerm, &HeapTerm, &HeapTerm)) -> Self {
+        Self {
+            s: s.clone(),
+            p: p.clone(),
+            o: o.clone(),
+            g: None,
+        }
+    }
+}
+
 impl From<(HeapTerm, HeapTerm, HeapTerm, HeapTerm)> for HeapQuad {
     fn from((s, p, o, g): (HeapTerm, HeapTerm, HeapTerm, HeapTerm)) -> Self {
         Self {
@@ -43,6 +54,17 @@ impl From<(HeapTerm, HeapTerm, HeapTerm, HeapTerm)> for HeapQuad {
             p,
             o,
             g: Some(g),
+        }
+    }
+}
+
+impl From<(&HeapTerm, &HeapTerm, &HeapTerm, &HeapTerm)> for HeapQuad {
+    fn from((s, p, o, g): (&HeapTerm, &HeapTerm, &HeapTerm, &HeapTerm)) -> Self {
+        Self {
+            s: s.clone(),
+            p: p.clone(),
+            o: o.clone(),
+            g: Some(g.clone()),
         }
     }
 }

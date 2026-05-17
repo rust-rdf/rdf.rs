@@ -62,7 +62,7 @@ impl Term for HeapTerm {
         }
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         match self {
             Self::Iri(s) => Cow::Borrowed(s),
             Self::BNode(s) => Cow::Borrowed(s),
@@ -91,6 +91,12 @@ impl From<&str> for HeapTerm {
 
 impl From<String> for HeapTerm {
     fn from(value: String) -> Self {
-        Self::literal(&value)
+        Self::Literal(value)
+    }
+}
+
+impl From<&String> for HeapTerm {
+    fn from(value: &String) -> Self {
+        Self::Literal(value.clone())
     }
 }

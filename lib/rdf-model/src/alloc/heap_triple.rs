@@ -30,3 +30,13 @@ impl From<(HeapTerm, HeapTerm, HeapTerm)> for HeapTriple {
         Self { s, p, o }
     }
 }
+
+impl From<(&HeapTerm, &HeapTerm, &HeapTerm)> for HeapTriple {
+    fn from((s, p, o): (&HeapTerm, &HeapTerm, &HeapTerm)) -> Self {
+        Self {
+            s: s.clone(),
+            p: p.clone(),
+            o: o.clone(),
+        }
+    }
+}
