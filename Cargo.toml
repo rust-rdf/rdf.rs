@@ -30,6 +30,7 @@ rdf-model = { version = "=0.2.3", default-features = true }
 rdf-query = { version = "=0.2.3", default-features = true }
 rdf-reader = { version = "=0.2.3", default-features = true }
 rdf-store = { version = "=0.2.3", default-features = true }
+rdf-store-sqlite = { version = "=0.2.3", default-features = true }
 rdf-vocab = { version = "=0.2.3", default-features = true }
 rdf-writer = { version = "=0.2.3", default-features = true }
 
@@ -43,5 +44,6 @@ rdf-model = { path = "lib/rdf-model" }
 rdf-query = { path = "lib/rdf-query" }
 rdf-reader = { path = "lib/rdf-reader" }
 rdf-store = { path = "lib/rdf-store" }
+rdf-store-sqlite = { path = "lib/rdf-store-sqlite" }
 rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
