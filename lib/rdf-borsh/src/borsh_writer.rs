@@ -1,25 +1,26 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use crate::{BorshDataset, BorshTermId, FLAGS, MAGIC_NUMBER, VERSION_NUMBER};
 use alloc::boxed::Box;
 use borsh::{
-    io::{Result, Write},
     BorshSerialize,
+    io::{Result, Write},
 };
+use core::marker::PhantomData;
 use lz4_flex::frame::FrameEncoder;
-use rdf_model::{Statement, Term};
+use num_integer::Integer;
+use rdf_model::{HeapQuad, Statement, Term};
 use rdf_writer::{Format, Writer};
 
-pub struct BorshWriter {
+pub struct BorshWriter<T: Integer> {
     #[allow(unused)]
     sink: Box<dyn Write>,
     #[allow(unused)]
     dataset: BorshDataset,
+    _marker: PhantomData<T>,
 }
 
-impl core::fmt::Debug for BorshWriter {
+impl<T: Integer> core::fmt::Debug for BorshWriter<T> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("BorshWriter")
             .field("dataset", &self.dataset)
@@ -27,11 +28,12 @@ impl core::fmt::Debug for BorshWriter {
     }
 }
 
-impl BorshWriter {
+impl<T: Integer> BorshWriter<T> {
     pub fn new(sink: Box<dyn Write>) -> Result<Self> {
         Ok(Self {
             sink,
             dataset: BorshDataset::new(),
+            _marker: PhantomData,
         })
     }
 
@@ -62,14 +64,15 @@ impl BorshWriter {
     }
 }
 
-impl Writer for BorshWriter {
+impl<T: Integer> Writer for BorshWriter<T> {
     type Error = borsh::io::Error;
+    type Statement = HeapQuad;
 
     fn format(&self) -> Format {
         todo!() // TODO
     }
 
-    fn write_statement(&mut self, statement: &dyn Statement) -> Result<()> {
+    fn write_statement(&mut self, statement: &Self::Statement) -> Result<()> {
         let s = self.intern_term(statement.subject())?;
         let p = self.intern_term(statement.predicate())?;
         let o = self.intern_term(statement.object())?;

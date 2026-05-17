@@ -1,5 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
+#![allow(unused)]
+
 extern crate alloc;
 
 use crate::{Statement, Term, TermKind};
@@ -7,100 +9,65 @@ use alloc::{borrow::Cow, string::String};
 use oxrdf::Quad;
 
 pub struct OxrdfStatement {
-    subject: OxrdfSubject,
-    predicate: OxrdfNamedNode,
+    subject: OxrdfTerm,
+    predicate: OxrdfTerm,
     object: OxrdfTerm,
-    context: OxrdfGraphName,
+    context: Option<OxrdfTerm>,
 }
 
-impl OxrdfStatement {
-    pub fn new(quad: oxrdf::Quad) -> OxrdfStatement {
+impl From<oxrdf::Quad> for OxrdfStatement {
+    fn from(quad: oxrdf::Quad) -> Self {
+        use oxrdf::GraphName;
         Self {
-            subject: OxrdfSubject {
-                inner: quad.subject,
+            subject: quad.subject.into(),
+            predicate: quad.predicate.into(),
+            object: quad.object.into(),
+            context: match quad.graph_name {
+                GraphName::NamedNode(node) => Some(node.into()),
+                GraphName::BlankNode(node) => Some(node.into()),
+                GraphName::DefaultGraph => None,
             },
-            predicate: OxrdfNamedNode {
-                inner: quad.predicate,
-            },
-            object: OxrdfTerm { inner: quad.object },
-            context: OxrdfGraphName {
-                inner: quad.graph_name,
-            },
+        }
+    }
+}
+
+impl From<oxrdf::Triple> for OxrdfStatement {
+    fn from(quad: oxrdf::Triple) -> Self {
+        Self {
+            subject: quad.subject.into(),
+            predicate: quad.predicate.into(),
+            object: quad.object.into(),
+            context: None,
         }
     }
 }
 
 impl Statement for OxrdfStatement {
-    fn subject(&self) -> &dyn Term {
+    type Term = OxrdfTerm;
+
+    fn subject(&self) -> &Self::Term {
         &self.subject
     }
 
-    fn predicate(&self) -> &dyn Term {
+    fn predicate(&self) -> &Self::Term {
         &self.predicate
     }
 
-    fn object(&self) -> &dyn Term {
+    fn object(&self) -> &Self::Term {
         &self.object
     }
 
-    fn context(&self) -> Option<&dyn Term> {
-        use oxrdf::GraphName;
-        match &self.context.inner {
-            GraphName::NamedNode(_) => Some(&self.context),
-            GraphName::BlankNode(_) => Some(&self.context),
-            GraphName::DefaultGraph => None,
-        }
+    fn context(&self) -> Option<&Self::Term> {
+        self.context.as_ref()
     }
 }
 
-pub struct OxrdfSubject {
-    inner: oxrdf::Subject,
-}
-
-impl Term for OxrdfSubject {
-    fn kind(&self) -> TermKind {
-        use oxrdf::Subject;
-        match &self.inner {
-            Subject::NamedNode(_) => TermKind::Iri,
-            Subject::BlankNode(_) => TermKind::BNode,
-            #[cfg(feature = "rdf-star")]
-            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
-        }
-    }
-
-    fn as_str(&self) -> Cow<'_, str> {
-        use oxrdf::Subject;
-        match &self.inner {
-            Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
-            Subject::BlankNode(node) => Cow::Borrowed(node.as_str()),
-            #[cfg(feature = "rdf-star")]
-            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
-        }
-    }
-}
-
-pub struct OxrdfNamedNode {
-    inner: oxrdf::NamedNode,
-}
-
-impl Term for OxrdfNamedNode {
-    fn kind(&self) -> TermKind {
-        TermKind::Iri
-    }
-
-    fn as_str(&self) -> Cow<'_, str> {
-        Cow::Borrowed(self.inner.as_str())
-    }
-}
-
-pub struct OxrdfTerm {
-    inner: oxrdf::Term,
-}
+pub struct OxrdfTerm(oxrdf::Term);
 
 impl Term for OxrdfTerm {
     fn kind(&self) -> TermKind {
         use oxrdf::Term;
-        match &self.inner {
+        match &self.0 {
             Term::NamedNode(_) => TermKind::Iri,
             Term::BlankNode(_) => TermKind::BNode,
             Term::Literal(_) => TermKind::Literal,
@@ -111,7 +78,7 @@ impl Term for OxrdfTerm {
 
     fn as_str(&self) -> Cow<'_, str> {
         use oxrdf::Term;
-        match &self.inner {
+        match &self.0 {
             Term::NamedNode(node) => Cow::Borrowed(node.as_str()),
             Term::BlankNode(node) => Cow::Borrowed(node.as_str()),
             Term::Literal(lit) => Cow::Borrowed(lit.value()), // TODO
@@ -121,14 +88,89 @@ impl Term for OxrdfTerm {
     }
 }
 
-pub struct OxrdfGraphName {
-    inner: oxrdf::GraphName,
+impl From<oxrdf::Term> for OxrdfTerm {
+    fn from(input: oxrdf::Term) -> Self {
+        Self(input)
+    }
 }
+
+impl From<oxrdf::GraphName> for OxrdfTerm {
+    fn from(input: oxrdf::GraphName) -> Self {
+        use oxrdf::GraphName;
+        Self(match input {
+            GraphName::NamedNode(n) => n.into(),
+            GraphName::BlankNode(n) => n.into(),
+            GraphName::DefaultGraph => unreachable!(),
+        })
+    }
+}
+
+impl From<oxrdf::Subject> for OxrdfTerm {
+    fn from(input: oxrdf::Subject) -> Self {
+        Self(input.into())
+    }
+}
+
+impl From<oxrdf::NamedNode> for OxrdfTerm {
+    fn from(input: oxrdf::NamedNode) -> Self {
+        Self(input.into())
+    }
+}
+
+impl From<oxrdf::BlankNode> for OxrdfTerm {
+    fn from(input: oxrdf::BlankNode) -> Self {
+        Self(input.into())
+    }
+}
+
+impl From<oxrdf::Literal> for OxrdfTerm {
+    fn from(input: oxrdf::Literal) -> Self {
+        Self(input.into())
+    }
+}
+
+pub struct OxrdfSubject(oxrdf::Subject);
+
+impl Term for OxrdfSubject {
+    fn kind(&self) -> TermKind {
+        use oxrdf::Subject;
+        match &self.0 {
+            Subject::NamedNode(_) => TermKind::Iri,
+            Subject::BlankNode(_) => TermKind::BNode,
+            #[cfg(feature = "rdf-star")]
+            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+        }
+    }
+
+    fn as_str(&self) -> Cow<'_, str> {
+        use oxrdf::Subject;
+        match &self.0 {
+            Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
+            Subject::BlankNode(node) => Cow::Borrowed(node.as_str()),
+            #[cfg(feature = "rdf-star")]
+            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+        }
+    }
+}
+
+pub struct OxrdfNamedNode(oxrdf::NamedNode);
+
+impl Term for OxrdfNamedNode {
+    fn kind(&self) -> TermKind {
+        TermKind::Iri
+    }
+
+    fn as_str(&self) -> Cow<'_, str> {
+        Cow::Borrowed(self.0.as_str())
+    }
+}
+
+pub struct OxrdfGraphName(oxrdf::GraphName);
 
 impl Term for OxrdfGraphName {
     fn kind(&self) -> TermKind {
         use oxrdf::GraphName;
-        match &self.inner {
+        match &self.0 {
             GraphName::NamedNode(_) => TermKind::Iri,
             GraphName::BlankNode(_) => TermKind::BNode,
             GraphName::DefaultGraph => todo!(), // TODO
@@ -137,7 +179,7 @@ impl Term for OxrdfGraphName {
 
     fn as_str(&self) -> Cow<'_, str> {
         use oxrdf::GraphName;
-        match &self.inner {
+        match &self.0 {
             GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),
             GraphName::BlankNode(node) => Cow::Borrowed(node.as_str()),
             GraphName::DefaultGraph => Cow::Borrowed(""), // TODO

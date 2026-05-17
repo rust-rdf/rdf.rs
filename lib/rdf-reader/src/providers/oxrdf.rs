@@ -1,13 +1,14 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate std;
+#![allow(unused)]
 
 use crate::{Reader, ReaderOptions};
 use core::error::Error;
 use oxrdfio::{RdfParser, ReaderQuadParser};
 use rdf_format::Format;
 use rdf_model::{
-    Countable, Enumerable, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement,
+    Countable, Enumerable, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement, Term,
+    providers::{OxrdfStatement, OxrdfTerm},
 };
 use std::{boxed::Box, io::Read};
 
@@ -17,12 +18,14 @@ pub struct OxrdfReader<R: Read> {
 }
 
 impl<R: Read> Iterator for OxrdfReader<R> {
-    type Item = Result<Box<dyn Statement>, Box<dyn Error>>;
+    //type Item = Result<Box<dyn Statement<Term = OxrdfTerm>>, Box<dyn Error>>;
+    type Item = Result<OxrdfStatement, Box<dyn Error>>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.parser.next() {
             Some(Err(error)) => Some(Err(error.into())),
-            Some(Ok(quad)) => Some(Ok(quad.into())),
+            //Some(Ok(quad)) => Some(Ok(Box::new(OxrdfStatement::from(quad)))),
+            Some(Ok(quad)) => Some(Ok(OxrdfStatement::from(quad))),
             None => None,
         }
     }
@@ -45,7 +48,9 @@ impl<R: Read> Reader for OxrdfReader<R> {
 
 impl<R: Read> Source for OxrdfReader<R> {}
 
-impl<R: Read> Enumerable for OxrdfReader<R> {}
+impl<R: Read> Enumerable for OxrdfReader<R> {
+    type Statement = OxrdfStatement;
+}
 
 impl<R: Read> Countable for OxrdfReader<R> {
     fn count(&self) -> usize {

@@ -9,6 +9,8 @@
 #![no_std]
 #![deny(unsafe_code)]
 
+extern crate alloc;
+
 mod borsh_dataset;
 pub use borsh_dataset::*;
 

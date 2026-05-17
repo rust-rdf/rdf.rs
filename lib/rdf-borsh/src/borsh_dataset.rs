@@ -1,7 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use crate::{BorshQuad, BorshTerm, BorshTermId, BorshTriple};
 use alloc::{
     collections::{BTreeMap, BTreeSet},

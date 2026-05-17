@@ -6,16 +6,23 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+#![allow(unused_imports)]
 
 #[cfg(feature = "std")]
-mod open_path;
-#[cfg(feature = "std")]
-pub use open_path::*;
+extern crate std;
 
-#[cfg(feature = "std")]
-mod open_url;
-#[cfg(feature = "std")]
-pub use open_url::*;
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+// #[cfg(feature = "std")]
+// mod open_path;
+// #[cfg(feature = "std")]
+// pub use open_path::*;
+
+// #[cfg(feature = "std")]
+// mod open_url;
+// #[cfg(feature = "std")]
+// pub use open_url::*;
 
 mod reader;
 pub use reader::*;

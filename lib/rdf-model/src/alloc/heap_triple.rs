@@ -12,15 +12,17 @@ pub struct HeapTriple {
 }
 
 impl Statement for HeapTriple {
-    fn subject(&self) -> &dyn Term {
+    type Term = HeapTerm;
+
+    fn subject(&self) -> &Self::Term {
         &self.s
     }
 
-    fn predicate(&self) -> &dyn Term {
+    fn predicate(&self) -> &Self::Term {
         &self.p
     }
 
-    fn object(&self) -> &dyn Term {
+    fn object(&self) -> &Self::Term {
         &self.o
     }
 }

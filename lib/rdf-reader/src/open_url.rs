@@ -1,7 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate std;
-
 use crate::{Reader, ReaderOptions};
 use rdf_format::Format;
 use std::{boxed::Box, io::Result, string::String};

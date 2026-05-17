@@ -75,7 +75,7 @@ mod traits {
 }
 pub use traits::*;
 
-mod providers {
+pub mod providers {
     #[cfg(feature = "oxrdf")]
     mod oxrdf;
     #[cfg(feature = "oxrdf")]

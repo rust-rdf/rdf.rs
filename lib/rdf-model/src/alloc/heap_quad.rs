@@ -13,20 +13,22 @@ pub struct HeapQuad {
 }
 
 impl Statement for HeapQuad {
-    fn subject(&self) -> &dyn Term {
+    type Term = HeapTerm;
+
+    fn subject(&self) -> &Self::Term {
         &self.s
     }
 
-    fn predicate(&self) -> &dyn Term {
+    fn predicate(&self) -> &Self::Term {
         &self.p
     }
 
-    fn object(&self) -> &dyn Term {
+    fn object(&self) -> &Self::Term {
         &self.o
     }
 
-    fn context(&self) -> Option<&dyn Term> {
-        self.g.as_ref().map(|g| g as &dyn Term)
+    fn context(&self) -> Option<&Self::Term> {
+        self.g.as_ref()
     }
 }
 

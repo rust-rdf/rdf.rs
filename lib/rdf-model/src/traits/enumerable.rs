@@ -7,7 +7,6 @@ use crate::Statement;
 use alloc::boxed::Box;
 use core::error::Error;
 
-pub trait Enumerable:
-    Countable + Iterator<Item = Result<Box<dyn Statement>, Box<dyn Error>>>
-{
+pub trait Enumerable: Countable + Iterator<Item = Result<Self::Statement, Box<dyn Error>>> {
+    type Statement: Statement;
 }

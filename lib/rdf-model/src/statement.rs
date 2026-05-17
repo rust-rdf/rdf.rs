@@ -1,29 +1,28 @@
 // This is free and unencumbered software released into the public domain.
 
-#[cfg(feature = "oxrdf")]
-extern crate alloc;
-
-use crate::{providers, Term};
-
-#[cfg(feature = "oxrdf")]
-use alloc::boxed::Box;
+use crate::{HeapTerm, Term, providers};
 
 /// An RDF statement.
 ///
 /// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-statement
 pub trait Statement {
-    fn subject(&self) -> &dyn Term;
+    type Term: Term;
 
-    fn predicate(&self) -> &dyn Term;
+    // TODO: associated type defaults (https://github.com/rust-lang/rust/issues/29661)
+    //type Term: Term = &dyn Term;
 
-    fn object(&self) -> &dyn Term;
+    fn subject(&self) -> &Self::Term;
 
-    fn context(&self) -> Option<&dyn Term> {
+    fn predicate(&self) -> &Self::Term;
+
+    fn object(&self) -> &Self::Term;
+
+    fn context(&self) -> Option<&Self::Term> {
         None
     }
 }
 
-impl core::fmt::Debug for dyn Statement {
+impl core::fmt::Debug for dyn Statement<Term = HeapTerm> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Statement")
             .field("subject", &self.subject().as_str())
@@ -31,12 +30,5 @@ impl core::fmt::Debug for dyn Statement {
             .field("object", &self.object().as_str())
             .field("context", &self.context().map(|t| t.as_str()))
             .finish()
-    }
-}
-
-#[cfg(feature = "oxrdf")]
-impl From<oxrdf::Quad> for Box<dyn Statement> {
-    fn from(quad: oxrdf::Quad) -> Self {
-        Box::new(providers::OxrdfStatement::new(quad))
     }
 }

@@ -1,31 +1,31 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use alloc::{boxed::Box, collections::BTreeMap, vec::Vec};
 use borsh::{
-    io::{Read, Result},
     BorshDeserialize,
+    io::{Read, Result},
 };
-use core::error::Error;
+use core::{error::Error, marker::PhantomData};
 use lz4_flex::frame::FrameDecoder;
+use num_integer::Integer;
 use rdf_model::{
-    Countable, Enumerable, HeapQuad, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement,
+    Countable, Enumerable, HeapQuad, MaybeDurable, MaybeIndexed, MaybeMutable, Source,
 };
 use rdf_reader::{Format, Reader};
 
-use crate::{parse_header, BorshQuad, BorshTerm, BorshTermId};
+use crate::{BorshQuad, BorshTerm, BorshTermId, parse_header};
 
-pub struct BorshReader<R: Read> {
+pub struct BorshReader<R: Read, T: Integer> {
     decompressor: FrameDecoder<R>,
 
     term_dict: BTreeMap<BorshTermId<u16>, BorshTerm>,
 
     quad_count: usize,
     read_count: usize,
+    _marker: PhantomData<T>,
 }
 
-impl<R: Read> BorshReader<R> {
+impl<R: Read, T: Integer> BorshReader<R, T> {
     pub fn new(mut source: R) -> Result<Self> {
         let quad_count = {
             let mut buf = [0u8; 10];
@@ -58,30 +58,34 @@ impl<R: Read> BorshReader<R> {
             quad_count: quad_count as _,
             term_dict,
             read_count: 0usize,
+            _marker: PhantomData,
         })
     }
 }
 
-impl<R: Read> Reader for BorshReader<R> {
+impl<R: Read, T: Integer> Reader for BorshReader<R, T> {
     fn format(&self) -> Format {
         todo!() // TODO
     }
 }
 
-impl<R: Read> Source for BorshReader<R> {}
-impl<R: Read> Enumerable for BorshReader<R> {}
-impl<R: Read> MaybeDurable for BorshReader<R> {}
-impl<R: Read> MaybeIndexed for BorshReader<R> {}
-impl<R: Read> MaybeMutable for BorshReader<R> {}
+impl<R: Read, T: Integer> Source for BorshReader<R, T> {}
+impl<R: Read, T: Integer> Enumerable for BorshReader<R, T> {
+    //type Statement = BorshQuad<T>;
+    type Statement = HeapQuad;
+}
+impl<R: Read, T: Integer> MaybeDurable for BorshReader<R, T> {}
+impl<R: Read, T: Integer> MaybeIndexed for BorshReader<R, T> {}
+impl<R: Read, T: Integer> MaybeMutable for BorshReader<R, T> {}
 
-impl<R: Read> Countable for BorshReader<R> {
+impl<R: Read, T: Integer> Countable for BorshReader<R, T> {
     fn count(&self) -> usize {
         self.quad_count
     }
 }
 
-impl<R: Read> Iterator for BorshReader<R> {
-    type Item = core::result::Result<Box<dyn Statement>, Box<dyn Error>>;
+impl<R: Read, T: Integer> Iterator for BorshReader<R, T> {
+    type Item = core::result::Result<HeapQuad, Box<dyn Error>>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.len() == 0 {
@@ -126,7 +130,7 @@ impl<R: Read> Iterator for BorshReader<R> {
 
         self.read_count += 1;
 
-        Some(Ok(Box::new(stmt)))
+        Some(Ok(stmt))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -135,4 +139,4 @@ impl<R: Read> Iterator for BorshReader<R> {
     }
 }
 
-impl<R: Read> ExactSizeIterator for BorshReader<R> {}
+impl<R: Read, T: Integer> ExactSizeIterator for BorshReader<R, T> {}
