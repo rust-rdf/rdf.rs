@@ -23,7 +23,7 @@ pub trait Term {
         self.kind() == TermKind::Literal
     }
 
-    fn as_str(&self) -> Cow<str>;
+    fn as_str(&self) -> Cow<'_, str>;
 }
 
 impl core::fmt::Debug for dyn Term {

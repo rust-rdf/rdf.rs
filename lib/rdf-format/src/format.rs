@@ -37,7 +37,7 @@ pub enum Format {
 }
 
 impl Named for Format {
-    fn name(&self) -> Cow<str> {
+    fn name(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
             Hdt => "hdt",
@@ -56,7 +56,7 @@ impl Named for Format {
 }
 
 impl Labeled for Format {
-    fn label(&self) -> Cow<str> {
+    fn label(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
             Hdt => "HDT",

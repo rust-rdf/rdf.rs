@@ -13,7 +13,7 @@ impl Term for BorshTerm {
         self.0.kind()
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         self.0.as_str()
     }
 }

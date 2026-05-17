@@ -68,7 +68,7 @@ impl Term for OxrdfSubject {
         }
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         use oxrdf::Subject;
         match &self.inner {
             Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
@@ -88,7 +88,7 @@ impl Term for OxrdfNamedNode {
         TermKind::Iri
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         Cow::Borrowed(self.inner.as_str())
     }
 }
@@ -109,7 +109,7 @@ impl Term for OxrdfTerm {
         }
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         use oxrdf::Term;
         match &self.inner {
             Term::NamedNode(node) => Cow::Borrowed(node.as_str()),
@@ -135,7 +135,7 @@ impl Term for OxrdfGraphName {
         }
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn as_str(&self) -> Cow<'_, str> {
         use oxrdf::GraphName;
         match &self.inner {
             GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),
