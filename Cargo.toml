@@ -8,8 +8,8 @@ resolver = "2"
 [workspace.package]
 version = "0.2.3"
 authors = ["Arto Bendiken"]
-edition = "2021"
-rust-version = "1.81"
+edition = "2024"
+rust-version = "1.85"
 description = "RDF.rs is a Rust framework for working with RDF knowledge graphs."
 #documentation = "https://docs.rs/rdf-model/"
 readme = true

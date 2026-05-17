@@ -1,7 +1,7 @@
 # RDF.rs: RDF for Rust
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
-[![Compatibility](https://img.shields.io/badge/rust-1.81%2B-blue)](https://rust-lang.org)
+[![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![Package](https://img.shields.io/crates/v/rdf_rs)](https://crates.io/crates/rdf_rs)
 [![Documentation](https://docs.rs/rdf_rs/badge.svg)](https://docs.rs/rdf_rs/)
 
@@ -19,7 +19,7 @@
 
 ## 🛠️ Prerequisites
 
-- [Rust] 1.81+
+- [Rust] 1.85+ (2024 edition)
 
 ## ⬇️ Installation
 
