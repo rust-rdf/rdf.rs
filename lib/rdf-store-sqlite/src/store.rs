@@ -19,7 +19,10 @@ impl SqliteStore {
     }
 
     pub async fn open(path: impl AsRef<str>) -> Result<Self, SqliteError> {
-        let db = Builder::new_local(path.as_ref()).build().await?;
+        let db = Builder::new_local(path.as_ref())
+            .experimental_without_rowid(true)
+            .build()
+            .await?;
         let conn = db.connect()?;
         let version = match conn
             .query(
