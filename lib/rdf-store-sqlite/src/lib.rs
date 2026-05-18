@@ -18,6 +18,9 @@ pub use rdf_store::*;
 mod error;
 pub use error::*;
 
+mod schema;
+pub use schema::*;
+
 mod store;
 pub use store::*;
 

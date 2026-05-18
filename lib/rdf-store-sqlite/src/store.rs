@@ -1,22 +1,51 @@
 // This is free and unencumbered software released into the public domain.
 
-use super::{SqliteError, SqliteTransaction};
-use alloc::boxed::Box;
+use super::{SCHEMA_SQL, SCHEMA_VERSION, SqliteError, SqliteTransaction};
+use alloc::{boxed::Box, string::ToString};
 use async_trait::async_trait;
 use rdf_store::{Store, Transaction};
-use turso::{transaction::TransactionBehavior, Builder, Connection, Database};
+use turso::{Builder, Connection, Database, transaction::TransactionBehavior};
 
 #[allow(unused)]
 pub struct SqliteStore {
+    pub version: u32,
     pub(crate) db: Database,
     pub(crate) conn: Connection,
 }
 
 impl SqliteStore {
     pub async fn new() -> Result<Self, SqliteError> {
-        let db = Builder::new_local(":memory:").build().await?;
+        Self::open(":memory:").await
+    }
+
+    pub async fn open(path: impl AsRef<str>) -> Result<Self, SqliteError> {
+        let db = Builder::new_local(path.as_ref()).build().await?;
         let conn = db.connect()?;
-        Ok(Self { db, conn })
+        let version = match conn
+            .query(
+                "SELECT cast(c.val as integer) FROM rdf_config c WHERE c.key = 'schema' LIMIT 1",
+                (),
+            )
+            .await
+        {
+            Err(err) => {
+                if err.to_string().contains("no such table: rdf_config") {
+                    conn.execute_batch(SCHEMA_SQL).await?;
+                    SCHEMA_VERSION
+                } else {
+                    return Err(err);
+                }
+            }
+            Ok(mut rows) => {
+                if let Some(row) = rows.next().await? {
+                    row.get::<u32>(0)?
+                } else {
+                    // TODO: migrate the schema to the latest version
+                    SCHEMA_VERSION
+                }
+            }
+        };
+        Ok(Self { version, db, conn })
     }
 }
 
