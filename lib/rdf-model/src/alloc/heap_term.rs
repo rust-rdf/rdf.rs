@@ -62,13 +62,23 @@ impl Term for HeapTerm {
         }
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
+    // fn as_str(&self) -> Cow<'_, str> {
+    //     match self {
+    //         Self::Iri(s) => Cow::Borrowed(s),
+    //         Self::BNode(s) => Cow::Borrowed(s),
+    //         Self::Literal(s)
+    //         | Self::LiteralWithLanguage(s, _)
+    //         | Self::LiteralWithDatatype(s, _) => Cow::Borrowed(s),
+    //     }
+    // }
+
+    fn as_str(&self) -> &str {
         match self {
-            Self::Iri(s) => Cow::Borrowed(s),
-            Self::BNode(s) => Cow::Borrowed(s),
+            Self::Iri(s) => s.as_str(),
+            Self::BNode(s) => s.as_str(),
             Self::Literal(s)
             | Self::LiteralWithLanguage(s, _)
-            | Self::LiteralWithDatatype(s, _) => Cow::Borrowed(s),
+            | Self::LiteralWithDatatype(s, _) => s.as_str(),
         }
     }
 }

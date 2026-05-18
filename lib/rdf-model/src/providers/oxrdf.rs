@@ -76,12 +76,23 @@ impl Term for OxrdfTerm {
         }
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
+    // fn as_str(&self) -> Cow<'_, str> {
+    //     use oxrdf::Term;
+    //     match &self.0 {
+    //         Term::NamedNode(node) => Cow::Borrowed(node.as_str()),
+    //         Term::BlankNode(node) => Cow::Borrowed(node.as_str()),
+    //         Term::Literal(lit) => Cow::Borrowed(lit.value()), // TODO
+    //         #[cfg(feature = "rdf-star")]
+    //         Term::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+    //     }
+    // }
+
+    fn as_str(&self) -> &str {
         use oxrdf::Term;
         match &self.0 {
-            Term::NamedNode(node) => Cow::Borrowed(node.as_str()),
-            Term::BlankNode(node) => Cow::Borrowed(node.as_str()),
-            Term::Literal(lit) => Cow::Borrowed(lit.value()), // TODO
+            Term::NamedNode(node) => node.as_str(),
+            Term::BlankNode(node) => node.as_str(),
+            Term::Literal(lit) => lit.value(), // TODO
             #[cfg(feature = "rdf-star")]
             Term::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
         }
@@ -142,11 +153,21 @@ impl Term for OxrdfSubject {
         }
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
+    // fn as_str(&self) -> Cow<'_, str> {
+    //     use oxrdf::Subject;
+    //     match &self.0 {
+    //         Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
+    //         Subject::BlankNode(node) => Cow::Borrowed(node.as_str()),
+    //         #[cfg(feature = "rdf-star")]
+    //         Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+    //     }
+    // }
+
+    fn as_str(&self) -> &str {
         use oxrdf::Subject;
         match &self.0 {
-            Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
-            Subject::BlankNode(node) => Cow::Borrowed(node.as_str()),
+            Subject::NamedNode(node) => node.as_str(),
+            Subject::BlankNode(node) => node.as_str(),
             #[cfg(feature = "rdf-star")]
             Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
         }
@@ -160,8 +181,12 @@ impl Term for OxrdfNamedNode {
         TermKind::Iri
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
-        Cow::Borrowed(self.0.as_str())
+    // fn as_str(&self) -> Cow<'_, str> {
+    //     Cow::Borrowed(self.0.as_str())
+    // }
+
+    fn as_str(&self) -> &str {
+        self.0.as_str()
     }
 }
 
@@ -177,12 +202,21 @@ impl Term for OxrdfGraphName {
         }
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
+    // fn as_str(&self) -> Cow<'_, str> {
+    //     use oxrdf::GraphName;
+    //     match &self.0 {
+    //         GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),
+    //         GraphName::BlankNode(node) => Cow::Borrowed(node.as_str()),
+    //         GraphName::DefaultGraph => Cow::Borrowed(""), // TODO
+    //     }
+    // }
+
+    fn as_str(&self) -> &str {
         use oxrdf::GraphName;
         match &self.0 {
-            GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),
-            GraphName::BlankNode(node) => Cow::Borrowed(node.as_str()),
-            GraphName::DefaultGraph => Cow::Borrowed(""), // TODO
+            GraphName::NamedNode(node) => node.as_str(),
+            GraphName::BlankNode(node) => node.as_str(),
+            GraphName::DefaultGraph => "", // TODO?
         }
     }
 }
