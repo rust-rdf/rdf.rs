@@ -7,18 +7,13 @@ use rdf_model::Statement;
 #[async_trait]
 pub trait Transaction {
     type Error;
+    type Statement: Statement;
 
-    async fn insert_statement(&mut self, statement: &dyn Statement) -> Result<(), Self::Error>;
+    async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
-    async fn remove_statement(&mut self, statement: &dyn Statement) -> Result<(), Self::Error>;
+    async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
-    async fn commit(self: Box<Self>) -> Result<(), Self::Error>;
+    async fn commit(self) -> Result<(), Self::Error>;
 
-    async fn rollback(self: Box<Self>) -> Result<(), Self::Error>;
-}
-
-impl core::fmt::Debug for dyn Transaction<Error = core::convert::Infallible> {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("Transaction").finish()
-    }
+    async fn rollback(self) -> Result<(), Self::Error>;
 }

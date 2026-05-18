@@ -8,14 +8,7 @@ use core::{future::Future, pin::Pin};
 #[async_trait]
 pub trait Store {
     type Error;
+    type Transaction: Transaction<Error = Self::Error> + Send;
 
-    async fn begin_transaction(
-        &mut self,
-    ) -> Result<Box<dyn Transaction<Error = Self::Error>>, Self::Error>;
-}
-
-impl core::fmt::Debug for dyn Store<Error = core::convert::Infallible> {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("Store").finish()
-    }
+    async fn begin_transaction(&mut self) -> Result<Self::Transaction, Self::Error>;
 }

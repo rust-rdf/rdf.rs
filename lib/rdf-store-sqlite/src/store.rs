@@ -23,14 +23,13 @@ impl SqliteStore {
 #[async_trait]
 impl Store for SqliteStore {
     type Error = SqliteError;
+    type Transaction = SqliteTransaction<'static>;
 
-    async fn begin_transaction(
-        &mut self,
-    ) -> Result<Box<dyn Transaction<Error = Self::Error>>, Self::Error> {
+    async fn begin_transaction(&mut self) -> Result<Self::Transaction, Self::Error> {
         let conn: &'static Connection = Box::leak(Box::new(self.conn.clone())); // obtain 'static lifetime
         let tx =
             turso::transaction::Transaction::new_unchecked(conn, TransactionBehavior::Deferred)
                 .await?;
-        Ok(Box::new(SqliteTransaction { tx }) as Box<dyn Transaction<Error = Self::Error>>)
+        Ok(SqliteTransaction { tx })
     }
 }
