@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use alloc::{borrow::Cow, string::String};
+use alloc::string::String;
 use rdf_model::{HeapTerm, Term, TermKind};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -11,7 +11,7 @@ impl Term for BorshTerm {
         self.0.kind()
     }
 
-    fn as_str(&self) -> Cow<'_, str> {
+    fn as_str(&self) -> &str {
         self.0.as_str()
     }
 }
