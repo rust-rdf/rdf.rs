@@ -1,12 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapTerm, Term};
+use crate::{HeapTerm, QuadPattern, Term, TriplePattern};
 
 /// An RDF statement pattern.
 ///
 /// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-statement
 pub trait StatementPattern {
-    type Term: Term;
+    type Term: Term + Clone;
 
     fn matches(
         &self,
@@ -69,6 +69,23 @@ pub trait StatementPattern {
 
     fn context(&self) -> Option<&Self::Term> {
         None
+    }
+
+    fn to_triple_pattern(&self) -> TriplePattern<Self::Term> {
+        TriplePattern::new(
+            self.subject().cloned(),
+            self.predicate().cloned(),
+            self.object().cloned(),
+        )
+    }
+
+    fn to_quad_pattern(&self) -> QuadPattern<Self::Term> {
+        QuadPattern::new(
+            self.subject().cloned(),
+            self.predicate().cloned(),
+            self.object().cloned(),
+            self.context().cloned(),
+        )
     }
 }
 

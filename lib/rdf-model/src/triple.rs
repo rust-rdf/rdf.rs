@@ -17,7 +17,7 @@ impl<T: Term> Triple<T> {
     }
 }
 
-impl<T: Term> Statement for Triple<T> {
+impl<T: Term + Clone> Statement for Triple<T> {
     type Term = T;
 
     fn subject(&self) -> &Self::Term {

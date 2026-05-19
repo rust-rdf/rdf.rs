@@ -44,7 +44,7 @@ impl<T: Term + Clone> QuadPattern<T> {
     }
 }
 
-impl<T: Term> StatementPattern for QuadPattern<T> {
+impl<T: Term + Clone> StatementPattern for QuadPattern<T> {
     type Term = T;
 
     fn subject(&self) -> Option<&Self::Term> {

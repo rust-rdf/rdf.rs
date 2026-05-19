@@ -18,7 +18,7 @@ impl<T: Term> Quad<T> {
     }
 }
 
-impl<T: Term> Statement for Quad<T> {
+impl<T: Term + Clone> Statement for Quad<T> {
     type Term = T;
 
     fn subject(&self) -> &Self::Term {

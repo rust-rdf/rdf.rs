@@ -8,6 +8,7 @@ use crate::{Statement, Term, TermKind};
 use alloc::{borrow::Cow, string::String};
 use oxrdf::Quad;
 
+#[derive(Clone)]
 pub struct OxrdfStatement {
     subject: OxrdfTerm,
     predicate: OxrdfTerm,
@@ -62,6 +63,7 @@ impl Statement for OxrdfStatement {
     }
 }
 
+#[derive(Clone)]
 pub struct OxrdfTerm(oxrdf::Term);
 
 impl Term for OxrdfTerm {
@@ -140,6 +142,7 @@ impl From<oxrdf::Literal> for OxrdfTerm {
     }
 }
 
+#[derive(Clone)]
 pub struct OxrdfSubject(oxrdf::Subject);
 
 impl Term for OxrdfSubject {
@@ -174,6 +177,7 @@ impl Term for OxrdfSubject {
     }
 }
 
+#[derive(Clone)]
 pub struct OxrdfNamedNode(oxrdf::NamedNode);
 
 impl Term for OxrdfNamedNode {
@@ -190,6 +194,7 @@ impl Term for OxrdfNamedNode {
     }
 }
 
+#[derive(Clone)]
 pub struct OxrdfGraphName(oxrdf::GraphName);
 
 impl Term for OxrdfGraphName {

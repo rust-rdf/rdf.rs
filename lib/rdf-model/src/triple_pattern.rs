@@ -39,7 +39,7 @@ impl<T: Term + Clone> TriplePattern<T> {
     }
 }
 
-impl<T: Term> StatementPattern for TriplePattern<T> {
+impl<T: Term + Clone> StatementPattern for TriplePattern<T> {
     type Term = T;
 
     fn subject(&self) -> Option<&Self::Term> {
