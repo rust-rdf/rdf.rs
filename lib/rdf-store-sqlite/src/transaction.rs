@@ -2,9 +2,12 @@
 
 use super::SqliteError;
 use alloc::boxed::Box;
+use async_stream::stream;
 use async_trait::async_trait;
-use rdf_model::{HeapQuad, HeapTerm, Statement, Term, TermKind};
+use futures::{Stream, stream::select};
+use rdf_model::{HeapQuad, HeapTerm, HeapTriple, Statement, StatementPattern, Term, TermKind};
 use rdf_store::Transaction;
+use std::string::String;
 
 pub struct SqliteTransaction<'conn> {
     pub(crate) tx: turso::transaction::Transaction<'conn>,
@@ -86,12 +89,97 @@ impl<'conn> SqliteTransaction<'conn> {
         let row = rows.next().await?.expect("should return a row");
         row.get::<u64>(0)
     }
+
+    fn match_triples(
+        &self,
+        pattern: impl StatementPattern,
+    ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
+        stream! {
+            let mut rows = self.tx.query(r#"
+                SELECT ns.val AS s, np.val AS p, no.val AS o
+                FROM rdf_triple t
+                JOIN rdf_node ns ON t.s = ns.id
+                JOIN rdf_node np ON t.p = np.id
+                JOIN rdf_node no ON t.o = no.id
+            "#, ()).await?; // TODO: use pattern
+
+            while let Some(row) = rows.next().await? {
+                let s = HeapTerm::iri(row.get::<String>(0)?);
+                let p = HeapTerm::iri(row.get::<String>(1)?);
+                let o = HeapTerm::iri(row.get::<String>(2)?);
+                let g: Option<HeapTerm> = None;
+                if pattern.matches(&s, &p, &o, g) {
+                    yield Ok(HeapQuad::new(s, p, o, None));
+                }
+            }
+        }
+    }
+
+    fn match_triples_str(
+        &self,
+        pattern: impl StatementPattern,
+    ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
+        stream! {
+            let mut rows = self.tx.query(r#"
+                SELECT ns.val AS s, np.val AS p, t.o_val
+                FROM rdf_triple_str t
+                JOIN rdf_node ns ON t.s = ns.id
+                JOIN rdf_node np ON t.p = np.id
+            "#, ()).await?; // TODO: use pattern
+
+            while let Some(row) = rows.next().await? {
+                let s = HeapTerm::iri(row.get::<String>(0)?);
+                let p = HeapTerm::iri(row.get::<String>(1)?);
+                let o = HeapTerm::literal(row.get::<String>(2)?); // TODO
+                let g: Option<HeapTerm> = None;
+                if pattern.matches(&s, &p, &o, g) {
+                    yield Ok(HeapQuad::new(s, p, o, None));
+                }
+            }
+        }
+    }
+
+    fn match_triples_num(
+        &self,
+        pattern: impl StatementPattern,
+    ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
+        stream! {
+            let mut rows = self.tx.query(r#"
+                SELECT ns.val AS s, np.val AS p, t.o_val
+                FROM rdf_triple_num t
+                JOIN rdf_node ns ON t.s = ns.id
+                JOIN rdf_node np ON t.p = np.id
+            "#, ()).await?; // TODO: use pattern
+
+            while let Some(row) = rows.next().await? {
+                let s = HeapTerm::iri(row.get::<String>(0)?);
+                let p = HeapTerm::iri(row.get::<String>(1)?);
+                let o = HeapTerm::literal(row.get::<String>(2)?); // TODO
+                let g: Option<HeapTerm> = None;
+                if pattern.matches(&s, &p, &o, g) {
+                    yield Ok(HeapQuad::new(s, p, o, None));
+                }
+            }
+        }
+    }
 }
 
 #[async_trait]
 impl<'conn> Transaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
+    type Term = HeapTerm;
     type Statement = HeapQuad;
+
+    fn match_statements(
+        &self,
+        pattern: impl StatementPattern<Term = Self::Term>,
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
+        let pattern = pattern.to_quad_pattern();
+        let stream1 = self.match_triples(pattern.clone());
+        let stream2 = self.match_triples_str(pattern.clone());
+        let stream3 = self.match_triples_num(pattern.clone());
+        select(select(stream1, stream2), stream3)
+    }
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         use HeapTerm::*;

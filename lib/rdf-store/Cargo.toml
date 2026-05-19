@@ -22,4 +22,5 @@ unstable = ["rdf-model/unstable"]
 
 [dependencies]
 async-trait = "0.1"
+futures = "0.3"
 rdf-model.workspace = true
