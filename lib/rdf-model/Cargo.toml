@@ -17,13 +17,18 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["rdf-star", "serde"]
+alloc = []
+std = ["alloc", "dogma/std", "serde?/std"]
+unstable = []
+
+# Features:
+rdf-star = ["oxrdf?/rdf-star"]
+
+# Integrations:
 borsh = ["dep:borsh"]
 oxrdf = ["dep:oxrdf"]
-rdf-star = ["oxrdf?/rdf-star"]
 serde = ["dep:serde"]
 sophia = ["dep:sophia"]
-std = ["dogma/std", "serde?/std"]
-unstable = []
 
 [dependencies]
 borsh = { version = "1.5", default-features = false, features = [

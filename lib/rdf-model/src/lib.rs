@@ -8,24 +8,13 @@
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 
-extern crate alloc;
-
 #[doc(hidden)]
 pub mod prelude;
 
-mod heap {
-    mod heap_quad;
-    pub use heap_quad::*;
-    mod heap_quad_pattern;
-    pub use heap_quad_pattern::*;
-    mod heap_term;
-    pub use heap_term::*;
-    mod heap_triple;
-    pub use heap_triple::*;
-    mod heap_triple_pattern;
-    pub use heap_triple_pattern::*;
-}
-pub use heap::*;
+#[cfg(feature = "alloc")]
+mod alloc;
+#[cfg(feature = "alloc")]
+pub use alloc::*;
 
 mod dataset;
 pub use dataset::*;
