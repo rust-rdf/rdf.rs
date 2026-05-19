@@ -8,6 +8,37 @@ use crate::{HeapTerm, Term};
 pub trait StatementPattern {
     type Term: Term;
 
+    fn matches(
+        &self,
+        subject: impl Term,
+        predicate: impl Term,
+        object: impl Term,
+        context: Option<impl Term>,
+    ) -> bool {
+        if let Some(s) = self.subject() {
+            if s.as_str() != subject.as_str() {
+                return false;
+            }
+        }
+        if let Some(p) = self.predicate() {
+            if p.as_str() != predicate.as_str() {
+                return false;
+            }
+        }
+        if let Some(o) = self.object() {
+            if o.as_str() != object.as_str() {
+                return false;
+            }
+        }
+        if let Some(c) = self.context() {
+            if c.as_str() != context.unwrap().as_str() {
+                // FIXME
+                return false;
+            }
+        }
+        true
+    }
+
     fn has_subject(&self) -> bool {
         self.subject().is_some()
     }
@@ -41,13 +72,13 @@ pub trait StatementPattern {
     }
 }
 
-impl core::fmt::Debug for dyn StatementPattern<Term = HeapTerm> {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("StatementPattern")
-            .field("subject", &self.subject().map(|t| t.as_str()))
-            .field("predicate", &self.predicate().map(|t| t.as_str()))
-            .field("object", &self.object().map(|t| t.as_str()))
-            .field("context", &self.context().map(|t| t.as_str()))
-            .finish()
-    }
-}
+// impl core::fmt::Debug for dyn StatementPattern<Term = HeapTerm> {
+//     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+//         f.debug_struct("StatementPattern")
+//             .field("subject", &self.subject().map(|t| t.as_str()))
+//             .field("predicate", &self.predicate().map(|t| t.as_str()))
+//             .field("object", &self.object().map(|t| t.as_str()))
+//             .field("context", &self.context().map(|t| t.as_str()))
+//             .finish()
+//     }
+// }

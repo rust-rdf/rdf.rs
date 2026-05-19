@@ -40,16 +40,24 @@ impl HeapTerm {
     pub fn literal_with_datatype(value: impl ToString, datatype: impl ToString) -> Self {
         Self::LiteralWithDatatype(value.to_string(), datatype.to_string())
     }
-}
 
-impl Term for HeapTerm {
-    fn kind(&self) -> TermKind {
+    pub fn kind(&self) -> TermKind {
         match self {
             Self::Iri(_) => TermKind::Iri,
             Self::BNode(_) => TermKind::BNode,
             Self::Literal(_)
             | Self::LiteralWithLanguage(_, _)
             | Self::LiteralWithDatatype(_, _) => TermKind::Literal,
+        }
+    }
+
+    fn as_str(&self) -> &str {
+        match self {
+            Self::Iri(s) => s.as_str(),
+            Self::BNode(s) => s.as_str(),
+            Self::Literal(s)
+            | Self::LiteralWithLanguage(s, _)
+            | Self::LiteralWithDatatype(s, _) => s.as_str(),
         }
     }
 
@@ -62,15 +70,25 @@ impl Term for HeapTerm {
     //         | Self::LiteralWithDatatype(s, _) => Cow::Borrowed(s),
     //     }
     // }
+}
+
+impl Term for HeapTerm {
+    fn kind(&self) -> TermKind {
+        self.kind()
+    }
 
     fn as_str(&self) -> &str {
-        match self {
-            Self::Iri(s) => s.as_str(),
-            Self::BNode(s) => s.as_str(),
-            Self::Literal(s)
-            | Self::LiteralWithLanguage(s, _)
-            | Self::LiteralWithDatatype(s, _) => s.as_str(),
-        }
+        self.as_str()
+    }
+}
+
+impl Term for &HeapTerm {
+    fn kind(&self) -> TermKind {
+        (*self).kind()
+    }
+
+    fn as_str(&self) -> &str {
+        (*self).as_str()
     }
 }
 
