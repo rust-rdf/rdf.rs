@@ -39,6 +39,9 @@ pub use literal::*;
 mod node;
 pub use node::*;
 
+mod quad;
+pub use quad::*;
+
 mod source;
 pub use source::*;
 
@@ -50,6 +53,9 @@ pub use term::*;
 
 mod term_kind;
 pub use term_kind::*;
+
+mod triple;
+pub use triple::*;
 
 mod vocabulary;
 pub use vocabulary::*;
