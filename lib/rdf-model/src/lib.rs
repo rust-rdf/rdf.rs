@@ -42,11 +42,17 @@ pub use node::*;
 mod quad;
 pub use quad::*;
 
+mod quad_pattern;
+pub use quad_pattern::*;
+
 mod source;
 pub use source::*;
 
 mod statement;
 pub use statement::*;
+
+mod statement_pattern;
+pub use statement_pattern::*;
 
 mod term;
 pub use term::*;
@@ -56,6 +62,9 @@ pub use term_kind::*;
 
 mod triple;
 pub use triple::*;
+
+mod triple_pattern;
+pub use triple_pattern::*;
 
 mod vocabulary;
 pub use vocabulary::*;
