@@ -12,6 +12,10 @@ pub struct TriplePattern<T: Term> {
 }
 
 impl<T: Term> TriplePattern<T> {
+    pub const fn empty() -> Self {
+        Self::new(None, None, None)
+    }
+
     pub const fn new(s: Option<T>, p: Option<T>, o: Option<T>) -> Self {
         Self { s, p, o }
     }

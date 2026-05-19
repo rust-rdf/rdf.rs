@@ -13,6 +13,10 @@ pub struct QuadPattern<T: Term> {
 }
 
 impl<T: Term> QuadPattern<T> {
+    pub const fn empty() -> Self {
+        Self::new(None, None, None, None)
+    }
+
     pub const fn new(s: Option<T>, p: Option<T>, o: Option<T>, g: Option<T>) -> Self {
         Self { s, p, o, g }
     }

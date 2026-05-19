@@ -3,7 +3,7 @@
 extern crate alloc;
 
 use crate::{Term, TermKind};
-use alloc::string::String;
+use alloc::string::{String, ToString};
 
 /// A heap-allocated term.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -21,30 +21,24 @@ pub enum HeapTerm {
 }
 
 impl HeapTerm {
-    pub fn iri(value: impl AsRef<str>) -> Self {
-        Self::Iri(String::from(value.as_ref()))
+    pub fn iri(value: impl ToString) -> Self {
+        Self::Iri(value.to_string())
     }
 
-    pub fn bnode(id: impl AsRef<str>) -> Self {
-        Self::BNode(String::from(id.as_ref()))
+    pub fn bnode(id: impl ToString) -> Self {
+        Self::BNode(id.to_string())
     }
 
-    pub fn literal(value: impl AsRef<str>) -> Self {
-        Self::Literal(String::from(value.as_ref()))
+    pub fn literal(value: impl ToString) -> Self {
+        Self::Literal(value.to_string())
     }
 
-    pub fn literal_with_language(value: impl AsRef<str>, language: impl AsRef<str>) -> Self {
-        Self::LiteralWithLanguage(
-            String::from(value.as_ref()),
-            String::from(language.as_ref()),
-        )
+    pub fn literal_with_language(value: impl ToString, language: impl ToString) -> Self {
+        Self::LiteralWithLanguage(value.to_string(), language.to_string())
     }
 
-    pub fn literal_with_datatype(value: impl AsRef<str>, datatype: impl AsRef<str>) -> Self {
-        Self::LiteralWithDatatype(
-            String::from(value.as_ref()),
-            String::from(datatype.as_ref()),
-        )
+    pub fn literal_with_datatype(value: impl ToString, datatype: impl ToString) -> Self {
+        Self::LiteralWithDatatype(value.to_string(), datatype.to_string())
     }
 }
 
