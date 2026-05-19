@@ -3,7 +3,6 @@
 extern crate alloc;
 
 use crate::TermKind;
-use alloc::borrow::Cow;
 
 /// An RDF term.
 ///

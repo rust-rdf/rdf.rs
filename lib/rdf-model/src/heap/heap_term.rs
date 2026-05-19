@@ -1,12 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use crate::{Term, TermKind};
-use alloc::{
-    borrow::Cow,
-    string::{String, ToString},
-};
+use alloc::string::String;
 
 /// A heap-allocated term.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
