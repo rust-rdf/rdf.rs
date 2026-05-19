@@ -1,15 +1,43 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{StatementPattern, Term};
+use crate::{StatementPattern, Term, TriplePattern};
 
 /// A quad statement pattern.
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct QuadPattern<T: Term> {
     s: Option<T>,
     p: Option<T>,
     o: Option<T>,
     g: Option<T>,
+}
+
+impl<T: Term> QuadPattern<T> {
+    pub const fn new(s: Option<T>, p: Option<T>, o: Option<T>, g: Option<T>) -> Self {
+        Self { s, p, o, g }
+    }
+
+    pub const fn with_subject(s: T) -> Self {
+        Self::new(Some(s), None, None, None)
+    }
+
+    pub const fn with_predicate(p: T) -> Self {
+        Self::new(None, Some(p), None, None)
+    }
+
+    pub const fn with_object(o: T) -> Self {
+        Self::new(None, None, Some(o), None)
+    }
+
+    pub const fn with_context(g: T) -> Self {
+        Self::new(None, None, None, Some(g))
+    }
+}
+
+impl<T: Term + Clone> QuadPattern<T> {
+    pub fn to_triple_pattern(&self) -> TriplePattern<T> {
+        TriplePattern::new(self.s.clone(), self.p.clone(), self.o.clone())
+    }
 }
 
 impl<T: Term> StatementPattern for QuadPattern<T> {

@@ -2,9 +2,6 @@
 
 use crate::{Quad, QuadPattern, Triple, TriplePattern};
 
-mod term;
-pub use term::*;
-
 /// A heap-allocated triple statement.
 pub type HeapTriple = Triple<HeapTerm>;
 
@@ -16,3 +13,6 @@ pub type HeapQuad = Quad<HeapTerm>;
 
 /// A heap-allocated quad statement pattern.
 pub type HeapQuadPattern = QuadPattern<HeapTerm>;
+
+mod term;
+pub use term::*;

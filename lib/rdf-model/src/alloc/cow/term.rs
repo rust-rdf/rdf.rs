@@ -24,23 +24,35 @@ pub enum CowTerm<'a> {
 }
 
 impl<'a> CowTerm<'a> {
-    pub fn iri(value: Cow<'a, str>) -> Self {
+    pub const fn iri_static(value: &'static str) -> Self {
+        Self::Iri(Cow::Borrowed(value))
+    }
+
+    pub const fn iri(value: Cow<'a, str>) -> Self {
         Self::Iri(value)
     }
 
-    pub fn bnode(id: Cow<'a, str>) -> Self {
+    pub const fn bnode_static(id: &'static str) -> Self {
+        Self::BNode(Cow::Borrowed(id))
+    }
+
+    pub const fn bnode(id: Cow<'a, str>) -> Self {
         Self::BNode(id)
     }
 
-    pub fn literal(value: Cow<'a, str>) -> Self {
+    pub const fn literal_static(value: &'static str) -> Self {
+        Self::Literal(Cow::Borrowed(value))
+    }
+
+    pub const fn literal(value: Cow<'a, str>) -> Self {
         Self::Literal(value)
     }
 
-    pub fn literal_with_language(value: Cow<'a, str>, language: Cow<'a, str>) -> Self {
+    pub const fn literal_with_language(value: Cow<'a, str>, language: Cow<'a, str>) -> Self {
         Self::LiteralWithLanguage(value, language)
     }
 
-    pub fn literal_with_datatype(value: Cow<'a, str>, datatype: Cow<'a, str>) -> Self {
+    pub const fn literal_with_datatype(value: Cow<'a, str>, datatype: Cow<'a, str>) -> Self {
         Self::LiteralWithDatatype(value, datatype)
     }
 }

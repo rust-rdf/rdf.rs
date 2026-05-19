@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{Statement, Term};
+use crate::{Quad, QuadPattern, Statement, Term, TriplePattern};
 
 /// A triple statement.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -9,6 +9,12 @@ pub struct Triple<T: Term> {
     s: T,
     p: T,
     o: T,
+}
+
+impl<T: Term> Triple<T> {
+    pub const fn new(s: T, p: T, o: T) -> Self {
+        Self { s, p, o }
+    }
 }
 
 impl<T: Term> Statement for Triple<T> {
@@ -24,6 +30,29 @@ impl<T: Term> Statement for Triple<T> {
 
     fn object(&self) -> &Self::Term {
         &self.o
+    }
+}
+
+impl<T: Term + Clone> Triple<T> {
+    pub fn to_triple_pattern(&self) -> TriplePattern<T> {
+        TriplePattern::new(
+            Some(self.s.clone()),
+            Some(self.p.clone()),
+            Some(self.o.clone()),
+        )
+    }
+
+    pub fn to_quad(&self) -> Quad<T> {
+        Quad::new(self.s.clone(), self.p.clone(), self.o.clone(), None)
+    }
+
+    pub fn to_quad_pattern(&self) -> QuadPattern<T> {
+        QuadPattern::new(
+            Some(self.s.clone()),
+            Some(self.p.clone()),
+            Some(self.o.clone()),
+            None,
+        )
     }
 }
 
