@@ -21,3 +21,5 @@ std = []
 unstable = []
 
 [dependencies]
+strum = "0.28"
+strum_macros = "0.28"
