@@ -22,6 +22,7 @@ publish = true
 
 [workspace.dependencies]
 dogma = { version = "0.1", default-features = false, features = ["traits"] }
+float-ord = { version = "0.3", default-features = false }
 rdf = { package = "rdf_rs", version = "=0.2.3", default-features = true }
 rdf-borsh = { version = "=0.2.3", default-features = true }
 rdf-derive = { version = "=0.2.3", default-features = true }
@@ -33,6 +34,7 @@ rdf-store = { version = "=0.2.3", default-features = true }
 rdf-store-sqlite = { version = "=0.2.3", default-features = true }
 rdf-vocab = { version = "=0.2.3", default-features = true }
 rdf-writer = { version = "=0.2.3", default-features = true }
+xsd = { version = "=0.2.3", default-features = true }
 
 [patch.crates-io]
 rdf-cli = { path = "bin/rdf" }
@@ -47,3 +49,4 @@ rdf-store = { path = "lib/rdf-store" }
 rdf-store-sqlite = { path = "lib/rdf-store-sqlite" }
 rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
+xsd = { path = "lib/xsd" }

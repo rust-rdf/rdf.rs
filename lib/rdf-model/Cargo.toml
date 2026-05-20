@@ -41,3 +41,4 @@ serde = { version = "1.0", default-features = false, features = [
 ], optional = true }
 sophia = { version = "0.9", default-features = false, optional = true }
 stability = "0.2"
+xsd.workspace = true

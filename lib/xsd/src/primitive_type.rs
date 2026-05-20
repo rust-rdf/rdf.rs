@@ -3,15 +3,16 @@
 extern crate alloc;
 
 use alloc::{format, string::String};
+use phf::phf_map;
 use strum_macros::{AsRefStr, Display, EnumString};
 
-/// The XML Schema built-in datatypes.
+/// The XML Schema built-in primitive datatypes.
 ///
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(
     AsRefStr, Clone, Debug, Default, Display, EnumString, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
-pub enum Type {
+pub enum PrimitiveType {
     /// See: https://www.w3.org/TR/xmlschema-2/#string
     #[default]
     #[strum(to_string = "string")]
@@ -89,3 +90,26 @@ pub enum Type {
     #[strum(default)]
     Other(String),
 }
+
+impl PrimitiveType {}
+
+pub static TYPES: phf::Map<&'static str, PrimitiveType> = phf_map! {
+    "string" => PrimitiveType::String,
+    "boolean" => PrimitiveType::Boolean,
+    "decimal" => PrimitiveType::Decimal,
+    "float" => PrimitiveType::Float,
+    "double" => PrimitiveType::Double,
+    "duration" => PrimitiveType::Duration,
+    "dateTime" => PrimitiveType::DateTime,
+    "time" => PrimitiveType::Time,
+    "date" => PrimitiveType::Date,
+    "gYearMonth" => PrimitiveType::GYearMonth,
+    "gYear" => PrimitiveType::GYear,
+    "gMonthDay" => PrimitiveType::GMonthDay,
+    "gDay" => PrimitiveType::GDay,
+    "gMonth" => PrimitiveType::GMonth,
+    "hexBinary" => PrimitiveType::HexBinary,
+    "base64Binary" => PrimitiveType::Base64Binary,
+    "anyURI" => PrimitiveType::AnyURI,
+    "QName" => PrimitiveType::QName,
+};

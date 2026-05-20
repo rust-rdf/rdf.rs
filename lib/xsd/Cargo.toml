@@ -21,5 +21,9 @@ std = []
 unstable = []
 
 [dependencies]
+float-ord.workspace = true
+jiff = { version = "0.2", default-features = false }
+phf = { version = "0.13", default-features = false, features = ["macros"] }
+rust_decimal = { version = "1.42", default-features = false }
 strum = "0.28"
 strum_macros = "0.28"

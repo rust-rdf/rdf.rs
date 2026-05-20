@@ -7,5 +7,11 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-mod r#type;
-pub use r#type::*;
+pub type Type = PrimitiveType;
+pub type Value = PrimitiveValue;
+
+mod primitive_type;
+pub use primitive_type::*;
+
+mod primitive_value;
+pub use primitive_value::*;

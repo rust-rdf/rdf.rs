@@ -178,7 +178,7 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
         let stream1 = self.match_triples(pattern.clone());
         let stream2 = self.match_triples_str(pattern.clone());
         let stream3 = self.match_triples_num(pattern.clone());
-        select(select(stream1, stream2), stream3)
+        select(stream1, select(stream2, stream3))
     }
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
