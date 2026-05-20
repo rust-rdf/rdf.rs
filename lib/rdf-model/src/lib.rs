@@ -19,6 +19,9 @@ pub use alloc::*;
 mod dataset;
 pub use dataset::*;
 
+mod datatype;
+pub use datatype::*;
+
 mod document;
 pub use document::*;
 

@@ -102,9 +102,59 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
+    pub fn name(&self) -> &str {
+        use PrimitiveType::*;
+        match self {
+            String => "string",
+            Boolean => "boolean",
+            Decimal => "decimal",
+            Float => "float",
+            Double => "double",
+            Duration => "duration",
+            DateTime => "dateTime",
+            Time => "time",
+            Date => "date",
+            GYearMonth => "gYearMonth",
+            GYear => "gYear",
+            GMonthDay => "gMonthDay",
+            GDay => "gDay",
+            GMonth => "gMonth",
+            HexBinary => "hexBinary",
+            Base64Binary => "base64Binary",
+            AnyUri => "anyURI",
+            QName => "QName",
+            Other(s) => s.as_str(),
+        }
+    }
+
+    pub fn curie(&self) -> &str {
+        use PrimitiveType::*;
+        match self {
+            String => "xsd:string",
+            Boolean => "xsd:boolean",
+            Decimal => "xsd:decimal",
+            Float => "xsd:float",
+            Double => "xsd:double",
+            Duration => "xsd:duration",
+            DateTime => "xsd:dateTime",
+            Time => "xsd:time",
+            Date => "xsd:date",
+            GYearMonth => "xsd:gYearMonth",
+            GYear => "xsd:gYear",
+            GMonthDay => "xsd:gMonthDay",
+            GDay => "xsd:gDay",
+            GMonth => "xsd:gMonth",
+            HexBinary => "xsd:hexBinary",
+            Base64Binary => "xsd:base64Binary",
+            AnyUri => "xsd:anyURI",
+            QName => "xsd:QName",
+            Other(s) => s.as_str(),
+        }
+    }
+
     #[cfg(feature = "alloc")]
-    pub fn iri_string(&self) -> String {
-        format!("http://www.w3.org/2001/XMLSchema#{}", self)
+    pub fn iri_string(&self) -> Cow<'_, str> {
+        Cow::Owned(format!("http://www.w3.org/2001/XMLSchema#{}", self))
     }
 }
 
