@@ -7,10 +7,10 @@ use borsh::io::Read;
 use lz4_flex::frame::FrameDecoder;
 use rdf_model::HeapTerm;
 use winnow::{
+    ModalResult, Parser,
     binary::{le_u16, le_u32, length_take, u8},
     combinator::{dispatch, fail},
     error::{ContextError, ErrMode, StrContext, StrContextValue},
-    ModalResult, Parser,
 };
 
 use crate::{BorshQuad, BorshTerm, FLAGS, MAGIC_NUMBER, VERSION_NUMBER};
@@ -119,7 +119,7 @@ pub fn parse_blank_node(input: &mut &[u8]) -> ModalResult<BorshTerm> {
 pub fn parse_plain_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |data| {
         core::str::from_utf8(data)
-            .map(HeapTerm::literal)
+            .map(HeapTerm::string)
             .map(BorshTerm::from)
     };
 
@@ -130,7 +130,7 @@ pub fn parse_typed_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |(data, datatype)| {
         let data = core::str::from_utf8(data)?;
         let datatype = core::str::from_utf8(datatype)?;
-        Ok::<BorshTerm, core::str::Utf8Error>(BorshTerm::from(HeapTerm::literal_with_datatype(
+        Ok::<BorshTerm, core::str::Utf8Error>(BorshTerm::from(HeapTerm::typed_literal(
             data, datatype,
         )))
     };
@@ -144,9 +144,7 @@ pub fn parse_tagged_literal(input: &mut &[u8]) -> ModalResult<BorshTerm> {
     let to_term = |(data, tag)| {
         let data = core::str::from_utf8(data)?;
         let tag = core::str::from_utf8(tag)?;
-        Ok::<BorshTerm, core::str::Utf8Error>(BorshTerm::from(HeapTerm::literal_with_language(
-            data, tag,
-        )))
+        Ok::<BorshTerm, core::str::Utf8Error>(BorshTerm::from(HeapTerm::tagged_string(data, tag)))
     };
 
     (length_take(le_u32), length_take(le_u32))

@@ -59,10 +59,10 @@ pub trait Statement {
 impl core::fmt::Debug for dyn Statement<Term = HeapTerm> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Statement")
-            .field("subject", &self.subject().as_str())
-            .field("predicate", &self.predicate().as_str())
-            .field("object", &self.object().as_str())
-            .field("context", &self.context().map(|t| t.as_str()))
+            .field("subject", &self.subject().value_str())
+            .field("predicate", &self.predicate().value_str())
+            .field("object", &self.object().value_str())
+            .field("context", &self.context().map(|t| t.value_str()))
             .finish()
     }
 }

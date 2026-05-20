@@ -7,6 +7,8 @@
 #![no_std]
 #![deny(unsafe_code)]
 
+pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
+
 pub type Type = PrimitiveType;
 pub type Value = PrimitiveValue;
 

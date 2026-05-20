@@ -2,107 +2,146 @@
 
 extern crate alloc;
 
-use crate::{Term, TermKind};
+use crate::{BaseDirection, Datatype, Term, TermKind};
 use alloc::{
     borrow::{Cow, ToOwned},
-    string::String,
+    string::{String, ToString},
 };
+use xsd::Value;
+
+type Language = String; // TODO
 
 /// A clone-on-write term.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "borsh",
-    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-)]
+// #[cfg_attr(
+//     feature = "borsh",
+//     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+// )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum CowTerm<'a> {
+    /// An IRI or IRI reference term.
     Iri(Cow<'a, str>),
+
+    /// A blank node (aka bnode) term.
     BNode(Cow<'a, str>),
-    Literal(Cow<'a, str>),
-    LiteralWithDatatype(Cow<'a, str>, Cow<'a, str>),
-    LiteralWithLanguage(Cow<'a, str>, Cow<'a, str>),
+
+    /// A plain string term.
+    /// The term's datatype is `xsd:string`.
+    String(Cow<'a, str>),
+
+    /// A language-tagged string term.
+    /// The term's datatype is either `rdf:langString` or `rdf:dirLangString`.
+    TaggedString(Cow<'a, str>, Language, Option<BaseDirection>),
+
+    /// A typed value term.
+    TypedValue(Value),
+
+    /// A typed literal term that could not be instantiated as a typed value.
+    /// The term is either an ill-typed literal and/or an unsupported datatype.
+    TypedLiteral(Cow<'a, str>, Datatype),
 }
 
 impl<'a> CowTerm<'a> {
-    pub const fn iri_static(value: &'static str) -> Self {
+    pub const fn static_iri(value: &'static str) -> Self {
         Self::Iri(Cow::Borrowed(value))
     }
 
-    pub const fn iri(value: Cow<'a, str>) -> Self {
-        Self::Iri(value)
+    pub const fn static_string(value: &'static str) -> Self {
+        Self::String(Cow::Borrowed(value))
     }
 
-    pub const fn bnode_static(id: &'static str) -> Self {
-        Self::BNode(Cow::Borrowed(id))
+    pub fn iri(value: impl Into<Cow<'a, str>>) -> Self {
+        Self::Iri(value.into())
     }
 
-    pub const fn bnode(id: Cow<'a, str>) -> Self {
-        Self::BNode(id)
+    pub fn bnode(id: impl Into<Cow<'a, str>>) -> Self {
+        Self::BNode(id.into())
     }
 
-    pub const fn literal_static(value: &'static str) -> Self {
-        Self::Literal(Cow::Borrowed(value))
+    pub fn string(value: impl Into<Cow<'a, str>>) -> Self {
+        Self::String(value.into())
     }
 
-    pub const fn literal(value: Cow<'a, str>) -> Self {
-        Self::Literal(value)
+    pub fn tagged_string(value: impl Into<Cow<'a, str>>, tag: impl Into<Language>) -> Self {
+        Self::TaggedString(value.into(), tag.into(), None)
     }
 
-    pub const fn literal_with_language(value: Cow<'a, str>, language: Cow<'a, str>) -> Self {
-        Self::LiteralWithLanguage(value, language)
+    pub fn typed_value(value: impl Into<Value>) -> Self {
+        Self::TypedValue(value.into())
     }
 
-    pub const fn literal_with_datatype(value: Cow<'a, str>, datatype: Cow<'a, str>) -> Self {
-        Self::LiteralWithDatatype(value, datatype)
+    pub fn typed_literal(literal: impl Into<Cow<'a, str>>, datatype: impl Into<Datatype>) -> Self {
+        Self::TypedLiteral(literal.into(), datatype.into())
+    }
+
+    pub fn kind(&self) -> TermKind {
+        match self {
+            Self::Iri(_) => TermKind::Iri,
+            Self::BNode(_) => TermKind::BNode,
+            Self::String(_)
+            | Self::TaggedString(_, _, _)
+            | Self::TypedValue(_)
+            | Self::TypedLiteral(_, _) => TermKind::Literal,
+        }
+    }
+
+    pub fn value_str(&self) -> Cow<'_, str> {
+        Cow::Borrowed(match self {
+            Self::Iri(s) => s,
+            Self::BNode(s) => s,
+            Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s,
+            Self::TypedValue(Value::Boolean(false)) => "false",
+            Self::TypedValue(Value::Boolean(true)) => "true",
+            Self::TypedValue(Value::String(s) | Value::AnyUri(s)) => s,
+            Self::TypedValue(v) => return Cow::Owned(ToString::to_string(&v)),
+        })
     }
 }
 
 impl<'a> Term for CowTerm<'a> {
     fn kind(&self) -> TermKind {
-        match self {
-            Self::Iri(_) => TermKind::Iri,
-            Self::BNode(_) => TermKind::BNode,
-            Self::Literal(_)
-            | Self::LiteralWithLanguage(_, _)
-            | Self::LiteralWithDatatype(_, _) => TermKind::Literal,
-        }
+        self.kind()
     }
 
-    fn as_str(&self) -> &str {
-        match self {
-            Self::Iri(s) => s,
-            Self::BNode(s) => s,
-            Self::Literal(s)
-            | Self::LiteralWithLanguage(s, _)
-            | Self::LiteralWithDatatype(s, _) => s,
-        }
+    fn value_str(&self) -> Cow<'_, str> {
+        self.value_str()
+    }
+}
+
+impl<'a> Term for &CowTerm<'a> {
+    fn kind(&self) -> TermKind {
+        (*self).kind()
+    }
+
+    fn value_str(&self) -> Cow<'_, str> {
+        (*self).value_str()
     }
 }
 
 impl<'a> From<&'a dyn Term> for CowTerm<'a> {
     fn from(term: &'a dyn Term) -> Self {
         match term.kind() {
-            TermKind::Iri => Self::iri(Cow::from(term.as_str())),
-            TermKind::BNode => Self::bnode(Cow::from(term.as_str())),
-            TermKind::Literal => Self::literal(Cow::from(term.as_str())), // TODO
+            TermKind::Iri => Self::iri(Cow::from(term.value_str())),
+            TermKind::BNode => Self::bnode(Cow::from(term.value_str())),
+            TermKind::Literal => Self::string(Cow::from(term.value_str())), // TODO
         }
     }
 }
 
 impl<'a> From<&'a str> for CowTerm<'a> {
     fn from(value: &'a str) -> Self {
-        Self::literal(Cow::from(value))
+        Self::string(Cow::from(value))
     }
 }
 
 impl<'a> From<String> for CowTerm<'a> {
     fn from(value: String) -> Self {
-        Self::Literal(Cow::from(value))
+        Self::String(Cow::from(value))
     }
 }
 
 impl<'a> From<&'a String> for CowTerm<'a> {
     fn from(value: &'a String) -> Self {
-        Self::Literal(Cow::from(value))
+        Self::String(Cow::from(value))
     }
 }

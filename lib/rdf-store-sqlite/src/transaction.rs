@@ -62,9 +62,10 @@ impl<'conn> SqliteTransaction<'conn> {
         Ok(match term {
             HeapTerm::Iri(val) => self.intern_iri(val).await?,
             HeapTerm::BNode(val) => self.intern_bnode(val).await?,
-            HeapTerm::Literal(_)
-            | HeapTerm::LiteralWithDatatype(_, _)
-            | HeapTerm::LiteralWithLanguage(_, _) => unreachable!(),
+            HeapTerm::String(_)
+            | HeapTerm::TaggedString(_, _, _)
+            | HeapTerm::TypedValue(_)
+            | HeapTerm::TypedLiteral(_, _) => unreachable!(),
         })
     }
 
@@ -130,7 +131,7 @@ impl<'conn> SqliteTransaction<'conn> {
             while let Some(row) = rows.next().await? {
                 let s = HeapTerm::iri(row.get::<String>(0)?);
                 let p = HeapTerm::iri(row.get::<String>(1)?);
-                let o = HeapTerm::literal(row.get::<String>(2)?); // TODO
+                let o = HeapTerm::string(row.get::<String>(2)?); // TODO
                 let g: Option<HeapTerm> = None;
                 if pattern.matches(&s, &p, &o, g) {
                     yield Ok(HeapQuad::new(s, p, o, None));
@@ -154,7 +155,7 @@ impl<'conn> SqliteTransaction<'conn> {
             while let Some(row) = rows.next().await? {
                 let s = HeapTerm::iri(row.get::<String>(0)?);
                 let p = HeapTerm::iri(row.get::<String>(1)?);
-                let o = HeapTerm::literal(row.get::<String>(2)?); // TODO
+                let o = HeapTerm::string(row.get::<String>(2)?); // TODO
                 let g: Option<HeapTerm> = None;
                 if pattern.matches(&s, &p, &o, g) {
                     yield Ok(HeapQuad::new(s, p, o, None));
@@ -194,15 +195,18 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
                 let o = self.intern_node(statement.object()).await?;
                 self.insert_triple(s, p, o).await?;
             }
-            Literal(o_val) => {
+            String(o_val) => {
                 self.insert_triple_str(s, p, None, None, o_val).await?;
             }
-            LiteralWithLanguage(o_val, o_lang) => {
+            TaggedString(o_val, o_lang, _) => {
                 self.insert_triple_str(s, p, None, Some(o_lang.as_str()), o_val)
                     .await?;
             }
-            LiteralWithDatatype(o_val, o_dt) => {
-                let o_dt = self.intern_iri(&o_dt).await?;
+            TypedValue(_) => {
+                todo!() // FIXME
+            }
+            TypedLiteral(o_val, o_dt) => {
+                let o_dt = self.intern_iri(o_dt.iri_string().as_ref()).await?;
                 self.insert_triple_str(s, p, Some(o_dt), None, o_val)
                     .await?; // TODO: numeric datatypes
             }

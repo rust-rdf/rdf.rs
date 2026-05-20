@@ -2,74 +2,92 @@
 
 extern crate alloc;
 
-use crate::{Term, TermKind};
-use alloc::string::{String, ToString};
+use crate::{BaseDirection, Datatype, Term, TermKind};
+use alloc::{
+    borrow::Cow,
+    string::{String, ToString},
+};
+use xsd::{Type, Value};
+
+type Language = String; // TODO
 
 /// A heap-allocated term.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "borsh",
-    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-)]
+// #[cfg_attr(
+//     feature = "borsh",
+//     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+// )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum HeapTerm {
+    /// An IRI or IRI reference term.
     Iri(String),
+
+    /// A blank node (aka bnode) term.
     BNode(String),
-    Literal(String),
-    LiteralWithDatatype(String, String),
-    LiteralWithLanguage(String, String),
+
+    /// A plain string term.
+    /// The term's datatype is `xsd:string`.
+    String(String),
+
+    /// A language-tagged string term.
+    /// The term's datatype is either `rdf:langString` or `rdf:dirLangString`.
+    TaggedString(String, Language, Option<BaseDirection>),
+
+    /// A typed value term.
+    TypedValue(Value),
+
+    /// A typed literal term that could not be instantiated as a typed value.
+    /// The term is either an ill-typed literal and/or an unsupported datatype.
+    TypedLiteral(String, Datatype),
 }
 
 impl HeapTerm {
-    pub fn iri(value: impl ToString) -> Self {
-        Self::Iri(value.to_string())
+    pub fn iri(value: impl Into<String>) -> Self {
+        Self::Iri(value.into())
     }
 
-    pub fn bnode(id: impl ToString) -> Self {
-        Self::BNode(id.to_string())
+    pub fn bnode(id: impl Into<String>) -> Self {
+        Self::BNode(id.into())
     }
 
-    pub fn literal(value: impl ToString) -> Self {
-        Self::Literal(value.to_string())
+    pub fn string(value: impl Into<String>) -> Self {
+        Self::String(value.into())
     }
 
-    pub fn literal_with_language(value: impl ToString, language: impl ToString) -> Self {
-        Self::LiteralWithLanguage(value.to_string(), language.to_string())
+    pub fn tagged_string(value: impl Into<String>, tag: impl Into<Language>) -> Self {
+        Self::TaggedString(value.into(), tag.into(), None)
     }
 
-    pub fn literal_with_datatype(value: impl ToString, datatype: impl ToString) -> Self {
-        Self::LiteralWithDatatype(value.to_string(), datatype.to_string())
+    pub fn typed_value(value: impl Into<Value>) -> Self {
+        Self::TypedValue(value.into())
+    }
+
+    pub fn typed_literal(literal: impl Into<String>, datatype: impl Into<Datatype>) -> Self {
+        Self::TypedLiteral(literal.into(), datatype.into())
     }
 
     pub fn kind(&self) -> TermKind {
         match self {
             Self::Iri(_) => TermKind::Iri,
             Self::BNode(_) => TermKind::BNode,
-            Self::Literal(_)
-            | Self::LiteralWithLanguage(_, _)
-            | Self::LiteralWithDatatype(_, _) => TermKind::Literal,
+            Self::String(_)
+            | Self::TaggedString(_, _, _)
+            | Self::TypedValue(_)
+            | Self::TypedLiteral(_, _) => TermKind::Literal,
         }
     }
 
-    fn as_str(&self) -> &str {
-        match self {
+    pub fn value_str(&self) -> Cow<'_, str> {
+        Cow::Borrowed(match self {
             Self::Iri(s) => s.as_str(),
             Self::BNode(s) => s.as_str(),
-            Self::Literal(s)
-            | Self::LiteralWithLanguage(s, _)
-            | Self::LiteralWithDatatype(s, _) => s.as_str(),
-        }
+            Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s.as_str(),
+            Self::TypedValue(Value::Boolean(false)) => "false",
+            Self::TypedValue(Value::Boolean(true)) => "true",
+            Self::TypedValue(Value::String(s) | Value::AnyUri(s)) => s.as_str(),
+            Self::TypedValue(v) => return Cow::Owned(v.to_string()),
+        })
     }
-
-    // fn as_str(&self) -> Cow<'_, str> {
-    //     match self {
-    //         Self::Iri(s) => Cow::Borrowed(s),
-    //         Self::BNode(s) => Cow::Borrowed(s),
-    //         Self::Literal(s)
-    //         | Self::LiteralWithLanguage(s, _)
-    //         | Self::LiteralWithDatatype(s, _) => Cow::Borrowed(s),
-    //     }
-    // }
 }
 
 impl Term for HeapTerm {
@@ -77,8 +95,8 @@ impl Term for HeapTerm {
         self.kind()
     }
 
-    fn as_str(&self) -> &str {
-        self.as_str()
+    fn value_str(&self) -> Cow<'_, str> {
+        self.value_str()
     }
 }
 
@@ -87,35 +105,35 @@ impl Term for &HeapTerm {
         (*self).kind()
     }
 
-    fn as_str(&self) -> &str {
-        (*self).as_str()
+    fn value_str(&self) -> Cow<'_, str> {
+        (*self).value_str()
     }
 }
 
 impl From<&dyn Term> for HeapTerm {
     fn from(term: &dyn Term) -> Self {
         match term.kind() {
-            TermKind::Iri => Self::iri(term.as_str()),
-            TermKind::BNode => Self::bnode(term.as_str()),
-            TermKind::Literal => Self::literal(term.as_str()), // TODO
+            TermKind::Iri => Self::iri(term.value_str()),
+            TermKind::BNode => Self::bnode(term.value_str()),
+            TermKind::Literal => Self::string(term.value_str()), // TODO
         }
     }
 }
 
 impl From<&str> for HeapTerm {
     fn from(value: &str) -> Self {
-        Self::literal(value)
+        Self::string(value)
     }
 }
 
 impl From<String> for HeapTerm {
     fn from(value: String) -> Self {
-        Self::Literal(value)
+        Self::String(value)
     }
 }
 
 impl From<&String> for HeapTerm {
     fn from(value: &String) -> Self {
-        Self::Literal(value.clone())
+        Self::String(value.clone())
     }
 }

@@ -6,7 +6,7 @@ use phf::phf_map;
 use strum_macros::{AsRefStr, Display, EnumString};
 
 #[cfg(feature = "alloc")]
-use alloc::{format, string::String};
+use alloc::{borrow::Cow, format, string::String};
 
 /// The XML Schema built-in primitive datatypes.
 ///
@@ -123,7 +123,7 @@ impl PrimitiveType {
             Base64Binary => "base64Binary",
             AnyUri => "anyURI",
             QName => "QName",
-            Other(s) => s.as_str(),
+            Other(s) => s.as_ref(),
         }
     }
 
@@ -148,7 +148,7 @@ impl PrimitiveType {
             Base64Binary => "xsd:base64Binary",
             AnyUri => "xsd:anyURI",
             QName => "xsd:QName",
-            Other(s) => s.as_str(),
+            Other(s) => s.as_ref(),
         }
     }
 

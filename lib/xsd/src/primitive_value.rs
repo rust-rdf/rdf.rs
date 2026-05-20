@@ -6,13 +6,17 @@ use crate::PrimitiveType;
 use decorum::Total;
 
 #[cfg(feature = "alloc")]
-use alloc::{string::String, vec::Vec};
+use strum_macros::Display;
+
+#[cfg(feature = "alloc")]
+use alloc::{format, string::String, vec::Vec};
 
 /// Values based on built-in primitive datatypes.
 ///
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-// #[cfg_attr(
+#[cfg_attr(feature = "alloc", derive(Display))]
+// #[cfg_attr( // FIXME
 //     feature = "borsh",
 //     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
 // )]
@@ -20,69 +24,88 @@ use alloc::{string::String, vec::Vec};
 pub enum PrimitiveValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#string
     #[cfg(feature = "alloc")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(String),
     #[cfg(not(feature = "alloc"))]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(&'static str),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#boolean
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Boolean(bool),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
     #[cfg(feature = "rust_decimal")]
     #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::str"))]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Decimal(crate::Decimal),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#float
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Float(Total<f32>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#double
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Double(Total<f64>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#duration
     #[cfg(feature = "jiff")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Duration(crate::Duration),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#dateTime
     #[cfg(feature = "jiff")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     DateTime(crate::DateTime),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#time
     #[cfg(feature = "jiff")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Time(crate::Time),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#date
     #[cfg(feature = "jiff")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Date(crate::Date),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYearMonth
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
     GYearMonth(i32, u8),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYear
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GYear(i32),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gMonthDay
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
     GMonthDay(u8, u8),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gDay
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GDay(u8),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gMonth
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GMonth(u8),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#hexBinary
     #[cfg(feature = "alloc")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "HexBinary"))]
     HexBinary(Vec<u8>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#base64Binary
     #[cfg(feature = "alloc")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "Base64Binary"))]
     Base64Binary(Vec<u8>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#anyURI
     #[cfg(feature = "alloc")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     AnyUri(String),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#QName
     #[cfg(feature = "alloc")]
+    #[cfg_attr(feature = "alloc", strum(to_string = "{0}:{1}"))]
     QName(String, String),
 }
 

@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use alloc::string::String;
+use alloc::{borrow::Cow, string::String};
 use rdf_model::{HeapTerm, Term, TermKind};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -11,8 +11,8 @@ impl Term for BorshTerm {
         self.0.kind()
     }
 
-    fn as_str(&self) -> &str {
-        self.0.as_str()
+    fn value_str(&self) -> Cow<'_, str> {
+        self.0.value_str()
     }
 }
 
@@ -51,16 +51,20 @@ impl borsh::BorshSerialize for BorshTerm {
                 0x02u8.serialize(writer)?;
                 value.serialize(writer)
             }
-            HeapTerm::Literal(value) => {
+            HeapTerm::String(value) => {
                 0x03u8.serialize(writer)?;
                 value.serialize(writer)
             }
-            HeapTerm::LiteralWithDatatype(value, datatype) => {
+            HeapTerm::TypedValue(_value) => {
+                0x04u8.serialize(writer)?;
+                todo!() // FIXME
+            }
+            HeapTerm::TypedLiteral(value, datatype) => {
                 0x04u8.serialize(writer)?;
                 value.serialize(writer)?;
                 datatype.serialize(writer)
             }
-            HeapTerm::LiteralWithLanguage(value, language) => {
+            HeapTerm::TaggedString(value, language, _) => {
                 0x05u8.serialize(writer)?;
                 value.serialize(writer)?;
                 language.serialize(writer)
@@ -82,17 +86,17 @@ impl borsh::BorshDeserialize for BorshTerm {
             }
             0x03 => {
                 let value = String::deserialize_reader(reader)?;
-                HeapTerm::Literal(value)
+                HeapTerm::String(value)
             }
             0x04 => {
                 let value = String::deserialize_reader(reader)?;
                 let datatype = String::deserialize_reader(reader)?;
-                HeapTerm::LiteralWithDatatype(value, datatype)
+                HeapTerm::TypedLiteral(value, datatype.into()) // TODO: HeapTerm::TypedValue
             }
             0x05 => {
                 let value = String::deserialize_reader(reader)?;
                 let language = String::deserialize_reader(reader)?;
-                HeapTerm::LiteralWithLanguage(value, language)
+                HeapTerm::TaggedString(value, language, None) // TODO
             }
             _ => return Err(borsh::io::ErrorKind::InvalidData.into()),
         }))

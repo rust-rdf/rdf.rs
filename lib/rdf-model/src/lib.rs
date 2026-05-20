@@ -16,6 +16,9 @@ mod alloc;
 #[cfg(feature = "alloc")]
 pub use alloc::*;
 
+mod base_direction;
+pub use base_direction::*;
+
 mod dataset;
 pub use dataset::*;
 

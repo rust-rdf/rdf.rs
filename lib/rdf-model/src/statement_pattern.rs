@@ -16,22 +16,22 @@ pub trait StatementPattern {
         context: Option<impl Term>,
     ) -> bool {
         if let Some(s) = self.subject() {
-            if s.as_str() != subject.as_str() {
+            if s.value_str() != subject.value_str() {
                 return false;
             }
         }
         if let Some(p) = self.predicate() {
-            if p.as_str() != predicate.as_str() {
+            if p.value_str() != predicate.value_str() {
                 return false;
             }
         }
         if let Some(o) = self.object() {
-            if o.as_str() != object.as_str() {
+            if o.value_str() != object.value_str() {
                 return false;
             }
         }
         if let Some(c) = self.context() {
-            if c.as_str() != context.unwrap().as_str() {
+            if c.value_str() != context.unwrap().value_str() {
                 // FIXME
                 return false;
             }
