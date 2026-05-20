@@ -16,14 +16,21 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
-std = []
+all = ["jiff"]
+alloc = []
+std = ["alloc"]
 unstable = []
+
+# Integrations:
+jiff = ["dep:jiff"]
+rust_decimal = ["dep:rust_decimal"]
 
 [dependencies]
 float-ord.workspace = true
-jiff = { version = "0.2", default-features = false }
 phf = { version = "0.13", default-features = false, features = ["macros"] }
-rust_decimal = { version = "1.42", default-features = false }
 strum = "0.28"
 strum_macros = "0.28"
+
+# Integrations:
+jiff = { version = "0.2", default-features = false, optional = true }
+rust_decimal = { version = "1.42", default-features = false }

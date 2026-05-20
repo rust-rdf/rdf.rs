@@ -80,7 +80,7 @@ pub enum PrimitiveType {
 
     /// See: https://www.w3.org/TR/xmlschema-2/#anyURI
     #[strum(to_string = "anyURI")]
-    AnyURI,
+    AnyUri,
 
     /// See: https://www.w3.org/TR/xmlschema-2/#QName
     #[strum(to_string = "QName")]
@@ -110,6 +110,6 @@ pub static TYPES: phf::Map<&'static str, PrimitiveType> = phf_map! {
     "gMonth" => PrimitiveType::GMonth,
     "hexBinary" => PrimitiveType::HexBinary,
     "base64Binary" => PrimitiveType::Base64Binary,
-    "anyURI" => PrimitiveType::AnyURI,
+    "anyURI" => PrimitiveType::AnyUri,
     "QName" => PrimitiveType::QName,
 };
