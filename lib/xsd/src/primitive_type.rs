@@ -2,9 +2,11 @@
 
 extern crate alloc;
 
-use alloc::format;
 use phf::phf_map;
 use strum_macros::{AsRefStr, Display, EnumString};
+
+#[cfg(feature = "alloc")]
+use alloc::{format, string::String};
 
 /// The XML Schema built-in primitive datatypes.
 ///
@@ -89,12 +91,17 @@ pub enum PrimitiveType {
     #[strum(to_string = "{0}")]
     #[strum(default)]
     #[cfg(feature = "alloc")]
-    Other(alloc::string::String),
+    Other(String),
     #[cfg(not(feature = "alloc"))]
     Other(&'static str),
 }
 
-impl PrimitiveType {}
+impl PrimitiveType {
+    #[cfg(feature = "alloc")]
+    pub fn iri_string(&self) -> String {
+        format!("http://www.w3.org/2001/XMLSchema#{}", self)
+    }
+}
 
 pub static TYPES: phf::Map<&'static str, PrimitiveType> = phf_map! {
     "string" => PrimitiveType::String,

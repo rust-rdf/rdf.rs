@@ -3,8 +3,10 @@
 extern crate alloc;
 
 use crate::PrimitiveType;
-use alloc::{string::String, vec::Vec};
 use float_ord::FloatOrd;
+
+#[cfg(feature = "alloc")]
+use alloc::{string::String, vec::Vec};
 
 /// Values based on built-in primitive datatypes.
 ///
@@ -12,7 +14,10 @@ use float_ord::FloatOrd;
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum PrimitiveValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#string
+    #[cfg(feature = "alloc")]
     String(String),
+    #[cfg(not(feature = "alloc"))]
+    String(&'static str),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#boolean
     Boolean(bool),
@@ -20,8 +25,6 @@ pub enum PrimitiveValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
     #[cfg(feature = "rust_decimal")]
     Decimal(crate::Decimal),
-    #[cfg(not(feature = "rust_decimal"))]
-    Decimal(String),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#float
     Float(FloatOrd<f32>),
@@ -61,15 +64,19 @@ pub enum PrimitiveValue {
     GMonth(u8),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#hexBinary
+    #[cfg(feature = "alloc")]
     HexBinary(Vec<u8>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#base64Binary
+    #[cfg(feature = "alloc")]
     Base64Binary(Vec<u8>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#anyURI
+    #[cfg(feature = "alloc")]
     AnyUri(String),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#QName
+    #[cfg(feature = "alloc")]
     QName(String, String),
 }
 
@@ -79,6 +86,7 @@ impl PrimitiveValue {
         match self {
             String(_) => PrimitiveType::String,
             Boolean(_) => PrimitiveType::Boolean,
+            #[cfg(feature = "rust_decimal")]
             Decimal(_) => PrimitiveType::Decimal,
             Float(_) => PrimitiveType::Float,
             Double(_) => PrimitiveType::Double,
@@ -95,26 +103,32 @@ impl PrimitiveValue {
             GMonthDay(_, _) => PrimitiveType::GMonthDay,
             GDay(_) => PrimitiveType::GDay,
             GMonth(_) => PrimitiveType::GMonth,
+            #[cfg(feature = "alloc")]
             HexBinary(_) => PrimitiveType::HexBinary,
+            #[cfg(feature = "alloc")]
             Base64Binary(_) => PrimitiveType::Base64Binary,
+            #[cfg(feature = "alloc")]
             AnyUri(_) => PrimitiveType::AnyUri,
+            #[cfg(feature = "alloc")]
             QName(_, _) => PrimitiveType::QName,
         }
     }
 }
 
-impl From<&str> for PrimitiveValue {
-    fn from(input: &str) -> Self {
+impl From<&'static str> for PrimitiveValue {
+    fn from(input: &'static str) -> Self {
         Self::String(input.into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<String> for PrimitiveValue {
     fn from(input: String) -> Self {
         Self::String(input)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<&String> for PrimitiveValue {
     fn from(input: &String) -> Self {
         Self::String(input.clone())
@@ -209,12 +223,14 @@ impl From<&jiff::civil::Date> for PrimitiveValue {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Vec<u8>> for PrimitiveValue {
     fn from(input: Vec<u8>) -> Self {
         Self::Base64Binary(input)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<&Vec<u8>> for PrimitiveValue {
     fn from(input: &Vec<u8>) -> Self {
         Self::Base64Binary(input.clone())
