@@ -3,7 +3,7 @@
 extern crate alloc;
 
 use crate::PrimitiveType;
-use float_ord::FloatOrd;
+use decorum::Total;
 
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
@@ -12,10 +12,10 @@ use alloc::{string::String, vec::Vec};
 ///
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "borsh",
-    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-)]
+// #[cfg_attr(
+//     feature = "borsh",
+//     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+// )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PrimitiveValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#string
@@ -29,13 +29,14 @@ pub enum PrimitiveValue {
 
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
     #[cfg(feature = "rust_decimal")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::str"))]
     Decimal(crate::Decimal),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#float
-    Float(FloatOrd<f32>),
+    Float(Total<f32>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#double
-    Double(FloatOrd<f64>),
+    Double(Total<f64>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#duration
     #[cfg(feature = "jiff")]
@@ -162,13 +163,13 @@ impl From<&rust_decimal::Decimal> for PrimitiveValue {
 
 impl From<f32> for PrimitiveValue {
     fn from(input: f32) -> Self {
-        Self::Float(FloatOrd(input))
+        Self::Float(input.into())
     }
 }
 
 impl From<f64> for PrimitiveValue {
     fn from(input: f64) -> Self {
-        Self::Double(FloatOrd(input))
+        Self::Double(input.into())
     }
 }
 

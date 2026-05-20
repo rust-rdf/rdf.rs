@@ -30,13 +30,13 @@ jiff = ["dep:jiff"]
 rust_decimal = ["dep:rust_decimal"]
 
 [dependencies]
-float-ord.workspace = true
+decorum = { workspace = true, features = ["serde"] }
 phf = { version = "0.13", default-features = false, features = ["macros"] }
 strum = "0.28"
 strum_macros = "0.28"
 
 # Integrations:
 borsh = { workspace = true, optional = true }
-jiff = { version = "0.2", default-features = false, optional = true }
-rust_decimal = { version = "1.42", default-features = false, optional = true }
+jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
+rust_decimal = { version = "1.42", default-features = false, features = ["serde-with-str"], optional = true }
 serde = { workspace = true, optional = true }

@@ -25,16 +25,18 @@ unstable = []
 rdf-star = ["oxrdf?/rdf-star"]
 
 # Integrations:
-borsh = ["dep:borsh"]
+borsh = ["dep:borsh", "xsd/borsh"]
 oxrdf = ["dep:oxrdf"]
-serde = ["dep:serde"]
+serde = ["dep:serde", "xsd/serde"]
 sophia = ["dep:sophia"]
 
 [dependencies]
+dogma = { workspace = true, features = [] }
+stability = "0.2"
+xsd = { workspace = true, features = ["alloc", "datetime", "decimal"] }
+
+# Integrations:
 borsh = { workspace = true, optional = true }
-dogma.workspace = true
 oxrdf = { version = "0.2", default-features = false, optional = true }
 serde = { workspace = true, optional = true }
 sophia = { version = "0.9", default-features = false, optional = true }
-stability = "0.2"
-xsd = { workspace = true, features = ["alloc", "datetime", "decimal"] }
