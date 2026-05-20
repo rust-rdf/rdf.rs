@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use alloc::{format, string::String};
+use alloc::format;
 use phf::phf_map;
 use strum_macros::{AsRefStr, Display, EnumString};
 
@@ -88,7 +88,10 @@ pub enum PrimitiveType {
 
     #[strum(to_string = "{0}")]
     #[strum(default)]
-    Other(String),
+    #[cfg(feature = "alloc")]
+    Other(alloc::string::String),
+    #[cfg(not(feature = "alloc"))]
+    Other(&'static str),
 }
 
 impl PrimitiveType {}

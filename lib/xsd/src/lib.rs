@@ -10,6 +10,15 @@
 pub type Type = PrimitiveType;
 pub type Value = PrimitiveValue;
 
+#[cfg(feature = "jiff")]
+pub use jiff::{
+    SignedDuration as Duration,
+    civil::{Date, DateTime, Time},
+};
+
+#[cfg(feature = "rust_decimal")]
+pub use rust_decimal::Decimal;
+
 mod primitive_type;
 pub use primitive_type::*;
 

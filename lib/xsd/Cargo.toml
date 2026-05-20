@@ -16,10 +16,14 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["jiff"]
+all = ["datetime", "decimal"]
 alloc = []
 std = ["alloc"]
 unstable = []
+
+# Features:
+datetime = ["jiff"]
+decimal = ["rust_decimal"]
 
 # Integrations:
 jiff = ["dep:jiff"]
@@ -33,4 +37,4 @@ strum_macros = "0.28"
 
 # Integrations:
 jiff = { version = "0.2", default-features = false, optional = true }
-rust_decimal = { version = "1.42", default-features = false }
+rust_decimal = { version = "1.42", default-features = false, optional = true }

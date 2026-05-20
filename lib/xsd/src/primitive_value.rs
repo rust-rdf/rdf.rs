@@ -5,11 +5,6 @@ extern crate alloc;
 use crate::PrimitiveType;
 use alloc::{string::String, vec::Vec};
 use float_ord::FloatOrd;
-use jiff::{
-    SignedDuration, Span,
-    civil::{Date, DateTime, Time},
-};
-use rust_decimal::Decimal;
 
 /// Values based on built-in primitive datatypes.
 ///
@@ -23,7 +18,10 @@ pub enum PrimitiveValue {
     Boolean(bool),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
-    Decimal(Decimal),
+    #[cfg(feature = "rust_decimal")]
+    Decimal(crate::Decimal),
+    #[cfg(not(feature = "rust_decimal"))]
+    Decimal(String),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#float
     Float(FloatOrd<f32>),
@@ -32,16 +30,20 @@ pub enum PrimitiveValue {
     Double(FloatOrd<f64>),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#duration
-    Duration(SignedDuration),
+    #[cfg(feature = "jiff")]
+    Duration(crate::Duration),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#dateTime
-    DateTime(DateTime),
+    #[cfg(feature = "jiff")]
+    DateTime(crate::DateTime),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#time
-    Time(Time),
+    #[cfg(feature = "jiff")]
+    Time(crate::Time),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#date
-    Date(Date),
+    #[cfg(feature = "jiff")]
+    Date(crate::Date),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYearMonth
     GYearMonth(i32, u8),
@@ -80,9 +82,13 @@ impl PrimitiveValue {
             Decimal(_) => PrimitiveType::Decimal,
             Float(_) => PrimitiveType::Float,
             Double(_) => PrimitiveType::Double,
+            #[cfg(feature = "jiff")]
             Duration(_) => PrimitiveType::Duration,
+            #[cfg(feature = "jiff")]
             DateTime(_) => PrimitiveType::DateTime,
+            #[cfg(feature = "jiff")]
             Time(_) => PrimitiveType::Time,
+            #[cfg(feature = "jiff")]
             Date(_) => PrimitiveType::Date,
             GYearMonth(_, _) => PrimitiveType::GYearMonth,
             GYear(_) => PrimitiveType::GYear,
@@ -94,6 +100,12 @@ impl PrimitiveValue {
             AnyUri(_) => PrimitiveType::AnyUri,
             QName(_, _) => PrimitiveType::QName,
         }
+    }
+}
+
+impl From<&str> for PrimitiveValue {
+    fn from(input: &str) -> Self {
+        Self::String(input.into())
     }
 }
 
@@ -109,26 +121,22 @@ impl From<&String> for PrimitiveValue {
     }
 }
 
-impl From<&str> for PrimitiveValue {
-    fn from(input: &str) -> Self {
-        Self::String(input.into())
-    }
-}
-
 impl From<bool> for PrimitiveValue {
     fn from(input: bool) -> Self {
         Self::Boolean(input)
     }
 }
 
-impl From<Decimal> for PrimitiveValue {
-    fn from(input: Decimal) -> Self {
+#[cfg(feature = "rust_decimal")]
+impl From<rust_decimal::Decimal> for PrimitiveValue {
+    fn from(input: rust_decimal::Decimal) -> Self {
         Self::Decimal(input)
     }
 }
 
-impl From<&Decimal> for PrimitiveValue {
-    fn from(input: &Decimal) -> Self {
+#[cfg(feature = "rust_decimal")]
+impl From<&rust_decimal::Decimal> for PrimitiveValue {
+    fn from(input: &rust_decimal::Decimal) -> Self {
         Self::Decimal(input.clone())
     }
 }
@@ -145,50 +153,58 @@ impl From<f64> for PrimitiveValue {
     }
 }
 
-impl From<SignedDuration> for PrimitiveValue {
-    fn from(input: SignedDuration) -> Self {
+#[cfg(feature = "jiff")]
+impl From<jiff::SignedDuration> for PrimitiveValue {
+    fn from(input: jiff::SignedDuration) -> Self {
         Self::Duration(input)
     }
 }
 
-impl From<&SignedDuration> for PrimitiveValue {
-    fn from(input: &SignedDuration) -> Self {
+#[cfg(feature = "jiff")]
+impl From<&jiff::SignedDuration> for PrimitiveValue {
+    fn from(input: &jiff::SignedDuration) -> Self {
         Self::Duration(input.clone())
     }
 }
 
-impl From<DateTime> for PrimitiveValue {
-    fn from(input: DateTime) -> Self {
+#[cfg(feature = "jiff")]
+impl From<jiff::civil::DateTime> for PrimitiveValue {
+    fn from(input: jiff::civil::DateTime) -> Self {
         Self::DateTime(input)
     }
 }
 
-impl From<&DateTime> for PrimitiveValue {
-    fn from(input: &DateTime) -> Self {
+#[cfg(feature = "jiff")]
+impl From<&jiff::civil::DateTime> for PrimitiveValue {
+    fn from(input: &jiff::civil::DateTime) -> Self {
         Self::DateTime(input.clone())
     }
 }
 
-impl From<Time> for PrimitiveValue {
-    fn from(input: Time) -> Self {
+#[cfg(feature = "jiff")]
+impl From<jiff::civil::Time> for PrimitiveValue {
+    fn from(input: jiff::civil::Time) -> Self {
         Self::Time(input)
     }
 }
 
-impl From<&Time> for PrimitiveValue {
-    fn from(input: &Time) -> Self {
+#[cfg(feature = "jiff")]
+impl From<&jiff::civil::Time> for PrimitiveValue {
+    fn from(input: &jiff::civil::Time) -> Self {
         Self::Time(input.clone())
     }
 }
 
-impl From<Date> for PrimitiveValue {
-    fn from(input: Date) -> Self {
+#[cfg(feature = "jiff")]
+impl From<jiff::civil::Date> for PrimitiveValue {
+    fn from(input: jiff::civil::Date) -> Self {
         Self::Date(input)
     }
 }
 
-impl From<&Date> for PrimitiveValue {
-    fn from(input: &Date) -> Self {
+#[cfg(feature = "jiff")]
+impl From<&jiff::civil::Date> for PrimitiveValue {
+    fn from(input: &jiff::civil::Date) -> Self {
         Self::Date(input.clone())
     }
 }
@@ -205,10 +221,11 @@ impl From<&Vec<u8>> for PrimitiveValue {
     }
 }
 
-impl TryFrom<Span> for PrimitiveValue {
+#[cfg(feature = "jiff")]
+impl TryFrom<jiff::Span> for PrimitiveValue {
     type Error = jiff::Error;
 
-    fn try_from(input: Span) -> Result<Self, Self::Error> {
-        Ok(Self::Duration(SignedDuration::try_from(input)?))
+    fn try_from(input: jiff::Span) -> Result<Self, Self::Error> {
+        Ok(Self::Duration(jiff::SignedDuration::try_from(input)?))
     }
 }
