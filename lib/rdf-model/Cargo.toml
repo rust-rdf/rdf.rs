@@ -31,14 +31,10 @@ serde = ["dep:serde"]
 sophia = ["dep:sophia"]
 
 [dependencies]
-borsh = { version = "1.5", default-features = false, features = [
-    "derive",
-], optional = true }
+borsh = { workspace = true, optional = true }
 dogma.workspace = true
 oxrdf = { version = "0.2", default-features = false, optional = true }
-serde = { version = "1.0", default-features = false, features = [
-    "derive",
-], optional = true }
+serde = { workspace = true, optional = true }
 sophia = { version = "0.9", default-features = false, optional = true }
 stability = "0.2"
 xsd = { workspace = true, features = ["alloc", "datetime", "decimal"] }

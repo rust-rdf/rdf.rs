@@ -12,6 +12,11 @@ use alloc::{string::String, vec::Vec};
 ///
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "borsh",
+    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PrimitiveValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#string
     #[cfg(feature = "alloc")]
