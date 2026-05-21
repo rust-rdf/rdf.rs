@@ -21,6 +21,12 @@ pub use jiff::{
 #[cfg(feature = "rust_decimal")]
 pub use rust_decimal::Decimal;
 
+mod decimal_type;
+pub use decimal_type::*;
+
+//mod decimal_value;
+//pub use decimal_value::*;
+
 mod primitive_type;
 pub use primitive_type::*;
 

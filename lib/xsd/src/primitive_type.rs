@@ -154,11 +154,11 @@ impl PrimitiveType {
 
     #[cfg(feature = "alloc")]
     pub fn iri_string(&self) -> Cow<'_, str> {
-        Cow::Owned(format!("http://www.w3.org/2001/XMLSchema#{}", self))
+        Cow::Owned(format!("{}{}", crate::BASE_URI, self))
     }
 }
 
-pub static TYPES: phf::Map<&'static str, PrimitiveType> = phf_map! {
+pub static PRIMITIVE_TYPES: phf::Map<&'static str, PrimitiveType> = phf_map! {
     "string" => PrimitiveType::String,
     "boolean" => PrimitiveType::Boolean,
     "decimal" => PrimitiveType::Decimal,
