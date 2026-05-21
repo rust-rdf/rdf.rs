@@ -12,7 +12,7 @@ use crate::primitives::{Date, DateTime, Duration, Time};
 use strum_macros::Display;
 
 #[cfg(feature = "alloc")]
-use ::alloc::{format, string::String, vec::Vec};
+use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 
 /// Values based on built-in primitive datatypes.
 ///
@@ -146,6 +146,13 @@ impl PrimitiveValue {
 
 impl From<&'static str> for PrimitiveValue {
     fn from(input: &'static str) -> Self {
+        Self::String(input.into())
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl From<Cow<'_, str>> for PrimitiveValue {
+    fn from(input: Cow<'_, str>) -> Self {
         Self::String(input.into())
     }
 }

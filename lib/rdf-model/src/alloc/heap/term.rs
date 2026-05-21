@@ -7,7 +7,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{Type, Value};
+use xsd::{PrimitiveValue, Type, Value};
 
 type Language = String; // TODO
 
@@ -82,9 +82,11 @@ impl HeapTerm {
             Self::Iri(s) => s.as_str(),
             Self::BNode(s) => s.as_str(),
             Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s.as_str(),
-            Self::TypedValue(Value::Boolean(false)) => "false",
-            Self::TypedValue(Value::Boolean(true)) => "true",
-            Self::TypedValue(Value::String(s) | Value::AnyUri(s)) => s.as_str(),
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(false))) => "false",
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(true))) => "true",
+            Self::TypedValue(Value::Primitive(
+                PrimitiveValue::String(s) | PrimitiveValue::AnyUri(s),
+            )) => s.as_str(),
             Self::TypedValue(v) => return Cow::Owned(v.to_string()),
         })
     }

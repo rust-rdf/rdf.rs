@@ -122,6 +122,20 @@ impl From<isize> for DecimalValue {
 }
 
 #[cfg(feature = "rust_decimal")]
+impl From<Decimal> for DecimalValue {
+    fn from(input: Decimal) -> Self {
+        Self::Decimal(input)
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl From<&Decimal> for DecimalValue {
+    fn from(input: &Decimal) -> Self {
+        Self::Decimal(input.clone())
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
 impl From<rust_decimal::Decimal> for DecimalValue {
     fn from(input: rust_decimal::Decimal) -> Self {
         Self::Decimal(input.into())
