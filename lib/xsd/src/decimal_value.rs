@@ -53,6 +53,34 @@ impl DecimalValue {
             Byte(_) => DecimalType::Byte,
         }
     }
+
+    /// Upcasts the type of this value to its wider base type.
+    pub fn widen(&self) -> Option<Self> {
+        use DecimalValue::*;
+        match self {
+            Decimal(_) => None, // already the widest primitive base type
+            Integer(n) => Some(Decimal((*n).into())),
+            Long(n) => Some(Integer(*n as _)),
+            Int(n) => Some(Long(*n as _)),
+            Short(n) => Some(Int(*n as _)),
+            Byte(n) => Some(Short(*n as _)),
+        }
+    }
+
+    /// Downcasts the type of this value to a compatible narrower derived
+    /// type, if feasible.
+    pub fn narrow(&self) -> Option<Self> {
+        use DecimalValue::*;
+        match self {
+            Decimal(d) if !d.is_integer() => None,
+            Decimal(d) => i128::try_from(d).ok().map(Integer),
+            Integer(n) => i64::try_from(*n).ok().map(Long),
+            Long(n) => i32::try_from(*n).ok().map(Int),
+            Int(n) => i16::try_from(*n).ok().map(Short),
+            Short(n) => i8::try_from(*n).ok().map(Byte),
+            Byte(_) => None, // already the narrowest derived type
+        }
+    }
 }
 
 impl From<i8> for DecimalValue {

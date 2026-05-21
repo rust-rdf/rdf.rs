@@ -15,6 +15,12 @@ pub struct Decimal(
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Decimal(decorum::Total<f64>);
 
+impl Decimal {
+    pub fn is_integer(&self) -> bool {
+        self.0.is_integer()
+    }
+}
+
 impl core::fmt::Display for Decimal {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         self.0.fmt(f)
@@ -92,5 +98,24 @@ impl TryFrom<f64> for Decimal {
 
     fn try_from(input: f64) -> Result<Self, Self::Error> {
         Ok(Self(rust_decimal::Decimal::from_f64(input).ok_or(())?))
+    }
+}
+
+impl TryFrom<Decimal> for i128 {
+    type Error = ();
+
+    fn try_from(input: Decimal) -> Result<Self, Self::Error> {
+        Self::try_from(&input)
+    }
+}
+
+impl TryFrom<&Decimal> for i128 {
+    type Error = ();
+
+    fn try_from(input: &Decimal) -> Result<Self, Self::Error> {
+        if !input.is_integer() {
+            return Err(());
+        }
+        Ok(input.0.as_i128())
     }
 }
