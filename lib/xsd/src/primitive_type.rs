@@ -1,12 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use phf::phf_map;
 use strum_macros::{AsRefStr, Display, EnumString};
 
 #[cfg(feature = "alloc")]
-use alloc::{borrow::Cow, format, string::String};
+use ::alloc::{borrow::Cow, format, string::String};
 
 /// The XML Schema built-in primitive datatypes.
 ///

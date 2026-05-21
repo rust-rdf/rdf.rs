@@ -7,6 +7,9 @@
 #![no_std]
 #![deny(unsafe_code)]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
 
 pub type Type = PrimitiveType;
@@ -24,8 +27,8 @@ pub use rust_decimal::Decimal;
 mod decimal_type;
 pub use decimal_type::*;
 
-//mod decimal_value;
-//pub use decimal_value::*;
+mod decimal_value;
+pub use decimal_value::*;
 
 mod primitive_type;
 pub use primitive_type::*;

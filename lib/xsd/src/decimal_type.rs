@@ -1,12 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use phf::phf_map;
 use strum_macros::Display;
 
 #[cfg(feature = "alloc")]
-use alloc::{borrow::Cow, format, vec, vec::Vec};
+use ::alloc::{borrow::Cow, format, vec, vec::Vec};
 
 /// The XML Schema `xsd:decimal` datatypes.
 ///
