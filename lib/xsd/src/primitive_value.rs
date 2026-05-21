@@ -1,7 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::PrimitiveType;
-use decorum::Total;
+use crate::{
+    PrimitiveType,
+    primitives::{Decimal, Double, Float},
+};
+
+#[cfg(feature = "jiff")]
+use crate::primitives::{Date, DateTime, Duration, Time};
 
 #[cfg(feature = "alloc")]
 use strum_macros::Display;
@@ -33,38 +38,36 @@ pub enum PrimitiveValue {
     Boolean(bool),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
-    #[cfg(feature = "rust_decimal")]
-    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::str"))]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Decimal(crate::Decimal),
+    Decimal(Decimal),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#float
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Float(Total<f32>),
+    Float(Float),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#double
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Double(Total<f64>),
+    Double(Double),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#duration
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Duration(crate::Duration),
+    Duration(Duration),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#dateTime
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    DateTime(crate::DateTime),
+    DateTime(DateTime),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#time
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Time(crate::Time),
+    Time(Time),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#date
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Date(crate::Date),
+    Date(Date),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYearMonth
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
@@ -113,7 +116,6 @@ impl PrimitiveValue {
         match self {
             String(_) => PrimitiveType::String,
             Boolean(_) => PrimitiveType::Boolean,
-            #[cfg(feature = "rust_decimal")]
             Decimal(_) => PrimitiveType::Decimal,
             Float(_) => PrimitiveType::Float,
             Double(_) => PrimitiveType::Double,
@@ -171,14 +173,14 @@ impl From<bool> for PrimitiveValue {
 #[cfg(feature = "rust_decimal")]
 impl From<rust_decimal::Decimal> for PrimitiveValue {
     fn from(input: rust_decimal::Decimal) -> Self {
-        Self::Decimal(input)
+        Self::Decimal(input.into())
     }
 }
 
 #[cfg(feature = "rust_decimal")]
 impl From<&rust_decimal::Decimal> for PrimitiveValue {
     fn from(input: &rust_decimal::Decimal) -> Self {
-        Self::Decimal(input.clone())
+        Self::Decimal(input.clone().into())
     }
 }
 

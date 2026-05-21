@@ -15,14 +15,28 @@ pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
 pub type Type = PrimitiveType;
 pub type Value = PrimitiveValue;
 
-#[cfg(feature = "jiff")]
-pub use jiff::{
-    SignedDuration as Duration,
-    civil::{Date, DateTime, Time},
-};
+pub mod primitives {
+    mod date;
+    pub use date::*;
 
-#[cfg(feature = "rust_decimal")]
-pub use rust_decimal::Decimal;
+    mod datetime;
+    pub use datetime::*;
+
+    mod decimal;
+    pub use decimal::*;
+
+    mod double;
+    pub use double::*;
+
+    mod duration;
+    pub use duration::*;
+
+    mod float;
+    pub use float::*;
+
+    mod time;
+    pub use time::*;
+}
 
 mod decimal_type;
 pub use decimal_type::*;

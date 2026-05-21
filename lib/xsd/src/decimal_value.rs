@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::DecimalType;
+use crate::{DecimalType, primitives::Decimal};
 use strum_macros::Display;
 
 #[cfg(feature = "alloc")]
@@ -17,10 +17,8 @@ use ::alloc::format;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DecimalValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
-    #[cfg(feature = "rust_decimal")]
-    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::str"))]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Decimal(crate::Decimal),
+    Decimal(Decimal),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#integer
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
@@ -47,7 +45,6 @@ impl DecimalValue {
     pub fn r#type(&self) -> DecimalType {
         use DecimalValue::*;
         match self {
-            #[cfg(feature = "rust_decimal")]
             Decimal(_) => DecimalType::Decimal,
             Integer(_) => DecimalType::Integer,
             Long(_) => DecimalType::Long,
@@ -55,5 +52,75 @@ impl DecimalValue {
             Short(_) => DecimalType::Short,
             Byte(_) => DecimalType::Byte,
         }
+    }
+}
+
+impl From<i8> for DecimalValue {
+    fn from(input: i8) -> Self {
+        Self::Byte(input)
+    }
+}
+
+impl From<i16> for DecimalValue {
+    fn from(input: i16) -> Self {
+        Self::Short(input)
+    }
+}
+
+impl From<i32> for DecimalValue {
+    fn from(input: i32) -> Self {
+        Self::Int(input)
+    }
+}
+
+impl From<i64> for DecimalValue {
+    fn from(input: i64) -> Self {
+        Self::Long(input)
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl From<i128> for DecimalValue {
+    fn from(input: i128) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl From<isize> for DecimalValue {
+    fn from(input: isize) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl From<rust_decimal::Decimal> for DecimalValue {
+    fn from(input: rust_decimal::Decimal) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl From<&rust_decimal::Decimal> for DecimalValue {
+    fn from(input: &rust_decimal::Decimal) -> Self {
+        Self::Decimal(input.clone().into())
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl TryFrom<f32> for DecimalValue {
+    type Error = ();
+
+    fn try_from(input: f32) -> Result<Self, Self::Error> {
+        Ok(Self::Decimal(input.try_into()?))
+    }
+}
+
+#[cfg(feature = "rust_decimal")]
+impl TryFrom<f64> for DecimalValue {
+    type Error = ();
+
+    fn try_from(input: f64) -> Result<Self, Self::Error> {
+        Ok(Self::Decimal(input.try_into()?))
     }
 }
