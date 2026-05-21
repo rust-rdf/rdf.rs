@@ -12,7 +12,6 @@ extern crate alloc;
 
 pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
 
-pub type Type = PrimitiveType;
 pub type Value = PrimitiveValue;
 
 pub mod primitives {
@@ -49,3 +48,6 @@ pub use primitive_type::*;
 
 mod primitive_value;
 pub use primitive_value::*;
+
+mod r#type;
+pub use r#type::*;
