@@ -19,9 +19,9 @@ use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "alloc", derive(Display))]
-// #[cfg_attr( // FIXME
+// #[cfg_attr(
 //     feature = "borsh",
-//     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+//     derive(borsh::BorshSerialize, borsh::BorshDeserialize) // FIXME: SignedDuration
 // )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PrimitiveValue {

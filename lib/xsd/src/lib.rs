@@ -12,6 +12,7 @@ extern crate alloc;
 
 pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
 
+#[allow(unused_imports)]
 pub mod primitives {
     mod date;
     pub use date::*;

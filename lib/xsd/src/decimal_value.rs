@@ -10,10 +10,10 @@ use ::alloc::format;
 ///
 /// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
-// #[cfg_attr(
-//     feature = "borsh",
-//     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-// )]
+#[cfg_attr(
+    feature = "borsh",
+    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DecimalValue {
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
@@ -59,7 +59,7 @@ impl DecimalValue {
         use DecimalValue::*;
         match self {
             Decimal(_) => None, // already the widest primitive base type
-            Integer(n) => Some(Decimal((*n).into())),
+            Integer(n) => (*n).try_into().ok(),
             Long(n) => Some(Integer(*n as _)),
             Int(n) => Some(Long(*n as _)),
             Short(n) => Some(Int(*n as _)),
@@ -107,28 +107,24 @@ impl From<i64> for DecimalValue {
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl From<i128> for DecimalValue {
     fn from(input: i128) -> Self {
-        Self::Decimal(input.into())
+        Self::Integer(input.into())
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl From<isize> for DecimalValue {
     fn from(input: isize) -> Self {
-        Self::Decimal(input.into())
+        Self::Integer((input as i128).into()) // TODO
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl From<Decimal> for DecimalValue {
     fn from(input: Decimal) -> Self {
         Self::Decimal(input)
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl From<&Decimal> for DecimalValue {
     fn from(input: &Decimal) -> Self {
         Self::Decimal(input.clone())
@@ -149,7 +145,6 @@ impl From<&rust_decimal::Decimal> for DecimalValue {
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl TryFrom<f32> for DecimalValue {
     type Error = ();
 
@@ -158,7 +153,6 @@ impl TryFrom<f32> for DecimalValue {
     }
 }
 
-#[cfg(feature = "rust_decimal")]
 impl TryFrom<f64> for DecimalValue {
     type Error = ();
 

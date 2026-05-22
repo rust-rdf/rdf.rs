@@ -38,5 +38,5 @@ strum_macros = "0.28"
 # Integrations:
 borsh = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
-rust_decimal = { version = "1.42", default-features = false, features = ["serde-with-str"], optional = true }
+rust_decimal = { version = "1.42", default-features = false, features = ["borsh", "serde-with-str"], optional = true }
 serde = { workspace = true, optional = true }

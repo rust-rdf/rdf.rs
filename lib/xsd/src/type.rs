@@ -80,12 +80,23 @@ impl FromStr for Type {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<&str> for Type {
     fn from(input: &str) -> Self {
         TYPES
             .get(input)
             .cloned()
             .unwrap_or_else(|| Type::Other(input.into()))
+    }
+}
+
+#[cfg(not(feature = "alloc"))]
+impl From<&'static str> for Type {
+    fn from(input: &'static str) -> Self {
+        TYPES
+            .get(input)
+            .cloned()
+            .unwrap_or_else(|| Type::Other(input))
     }
 }
 

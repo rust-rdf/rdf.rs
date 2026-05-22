@@ -25,6 +25,7 @@ pub enum Value {
 }
 
 impl Value {
+    #[cfg(feature = "alloc")]
     pub fn string(value: impl Into<String>) -> Self {
         Self::Primitive(value.into().into())
     }
