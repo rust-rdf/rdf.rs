@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::primitives::{Boolean, GDay, GMonth, GMonthDay, GYear, GYearMonth};
 use crate::{
     PrimitiveType,
     primitives::{Decimal, Double, Float},
@@ -35,7 +36,7 @@ pub enum PrimitiveValue {
 
     /// See: https://www.w3.org/TR/xmlschema-2/#boolean
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Boolean(bool),
+    Boolean(Boolean),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#decimal
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
@@ -70,24 +71,24 @@ pub enum PrimitiveValue {
     Date(Date),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYearMonth
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
-    GYearMonth(i32, u8),
+    //#[cfg_attr(feature = "alloc", strum(to_string = "{0.0}-{0.1}"))]
+    GYearMonth(GYearMonth),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gYear
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    GYear(i32),
+    GYear(GYear),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gMonthDay
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
-    GMonthDay(u8, u8),
+    //#[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
+    GMonthDay(GMonthDay),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gDay
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    GDay(u8),
+    GDay(GDay),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#gMonth
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    GMonth(u8),
+    GMonth(GMonth),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#hexBinary
     #[cfg(feature = "alloc")]
@@ -127,9 +128,9 @@ impl PrimitiveValue {
             Time(_) => PrimitiveType::Time,
             #[cfg(feature = "jiff")]
             Date(_) => PrimitiveType::Date,
-            GYearMonth(_, _) => PrimitiveType::GYearMonth,
+            GYearMonth(_) => PrimitiveType::GYearMonth,
             GYear(_) => PrimitiveType::GYear,
-            GMonthDay(_, _) => PrimitiveType::GMonthDay,
+            GMonthDay(_) => PrimitiveType::GMonthDay,
             GDay(_) => PrimitiveType::GDay,
             GMonth(_) => PrimitiveType::GMonth,
             #[cfg(feature = "alloc")]

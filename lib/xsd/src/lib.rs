@@ -14,6 +14,9 @@ pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
 
 #[allow(unused_imports)]
 pub mod primitives {
+    mod boolean;
+    pub use boolean::*;
+
     mod date;
     pub use date::*;
 
@@ -31,6 +34,24 @@ pub mod primitives {
 
     mod float;
     pub use float::*;
+
+    mod gday;
+    pub use gday::*;
+
+    mod gmonth;
+    pub use gmonth::*;
+
+    mod gmonthday;
+    pub use gmonthday::*;
+
+    mod gyear;
+    pub use gyear::*;
+
+    mod gyearmonth;
+    pub use gyearmonth::*;
+
+    mod string;
+    pub use string::*;
 
     mod time;
     pub use time::*;
