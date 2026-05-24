@@ -63,6 +63,9 @@ pub use decimal_type::*;
 mod decimal_value;
 pub use decimal_value::*;
 
+mod parse;
+pub use parse::*;
+
 mod primitive_type;
 pub use primitive_type::*;
 

@@ -1,6 +1,9 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{DecimalValue, PrimitiveValue, Type, primitives::Decimal};
+use crate::{
+    DecimalValue, PrimitiveValue, Type,
+    primitives::{Boolean, Decimal, Double, Float},
+};
 use strum_macros::Display;
 
 #[cfg(feature = "jiff")]
@@ -30,7 +33,7 @@ impl Value {
         Self::Primitive(value.into().into())
     }
 
-    pub fn boolean(value: impl Into<bool>) -> Self {
+    pub fn boolean(value: impl Into<Boolean>) -> Self {
         Self::Primitive(value.into().into())
     }
 
@@ -38,11 +41,11 @@ impl Value {
         Self::Decimal(value.into().into())
     }
 
-    pub fn float(value: impl Into<f32>) -> Self {
+    pub fn float(value: impl Into<Float>) -> Self {
         Self::Primitive(value.into().into())
     }
 
-    pub fn double(value: impl Into<f64>) -> Self {
+    pub fn double(value: impl Into<Double>) -> Self {
         Self::Primitive(value.into().into())
     }
 
@@ -120,6 +123,12 @@ impl From<bool> for Value {
     }
 }
 
+impl From<Boolean> for Value {
+    fn from(input: Boolean) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
 impl From<Decimal> for Value {
     fn from(input: Decimal) -> Self {
         Self::Decimal(input.into())
@@ -132,8 +141,20 @@ impl From<f32> for Value {
     }
 }
 
+impl From<Float> for Value {
+    fn from(input: Float) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
 impl From<f64> for Value {
     fn from(input: f64) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<Double> for Value {
+    fn from(input: Double) -> Self {
         Self::Primitive(input.into())
     }
 }

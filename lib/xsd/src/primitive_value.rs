@@ -174,6 +174,12 @@ impl From<&String> for PrimitiveValue {
 
 impl From<bool> for PrimitiveValue {
     fn from(input: bool) -> Self {
+        Self::Boolean(input.into())
+    }
+}
+
+impl From<Boolean> for PrimitiveValue {
+    fn from(input: Boolean) -> Self {
         Self::Boolean(input)
     }
 }
@@ -198,8 +204,20 @@ impl From<f32> for PrimitiveValue {
     }
 }
 
+impl From<Float> for PrimitiveValue {
+    fn from(input: Float) -> Self {
+        Self::Float(input.into())
+    }
+}
+
 impl From<f64> for PrimitiveValue {
     fn from(input: f64) -> Self {
+        Self::Double(input.into())
+    }
+}
+
+impl From<Double> for PrimitiveValue {
+    fn from(input: Double) -> Self {
         Self::Double(input.into())
     }
 }

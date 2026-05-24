@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use core::str::FromStr;
 use decorum::Total;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -61,6 +62,14 @@ impl From<i128> for Double {
 impl From<isize> for Double {
     fn from(input: isize) -> Self {
         Self((input as f64).into())
+    }
+}
+
+impl FromStr for Double {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        input.parse::<Total<f64>>().map(Self).map_err(|_| ())
     }
 }
 

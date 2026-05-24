@@ -1,7 +1,15 @@
 // This is free and unencumbered software released into the public domain.
 
+use core::str::FromStr;
+
 #[cfg(feature = "rust_decimal")]
 use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
+
+pub type Integer = i128;
+pub type Long = i64;
+pub type Int = i32;
+pub type Short = i16;
+pub type Byte = i8;
 
 #[cfg(feature = "rust_decimal")]
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -102,25 +110,51 @@ impl From<&rust_decimal::Decimal> for Decimal {
     }
 }
 
+impl FromStr for Decimal {
+    type Err = ();
+
+    #[cfg(feature = "rust_decimal")]
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        input
+            .parse::<rust_decimal::Decimal>()
+            .map(Self)
+            .map_err(|_| ())
+    }
+
+    #[cfg(not(feature = "rust_decimal"))]
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        input
+            .parse::<crate::primitives::Double>()
+            .map(Self)
+            .map_err(|_| ())
+    }
+}
+
 impl TryFrom<f32> for Decimal {
     type Error = ();
 
+    #[cfg(feature = "rust_decimal")]
     fn try_from(input: f32) -> Result<Self, Self::Error> {
-        #[cfg(feature = "rust_decimal")]
-        return Ok(Self(rust_decimal::Decimal::from_f32(input).ok_or(())?));
-        #[cfg(not(feature = "rust_decimal"))]
-        return Ok(Self(input.into()));
+        Ok(Self(rust_decimal::Decimal::from_f32(input).ok_or(())?))
+    }
+
+    #[cfg(not(feature = "rust_decimal"))]
+    fn try_from(input: f32) -> Result<Self, Self::Error> {
+        Ok(Self(input.into()))
     }
 }
 
 impl TryFrom<f64> for Decimal {
     type Error = ();
 
+    #[cfg(feature = "rust_decimal")]
     fn try_from(input: f64) -> Result<Self, Self::Error> {
-        #[cfg(feature = "rust_decimal")]
-        return Ok(Self(rust_decimal::Decimal::from_f64(input).ok_or(())?));
-        #[cfg(not(feature = "rust_decimal"))]
-        return Ok(Self(input.into()));
+        Ok(Self(rust_decimal::Decimal::from_f64(input).ok_or(())?))
+    }
+
+    #[cfg(not(feature = "rust_decimal"))]
+    fn try_from(input: f64) -> Result<Self, Self::Error> {
+        Ok(Self(input.into()))
     }
 }
 

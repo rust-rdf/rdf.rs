@@ -76,27 +76,36 @@ impl FromStr for Type {
     type Err = ();
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        TYPES.get(input).cloned().ok_or(())
+        match TYPES.get(input) {
+            Some(&t) => Ok(t.clone()),
+            None => Err(()),
+        }
+    }
+}
+
+impl From<&Type> for Type {
+    fn from(input: &Type) -> Self {
+        input.clone()
     }
 }
 
 #[cfg(feature = "alloc")]
 impl From<&str> for Type {
     fn from(input: &str) -> Self {
-        TYPES
-            .get(input)
-            .cloned()
-            .unwrap_or_else(|| Type::Other(input.into()))
+        match TYPES.get(input) {
+            Some(&t) => t.clone(),
+            None => Type::Other(input.into()),
+        }
     }
 }
 
 #[cfg(not(feature = "alloc"))]
 impl From<&'static str> for Type {
     fn from(input: &'static str) -> Self {
-        TYPES
-            .get(input)
-            .cloned()
-            .unwrap_or_else(|| Type::Other(input))
+        match TYPES.get(input) {
+            Some(&t) => t.clone(),
+            None => Type::Other(input.into()),
+        }
     }
 }
 

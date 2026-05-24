@@ -1,6 +1,9 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{DecimalType, primitives::Decimal};
+use crate::{
+    DecimalType,
+    primitives::{Byte, Decimal, Int, Integer, Long, Short},
+};
 use strum_macros::Display;
 
 #[cfg(feature = "alloc")]
@@ -22,23 +25,23 @@ pub enum DecimalValue {
 
     /// See: https://www.w3.org/TR/xmlschema-2/#integer
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Integer(i128),
+    Integer(Integer),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#long
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Long(i64),
+    Long(Long),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#int
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Int(i32),
+    Int(Int),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#short
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Short(i16),
+    Short(Short),
 
     /// See: https://www.w3.org/TR/xmlschema-2/#byte
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
-    Byte(i8),
+    Byte(Byte),
 }
 
 impl DecimalValue {
@@ -85,25 +88,25 @@ impl DecimalValue {
 
 impl From<i8> for DecimalValue {
     fn from(input: i8) -> Self {
-        Self::Byte(input)
+        Self::Byte(input.into())
     }
 }
 
 impl From<i16> for DecimalValue {
     fn from(input: i16) -> Self {
-        Self::Short(input)
+        Self::Short(input.into())
     }
 }
 
 impl From<i32> for DecimalValue {
     fn from(input: i32) -> Self {
-        Self::Int(input)
+        Self::Int(input.into())
     }
 }
 
 impl From<i64> for DecimalValue {
     fn from(input: i64) -> Self {
-        Self::Long(input)
+        Self::Long(input.into())
     }
 }
 

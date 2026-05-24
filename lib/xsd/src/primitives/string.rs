@@ -2,3 +2,6 @@
 
 #[cfg(feature = "alloc")]
 pub use ::alloc::string::String;
+
+#[cfg(not(feature = "alloc"))]
+pub type String = &'static str;
