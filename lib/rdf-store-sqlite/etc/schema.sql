@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS "rdf_triple" (
 CREATE TABLE IF NOT EXISTS "rdf_triple_num" (
     "s" integer NOT NULL REFERENCES "rdf_node"("id"),
     "p" integer NOT NULL REFERENCES "rdf_node"("id"),
-    "o_dt" integer NOT NULL DEFAULT 0,
+    "o_dt" integer NOT NULL DEFAULT 0 REFERENCES "rdf_node"("id"),
     "o_val" numeric NOT NULL,
     PRIMARY KEY ("s", "p", "o_dt", "o_val")
 ); -- WITHOUT ROWID;
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS "rdf_triple_num" (
 CREATE TABLE IF NOT EXISTS "rdf_triple_str" (
     "s" integer NOT NULL REFERENCES "rdf_node"("id"),
     "p" integer NOT NULL REFERENCES "rdf_node"("id"),
-    "o_dt" integer NOT NULL DEFAULT 0,
+    "o_dt" integer NOT NULL DEFAULT 0 REFERENCES "rdf_node"("id"),
     "o_lang" text NOT NULL DEFAULT '',
     "o_val" text NOT NULL,
     PRIMARY KEY ("s", "p", "o_dt", "o_lang", "o_val")

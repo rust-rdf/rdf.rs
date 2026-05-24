@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use super::{SCHEMA_SQL, SCHEMA_VERSION, SqliteError, SqliteTransaction};
+use super::{SCHEMA_SQL, SCHEMA_VERSION, SchemaVersion, SqliteError, SqliteTransaction};
 use alloc::{boxed::Box, string::ToString};
 use async_trait::async_trait;
 use rdf_store::{Store, Transaction};
@@ -24,7 +24,7 @@ impl SqliteStore {
             .build()
             .await?;
         let conn = db.connect()?;
-        let version = match conn
+        let version: SchemaVersion = match conn
             .query(
                 "SELECT cast(c.val as integer) FROM rdf_config c WHERE c.key = 'schema' LIMIT 1",
                 (),
@@ -41,7 +41,7 @@ impl SqliteStore {
             }
             Ok(mut rows) => {
                 if let Some(row) = rows.next().await? {
-                    row.get::<u32>(0)?
+                    row.get::<SchemaVersion>(0)?
                 } else {
                     // TODO: migrate the schema to the latest version
                     SCHEMA_VERSION
