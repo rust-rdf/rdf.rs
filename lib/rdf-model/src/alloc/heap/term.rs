@@ -7,7 +7,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{PrimitiveValue, Type, Value};
+use xsd::{PrimitiveValue, Type, Value, primitives::Boolean};
 
 type Language = String; // TODO
 
@@ -82,8 +82,8 @@ impl HeapTerm {
             Self::Iri(s) => s.as_str(),
             Self::BNode(s) => s.as_str(),
             Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s.as_str(),
-            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(false))) => "false",
-            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(true))) => "true",
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(Boolean::FALSE))) => "false",
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(Boolean::TRUE))) => "true",
             Self::TypedValue(Value::Primitive(
                 PrimitiveValue::String(s) | PrimitiveValue::AnyUri(s),
             )) => s.as_str(),
@@ -137,5 +137,41 @@ impl From<String> for HeapTerm {
 impl From<&String> for HeapTerm {
     fn from(value: &String) -> Self {
         Self::String(value.clone())
+    }
+}
+
+impl From<Boolean> for HeapTerm {
+    fn from(value: Boolean) -> Self {
+        Self::TypedValue(value.into())
+    }
+}
+
+impl From<(String, Language)> for HeapTerm {
+    fn from((literal, language): (String, Language)) -> Self {
+        Self::TaggedString(literal, language, None)
+    }
+}
+
+impl From<(String, Datatype)> for HeapTerm {
+    fn from((literal, datatype): (String, Datatype)) -> Self {
+        let result = match &datatype {
+            Datatype::Xsd(t) => xsd::parse(&literal, t),
+            _ => Err(()),
+        };
+        match result {
+            Ok(value) => Self::TypedValue(value),
+            Err(_) => Self::TypedLiteral(literal, datatype),
+        }
+    }
+}
+
+impl From<(String, Option<Datatype>, Option<Language>)> for HeapTerm {
+    fn from((literal, datatype, language): (String, Option<Datatype>, Option<Language>)) -> Self {
+        match (language, datatype) {
+            (None, None) => Self::string(literal),
+            (None, Some(datatype)) => Self::from((literal, datatype)),
+            (Some(language), None) => Self::tagged_string(literal, language),
+            (Some(language), Some(_)) => Self::tagged_string(literal, language), // TODO
+        }
     }
 }

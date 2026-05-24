@@ -31,13 +31,17 @@ pub enum Datatype {
 }
 
 impl Datatype {
-    pub fn curie(&self) -> &str {
-        match self {
+    pub fn from_iri(iri: impl AsRef<str>) -> Self {
+        Self::from(iri.as_ref())
+    }
+
+    pub fn curie(&self) -> Option<&str> {
+        Some(match self {
             Datatype::RdfLangString => "rdf:langString",
             Datatype::RdfDirLangString => "rdf:dirLangString",
             Datatype::Xsd(xsd) => xsd.curie(),
-            Datatype::Other(other) => other.as_ref(),
-        }
+            Datatype::Other(_) => return None, // not a CURIE
+        })
     }
 
     pub fn iri_string(&self) -> Cow<'_, str> {
@@ -46,6 +50,16 @@ impl Datatype {
             Datatype::RdfDirLangString => Cow::Borrowed(RDF_DIR_LANG_STRING),
             Datatype::Xsd(xsd) => xsd.iri_string(),
             Datatype::Other(other) => other.clone(),
+        }
+    }
+}
+
+impl core::fmt::Display for Datatype {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        if let Some(curie) = self.curie() {
+            f.write_str(curie)
+        } else {
+            f.write_str(self.iri_string().as_ref())
         }
     }
 }
@@ -64,6 +78,12 @@ impl From<&str> for Datatype {
     }
 }
 
+impl From<Cow<'_, str>> for Datatype {
+    fn from(input: Cow<'_, str>) -> Self {
+        Self::from(input.as_ref())
+    }
+}
+
 impl From<String> for Datatype {
     fn from(input: String) -> Self {
         Self::from(input.as_str())
@@ -73,5 +93,17 @@ impl From<String> for Datatype {
 impl From<&String> for Datatype {
     fn from(input: &String) -> Self {
         Self::from(input.as_str())
+    }
+}
+
+impl From<xsd::Type> for Datatype {
+    fn from(input: xsd::Type) -> Self {
+        Self::Xsd(input)
+    }
+}
+
+impl From<&xsd::Type> for Datatype {
+    fn from(input: &xsd::Type) -> Self {
+        Self::Xsd(input.clone())
     }
 }

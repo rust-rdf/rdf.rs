@@ -7,7 +7,7 @@ use alloc::{
     borrow::{Cow, ToOwned},
     string::{String, ToString},
 };
-use xsd::{PrimitiveValue, Value};
+use xsd::{PrimitiveValue, Value, primitives::Boolean};
 
 type Language = String; // TODO
 
@@ -90,8 +90,8 @@ impl<'a> CowTerm<'a> {
             Self::Iri(s) => s,
             Self::BNode(s) => s,
             Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s,
-            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(false))) => "false",
-            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(true))) => "true",
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(Boolean::FALSE))) => "false",
+            Self::TypedValue(Value::Primitive(PrimitiveValue::Boolean(Boolean::TRUE))) => "true",
             Self::TypedValue(Value::Primitive(
                 PrimitiveValue::String(s) | PrimitiveValue::AnyUri(s),
             )) => s,

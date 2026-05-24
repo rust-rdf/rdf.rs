@@ -16,7 +16,7 @@ impl<'a> Term for SophiaTerm<'a> {
         self.inner.kind().into()
     }
 
-    fn as_str(&self) -> Cow<str> {
+    fn value_str(&self) -> Cow<'_, str> {
         match &self.inner {
             SimpleTerm::Iri(iri) => Cow::Borrowed(iri.as_str()),
             SimpleTerm::BlankNode(id) => Cow::Borrowed(id.as_str()),
