@@ -3,7 +3,7 @@
 /// An RDF literal.
 ///
 /// See: https://www.w3.org/TR/rdf12-concepts/#dfn-literal
-#[stability::unstable]
+#[instability::unstable]
 pub trait Literal {}
 
 impl core::fmt::Debug for dyn Literal {

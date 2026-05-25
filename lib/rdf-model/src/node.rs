@@ -1,7 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 /// An RDF node.
-#[stability::unstable]
+#[instability::unstable]
 pub trait Node {}
 
 impl core::fmt::Debug for dyn Node {

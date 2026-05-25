@@ -9,7 +9,7 @@ use std::{
     path::Path,
 };
 
-#[stability::unstable]
+#[instability::unstable]
 pub fn open_path(
     input_path: impl AsRef<Path>,
     options: Option<ReaderOptions>,
@@ -28,7 +28,7 @@ pub fn open_path(
     )
 }
 
-#[stability::unstable]
+#[instability::unstable]
 pub fn for_reader<R: Read + 'static>(reader: R, options: ReaderOptions) -> Result<Box<dyn Reader>> {
     let input_format = options.format.expect("format must be specified");
     let input = match input_format {

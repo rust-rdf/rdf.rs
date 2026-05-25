@@ -32,7 +32,7 @@ sophia = ["rdf-model/sophia", "dep:sophia"]
 [dependencies]
 rdf-format.workspace = true
 rdf-model.workspace = true
-stability = "0.2"
+instability.workspace = true
 
 # Integrations:
 oxrdfio = { workspace = true, optional = true }

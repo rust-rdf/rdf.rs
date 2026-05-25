@@ -54,6 +54,7 @@ parking_lot = { version = "0.12", default-features = false }
 tempfile = { version = "3.15", default-features = false }
 
 # Development:
+instability = "0.3"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 
 [patch.crates-io]

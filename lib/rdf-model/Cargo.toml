@@ -32,7 +32,7 @@ sophia = ["dep:sophia"]
 
 [dependencies]
 dogma.workspace = true
-stability = "0.2"
+instability.workspace = true
 xsd = { workspace = true, features = ["datetime", "decimal"] }
 
 # Integrations:
