@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
 [![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![Package](https://img.shields.io/crates/v/rdf_rs)](https://crates.io/crates/rdf_rs)
-[![Documentation](https://docs.rs/rdf_rs/badge.svg)](https://docs.rs/rdf_rs/)
+[![Documentation](https://docs.rs/rdf_rs/badge.svg)](https://docs.rs/rdf_rs)
 
 **RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
 
@@ -33,14 +33,14 @@ cargo add rdf_rs --rename rdf
 
 ```toml
 [dependencies]
-rdf = { package = "rdf_rs", version = "0.2" }
+rdf = { package = "rdf_rs", version = "0.3" }
 ```
 
 ### Installation in `Cargo.toml` (with only specific features enabled)
 
 ```toml
 [dependencies]
-rdf = { package = "rdf_rs", version = "0.2", default-features = false, features = ["serde"] }
+rdf = { package = "rdf_rs", version = "0.3", default-features = false, features = ["serde"] }
 ```
 
 ## 👉 Examples
@@ -53,7 +53,7 @@ use rdf::*;
 
 ## 📚 Reference
 
-https://docs.rs/rdf_rs/
+https://docs.rs/rdf_rs
 
 ## 👨‍💻 Development
 
