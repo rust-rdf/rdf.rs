@@ -1,53 +1,99 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::Transaction;
-use alloc::boxed::Box;
-use alloc::collections::BTreeMap;
+use crate::{HeapStore, Transaction};
+use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
 use async_stream::stream;
 use async_trait::async_trait;
 use futures::Stream;
-use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
+use parking_lot::RwLock;
+use rdf_model::{HeapQuad, HeapTerm, Statement, StatementPattern};
 
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Default)]
 pub struct HeapTransaction {
-    mutations: BTreeMap<HeapQuad, bool>,
+    mutations: RwLock<BTreeMap<HeapQuad, bool>>,
+    store: Arc<HeapStore>,
 }
 
 impl HeapTransaction {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(store: Arc<HeapStore>) -> Self {
+        Self {
+            mutations: RwLock::new(BTreeMap::new()),
+            store: store,
+        }
     }
 }
 
 #[async_trait]
-impl Transaction for HeapTransaction {
+impl Transaction for Arc<HeapTransaction> {
     type Error = ();
     type Term = HeapTerm;
     type Statement = HeapQuad;
+
+    async fn rollback(self) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
+    async fn commit(self) -> Result<(), Self::Error> {
+        let mutations = self.mutations.read();
+        let mut quads = self.store.quads.write();
+        for (quad, &flag) in mutations.iter() {
+            if flag {
+                quads.insert(quad.clone());
+            } else {
+                quads.remove(quad);
+            }
+        }
+        Ok(())
+    }
+
+    async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+        let quad = statement.to_quad();
+        let mut mutations = self.mutations.write();
+        mutations.insert(quad, true);
+        Ok(())
+    }
+
+    async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+        let quad = statement.to_quad();
+        let mut mutations = self.mutations.write();
+        mutations.insert(quad, false);
+        Ok(())
+    }
 
     fn match_statements(
         &self,
         pattern: impl StatementPattern<Term = Self::Term>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let _pattern = pattern.to_quad_pattern();
+        let pattern = pattern.to_quad_pattern();
+        let mutations = self.mutations.read();
+        let quads = self.store.quads.read();
         stream! {
-            yield Err(()); // TODO
+            for quad in quads.iter() {
+                if pattern.matches(
+                    quad.subject(),
+                    quad.predicate(),
+                    quad.object(),
+                    quad.context(),
+                ) {
+                    if let Some(false) = mutations.get(quad) {
+                        continue; // the quad was removed in this transaction
+                    }
+                    yield Ok(quad.clone());
+                }
+            }
+            for (quad, &flag) in mutations.iter() {
+                if !flag {
+                    continue; // skip quads removed in this transaction
+                }
+                if pattern.matches(
+                    quad.subject(),
+                    quad.predicate(),
+                    quad.object(),
+                    quad.context(),
+                ) {
+                    yield Ok(quad.clone());
+                }
+            }
         }
-    }
-
-    async fn insert_statement(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
-        Err(()) // TODO
-    }
-
-    async fn remove_statement(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
-        Err(()) // TODO
-    }
-
-    async fn commit(self) -> Result<(), Self::Error> {
-        Err(()) // TODO
-    }
-
-    async fn rollback(self) -> Result<(), Self::Error> {
-        Err(()) // TODO
     }
 }

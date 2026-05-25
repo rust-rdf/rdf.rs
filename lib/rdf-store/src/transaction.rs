@@ -11,16 +11,16 @@ pub trait Transaction {
     type Term: Term;
     type Statement: Statement;
 
-    fn match_statements(
-        &self,
-        pattern: impl StatementPattern<Term = Self::Term>,
-    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
+    async fn rollback(self) -> Result<(), Self::Error>;
+
+    async fn commit(self) -> Result<(), Self::Error>;
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
     async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
-    async fn commit(self) -> Result<(), Self::Error>;
-
-    async fn rollback(self) -> Result<(), Self::Error>;
+    fn match_statements(
+        &self,
+        pattern: impl StatementPattern<Term = Self::Term>,
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
 }

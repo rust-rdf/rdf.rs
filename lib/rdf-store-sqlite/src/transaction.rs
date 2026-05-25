@@ -26,15 +26,12 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
     type Term = HeapTerm;
     type Statement = HeapQuad;
 
-    fn match_statements(
-        &self,
-        pattern: impl StatementPattern<Term = Self::Term>,
-    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern.to_quad_pattern();
-        let stream1 = self.match_triples(pattern.clone());
-        let stream2 = self.match_triples_str(pattern.clone());
-        let stream3 = self.match_triples_num(pattern.clone());
-        select(stream1, select(stream2, stream3))
+    async fn rollback(self) -> Result<(), Self::Error> {
+        Ok(self.tx.rollback().await?)
+    }
+
+    async fn commit(self) -> Result<(), Self::Error> {
+        Ok(self.tx.commit().await?)
     }
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
@@ -63,7 +60,7 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
                     .await?;
                 let o_val = value.to_string();
                 self.insert_triple_str(s, p, Some(o_dt), None, &o_val)
-                    .await?;
+                    .await?; // FIXME
             }
             TypedLiteral(o_val, o_dt) => {
                 let o_dt = self.intern_iri(o_dt.iri_string().as_ref()).await?;
@@ -78,12 +75,15 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
         Ok(()) // TODO
     }
 
-    async fn commit(self) -> Result<(), Self::Error> {
-        Ok(self.tx.commit().await?)
-    }
-
-    async fn rollback(self) -> Result<(), Self::Error> {
-        Ok(self.tx.rollback().await?)
+    fn match_statements(
+        &self,
+        pattern: impl StatementPattern<Term = Self::Term>,
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
+        let pattern = pattern.to_quad_pattern();
+        let stream1 = self.match_triples(pattern.clone());
+        let stream2 = self.match_triples_str(pattern.clone());
+        let stream3 = self.match_triples_num(pattern.clone());
+        select(stream1, select(stream2, stream3))
     }
 }
 

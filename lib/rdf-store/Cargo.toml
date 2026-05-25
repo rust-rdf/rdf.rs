@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-alloc = ["rdf-model/alloc"]
+alloc = ["rdf-model/alloc", "dep:parking_lot"]
 std = ["alloc", "rdf-model/std"]
 unstable = ["rdf-model/unstable"]
 
@@ -25,6 +25,7 @@ unstable = ["rdf-model/unstable"]
 async-stream = "0.3"
 async-trait = "0.1"
 futures = "0.3"
+parking_lot = { version = "0.12", default-features = false, optional = true }
 rdf-model.workspace = true
 
 [dev-dependencies]
