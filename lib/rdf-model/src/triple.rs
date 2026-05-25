@@ -6,9 +6,9 @@ use crate::{CowTerm, HeapTerm, Quad, QuadPattern, Statement, Term, TriplePattern
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Triple<T: Term> {
-    s: T,
-    p: T,
-    o: T,
+    pub(crate) s: T,
+    pub(crate) p: T,
+    pub(crate) o: T,
 }
 
 impl<T: Term> Triple<T> {
@@ -62,8 +62,20 @@ impl<'a> From<&'a Triple<CowTerm<'a>>> for Triple<HeapTerm> {
     }
 }
 
+impl<'a> From<&'a Quad<CowTerm<'a>>> for Triple<HeapTerm> {
+    fn from(input: &'a Quad<CowTerm<'a>>) -> Self {
+        Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
+    }
+}
+
 impl<'a> From<&'a Triple<HeapTerm>> for Triple<CowTerm<'a>> {
     fn from(input: &'a Triple<HeapTerm>) -> Self {
+        Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
+    }
+}
+
+impl<'a> From<&'a Quad<HeapTerm>> for Triple<CowTerm<'a>> {
+    fn from(input: &'a Quad<HeapTerm>) -> Self {
         Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
     }
 }

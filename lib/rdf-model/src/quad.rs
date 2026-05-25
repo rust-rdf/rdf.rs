@@ -6,10 +6,10 @@ use crate::{CowTerm, HeapTerm, QuadPattern, Statement, Term, Triple, TriplePatte
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Quad<T: Term> {
-    s: T,
-    p: T,
-    o: T,
-    g: Option<T>,
+    pub(crate) s: T,
+    pub(crate) p: T,
+    pub(crate) o: T,
+    pub(crate) g: Option<T>,
 }
 
 impl<T: Term> Quad<T> {
@@ -61,6 +61,17 @@ impl<T: Term + Clone> Quad<T> {
     }
 }
 
+impl<'a> From<&'a Triple<CowTerm<'a>>> for Quad<HeapTerm> {
+    fn from(input: &'a Triple<CowTerm<'a>>) -> Self {
+        Self::new(
+            (&input.s).into(),
+            (&input.p).into(),
+            (&input.o).into(),
+            None,
+        )
+    }
+}
+
 impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
     fn from(input: &'a Quad<CowTerm<'a>>) -> Self {
         Self::new(
@@ -68,6 +79,17 @@ impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
             (&input.p).into(),
             (&input.o).into(),
             input.g.as_ref().map(|g| g.into()),
+        )
+    }
+}
+
+impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
+    fn from(input: &'a Triple<HeapTerm>) -> Self {
+        Self::new(
+            (&input.s).into(),
+            (&input.p).into(),
+            (&input.o).into(),
+            None,
         )
     }
 }
