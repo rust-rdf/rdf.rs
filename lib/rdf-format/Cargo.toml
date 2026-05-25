@@ -22,7 +22,7 @@ std = ["alloc", "dogma/std", "rdf-model/std", "serde?/std"]
 unstable = []
 
 # Features:
-rdf-star = ["oxrdfio?/rdf-star", "rdf-model/rdf-star"]
+rdf-star = ["oxrdfio?/rdf-12", "rdf-model/rdf-star"]
 
 # Integrations:
 oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]

@@ -107,8 +107,8 @@ impl From<oxrdf::GraphName> for OxrdfTerm {
     }
 }
 
-impl From<oxrdf::Subject> for OxrdfTerm {
-    fn from(input: oxrdf::Subject) -> Self {
+impl From<oxrdf::NamedOrBlankNode> for OxrdfTerm {
+    fn from(input: oxrdf::NamedOrBlankNode) -> Self {
         Self(input.into())
     }
 }
@@ -132,26 +132,22 @@ impl From<oxrdf::Literal> for OxrdfTerm {
 }
 
 #[derive(Clone)]
-pub struct OxrdfSubject(oxrdf::Subject);
+pub struct OxrdfSubject(oxrdf::NamedOrBlankNode);
 
 impl Term for OxrdfSubject {
     fn kind(&self) -> TermKind {
-        use oxrdf::Subject;
+        use oxrdf::NamedOrBlankNode;
         match &self.0 {
-            Subject::NamedNode(_) => TermKind::Iri,
-            Subject::BlankNode(_) => TermKind::BNode,
-            #[cfg(feature = "rdf-star")]
-            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+            NamedOrBlankNode::NamedNode(_) => TermKind::Iri,
+            NamedOrBlankNode::BlankNode(_) => TermKind::BNode,
         }
     }
 
     fn value_str(&self) -> Cow<'_, str> {
-        use oxrdf::Subject;
+        use oxrdf::NamedOrBlankNode;
         match &self.0 {
-            Subject::NamedNode(node) => Cow::Borrowed(node.as_str()),
-            Subject::BlankNode(node) => Cow::Borrowed(node.as_str()),
-            #[cfg(feature = "rdf-star")]
-            Subject::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
+            NamedOrBlankNode::NamedNode(node) => Cow::Borrowed(node.as_str()),
+            NamedOrBlankNode::BlankNode(node) => Cow::Borrowed(node.as_str()),
         }
     }
 }

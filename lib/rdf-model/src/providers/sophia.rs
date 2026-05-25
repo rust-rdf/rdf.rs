@@ -21,7 +21,7 @@ impl<'a> Term for SophiaTerm<'a> {
             SimpleTerm::Iri(iri) => Cow::Borrowed(iri.as_str()),
             SimpleTerm::BlankNode(id) => Cow::Borrowed(id.as_str()),
             SimpleTerm::LiteralDatatype(value, _iri) => Cow::Borrowed(value.as_ref()), // TODO
-            SimpleTerm::LiteralLanguage(value, _lang) => Cow::Borrowed(value.as_ref()), // TODO
+            SimpleTerm::LiteralLanguage(value, _lang, _) => Cow::Borrowed(value.as_ref()), // TODO
             SimpleTerm::Triple(_) => todo!(),                                          // TODO
             SimpleTerm::Variable(_) => todo!(),                                        // TODO
         }

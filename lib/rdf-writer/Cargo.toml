@@ -22,7 +22,7 @@ std = ["alloc", "rdf-format/alloc", "rdf-model/std"]
 unstable = []
 
 # Features:
-rdf-star = ["oxrdfio?/rdf-star", "rdf-format/rdf-star", "rdf-model/rdf-star"]
+rdf-star = ["oxrdfio?/rdf-12", "rdf-format/rdf-star", "rdf-model/rdf-star"]
 
 # Integrations:
 oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
@@ -35,8 +35,8 @@ rdf-model.workspace = true
 stability = "0.2"
 
 # Integrations:
-oxrdfio = { version = "0.1", default-features = false, optional = true }
-sophia = { version = "0.9", default-features = false, optional = true }
+oxrdfio = { workspace = true, optional = true }
+sophia = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio.workspace = true

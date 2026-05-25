@@ -37,10 +37,10 @@ xsd = { version = "=0.2.3", default-features = true }
 # Integrations:
 borsh = { version = "1.6", default-features = false, features = ["derive"] }
 dogma = { version = "0.1", default-features = false, features = ["traits"] }
-oxrdf = { version = "0.2", default-features = false }
-oxrdfio = { version = "0.1", default-features = false }
+oxrdf = { version = "0.3", default-features = false }
+oxrdfio = { version = "0.2", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
-sophia = { version = "0.9", default-features = false }
+sophia = { version = "0.10", default-features = false }
 
 # Implementation:
 async-stream = "0.3"
