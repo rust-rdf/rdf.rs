@@ -3,7 +3,7 @@
 use super::{SCHEMA_SQL, SCHEMA_VERSION, SchemaVersion, SqliteError, SqliteTransaction};
 use alloc::{boxed::Box, string::ToString};
 use async_trait::async_trait;
-use rdf_store::{Store, Transaction};
+use rdf_store::Store;
 use turso::{Builder, Connection, Database, transaction::TransactionBehavior};
 
 #[allow(unused)]
@@ -56,9 +56,18 @@ impl SqliteStore {
 #[async_trait]
 impl Store for SqliteStore {
     type Error = SqliteError;
-    type Transaction = SqliteTransaction<'static>;
+    type Read = SqliteTransaction<'static>;
+    type Write = SqliteTransaction<'static>;
 
-    async fn begin_transaction(&mut self) -> Result<Self::Transaction, Self::Error> {
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        let conn: &'static Connection = Box::leak(Box::new(self.conn.clone())); // obtain 'static lifetime
+        let tx =
+            turso::transaction::Transaction::new_unchecked(conn, TransactionBehavior::Deferred)
+                .await?;
+        Ok(SqliteTransaction { tx })
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
         let conn: &'static Connection = Box::leak(Box::new(self.conn.clone())); // obtain 'static lifetime
         let tx =
             turso::transaction::Transaction::new_unchecked(conn, TransactionBehavior::Deferred)

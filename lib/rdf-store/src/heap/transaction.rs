@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapStore, ReadTransaction, Transaction, WriteTransaction};
+use crate::{HeapStore, ReadTransaction, WriteTransaction};
 use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
 use async_stream::stream;
 use async_trait::async_trait;
@@ -12,26 +12,35 @@ use rdf_model::{HeapQuad, HeapTerm, QuadPattern, Statement, StatementPattern};
 pub struct HeapTransaction {
     mutations: RwLock<BTreeMap<HeapQuad, bool>>,
     store: Arc<HeapStore>,
+    writable: bool,
 }
 
 impl HeapTransaction {
-    pub fn new(store: Arc<HeapStore>) -> Self {
+    pub fn new(store: Arc<HeapStore>, writable: bool) -> Self {
         Self {
             mutations: RwLock::new(BTreeMap::new()),
             store: store,
+            writable,
         }
     }
 }
 
 #[async_trait]
-impl Transaction for Arc<HeapTransaction> {
+impl WriteTransaction for Arc<HeapTransaction> {
     type Error = ();
+    type Statement = HeapQuad;
 
     async fn rollback(self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         Ok(())
     }
 
     async fn commit(self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         let mutations = self.mutations.read();
         let mut quads = self.store.quads.write();
         for (quad, &flag) in mutations.iter() {
@@ -43,14 +52,11 @@ impl Transaction for Arc<HeapTransaction> {
         }
         Ok(())
     }
-}
-
-#[async_trait]
-impl WriteTransaction for Arc<HeapTransaction> {
-    type Error = ();
-    type Statement = HeapQuad;
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         let quad = statement.to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, true);
@@ -58,6 +64,9 @@ impl WriteTransaction for Arc<HeapTransaction> {
     }
 
     async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         let quad = statement.to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, false);

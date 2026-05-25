@@ -5,15 +5,6 @@ use async_trait::async_trait;
 use futures::Stream;
 use rdf_model::{Statement, StatementPattern, Term};
 
-#[async_trait]
-pub trait Transaction {
-    type Error;
-
-    async fn rollback(self) -> Result<(), Self::Error>;
-
-    async fn commit(self) -> Result<(), Self::Error>;
-}
-
 //#[async_trait]
 pub trait ReadTransaction {
     type Error;
@@ -38,6 +29,10 @@ pub trait ReadTransaction {
 pub trait WriteTransaction {
     type Error;
     type Statement: Statement;
+
+    async fn rollback(self) -> Result<(), Self::Error>;
+
+    async fn commit(self) -> Result<(), Self::Error>;
 
     // TODO: delete_statements
 

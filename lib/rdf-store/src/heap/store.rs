@@ -20,9 +20,14 @@ impl HeapStore {
 #[async_trait]
 impl Store for Arc<HeapStore> {
     type Error = ();
-    type Transaction = Arc<HeapTransaction>;
+    type Read = Arc<HeapTransaction>;
+    type Write = Arc<HeapTransaction>;
 
-    async fn begin_transaction(&mut self) -> Result<Self::Transaction, Self::Error> {
-        Ok(Arc::new(HeapTransaction::new(self.clone()))) // TODO
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        Ok(Arc::new(HeapTransaction::new(self.clone(), false)))
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
+        Ok(Arc::new(HeapTransaction::new(self.clone(), true)))
     }
 }

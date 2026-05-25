@@ -12,7 +12,7 @@ use rdf_model::{
     Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, QuadPattern, Statement,
     StatementPattern, Term, TermKind,
 };
-use rdf_store::{ReadTransaction, Transaction, WriteTransaction};
+use rdf_store::{ReadTransaction, WriteTransaction};
 
 type Language = String; // TODO
 
@@ -22,8 +22,9 @@ pub struct SqliteTransaction<'conn> {
 }
 
 #[async_trait]
-impl<'conn> Transaction for SqliteTransaction<'conn> {
+impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
+    type Statement = HeapQuad;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(self.tx.rollback().await?)
@@ -32,12 +33,6 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
     async fn commit(self) -> Result<(), Self::Error> {
         Ok(self.tx.commit().await?)
     }
-}
-
-#[async_trait]
-impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
-    type Error = SqliteError;
-    type Statement = HeapQuad;
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         use HeapTerm::*;
