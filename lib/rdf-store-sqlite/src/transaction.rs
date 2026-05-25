@@ -34,7 +34,7 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
         Ok(self.tx.commit().await?)
     }
 
-    async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         use HeapTerm::*;
         let _g = match statement.context() {
             Some(g) => Some(self.intern_node(g).await?), // TODO
@@ -71,7 +71,7 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
         Ok(()) // TODO
     }
 
-    async fn remove_statement(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
         Ok(()) // FIXME
     }
 }
@@ -82,7 +82,7 @@ impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
     type Term = HeapTerm;
     type Statement = HeapQuad;
 
-    fn match_statements(
+    fn r#match(
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {

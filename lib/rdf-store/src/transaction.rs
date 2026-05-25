@@ -11,15 +11,15 @@ pub trait ReadTransaction {
     type Statement: Statement;
     type Term: Term + Clone;
 
-    fn count_statements(
+    fn count(
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Future<Output = Result<u64, Self::Error>> {
         use futures::StreamExt;
-        async move { Ok(self.match_statements(pattern).count().await as _) }
+        async move { Ok(self.r#match(pattern).count().await as _) }
     }
 
-    fn match_statements(
+    fn r#match(
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
@@ -34,9 +34,9 @@ pub trait WriteTransaction {
 
     async fn commit(self) -> Result<(), Self::Error>;
 
-    // TODO: delete_statements
+    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
-    async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
+    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 
-    async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
+    // TODO: delete(&mut self, pattern)
 }

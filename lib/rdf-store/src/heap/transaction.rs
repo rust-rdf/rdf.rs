@@ -53,7 +53,7 @@ impl WriteTransaction for Arc<HeapTransaction> {
         Ok(())
     }
 
-    async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
@@ -63,7 +63,7 @@ impl WriteTransaction for Arc<HeapTransaction> {
         Ok(())
     }
 
-    async fn remove_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
@@ -80,7 +80,7 @@ impl ReadTransaction for Arc<HeapTransaction> {
     type Term = HeapTerm;
     type Statement = HeapQuad;
 
-    fn match_statements(
+    fn r#match(
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
