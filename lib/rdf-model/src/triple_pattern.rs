@@ -12,6 +12,8 @@ pub struct TriplePattern<T: Term> {
 }
 
 impl<T: Term> TriplePattern<T> {
+    pub const EMPTY: TriplePattern<T> = Self::empty();
+
     pub const fn empty() -> Self {
         Self::new(None, None, None)
     }
@@ -30,6 +32,10 @@ impl<T: Term> TriplePattern<T> {
 
     pub const fn with_object(o: T) -> Self {
         Self::new(None, None, Some(o))
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.s.is_none() && self.p.is_none() && self.o.is_none()
     }
 }
 

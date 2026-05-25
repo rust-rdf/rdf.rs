@@ -11,6 +11,14 @@ use alloc::borrow::Cow;
 pub trait Term {
     fn kind(&self) -> TermKind;
 
+    fn is_variable(&self) -> bool {
+        false // TODO
+    }
+
+    fn is_constant(&self) -> bool {
+        !self.is_variable()
+    }
+
     fn is_iri(&self) -> bool {
         self.kind() == TermKind::Iri
     }
@@ -23,6 +31,7 @@ pub trait Term {
         self.kind() == TermKind::Literal
     }
 
+    #[cfg(feature = "alloc")]
     fn value_str(&self) -> Cow<'_, str>;
 }
 

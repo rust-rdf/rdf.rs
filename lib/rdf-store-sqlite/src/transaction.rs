@@ -9,7 +9,8 @@ use async_stream::stream;
 use async_trait::async_trait;
 use futures::{Stream, stream::select};
 use rdf_model::{
-    Datatype, HeapQuad, HeapTerm, HeapTriple, Statement, StatementPattern, Term, TermKind,
+    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, Statement, StatementPattern, Term,
+    TermKind,
 };
 use rdf_store::Transaction;
 

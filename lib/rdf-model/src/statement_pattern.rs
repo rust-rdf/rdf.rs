@@ -39,18 +39,22 @@ pub trait StatementPattern {
         true
     }
 
+    /// Whether the pattern has a constant subject.
     fn has_subject(&self) -> bool {
         self.subject().is_some()
     }
 
+    /// Whether the pattern has a constant predicate.
     fn has_predicate(&self) -> bool {
         self.predicate().is_some()
     }
 
+    /// Whether the pattern has a constant object.
     fn has_object(&self) -> bool {
         self.object().is_some()
     }
 
+    /// Whether the pattern has a constant context (graph).
     fn has_context(&self) -> bool {
         self.context().is_some()
     }

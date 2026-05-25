@@ -13,6 +13,8 @@ pub struct QuadPattern<T: Term> {
 }
 
 impl<T: Term> QuadPattern<T> {
+    pub const EMPTY: QuadPattern<T> = Self::empty();
+
     pub const fn empty() -> Self {
         Self::new(None, None, None, None)
     }
@@ -35,6 +37,10 @@ impl<T: Term> QuadPattern<T> {
 
     pub const fn with_context(g: T) -> Self {
         Self::new(None, None, None, Some(g))
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.s.is_none() && self.p.is_none() && self.o.is_none() && self.g.is_none()
     }
 }
 
