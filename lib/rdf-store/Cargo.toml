@@ -19,14 +19,14 @@ default = ["all", "std"]
 all = []
 alloc = ["rdf-model/alloc", "dep:parking_lot"]
 std = ["alloc", "rdf-model/std"]
-unstable = ["rdf-model/unstable"]
+unstable = []
 
 [dependencies]
-async-stream = "0.3"
-async-trait = "0.1"
-futures = "0.3"
-parking_lot = { version = "0.12", default-features = false, optional = true }
+async-stream.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+parking_lot = { workspace = true, optional = true }
 rdf-model.workspace = true
 
 [dev-dependencies]
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio.workspace = true

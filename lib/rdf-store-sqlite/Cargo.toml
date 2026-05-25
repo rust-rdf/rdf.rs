@@ -17,14 +17,18 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-std = ["rdf-model/std", "rdf-store/std"]
-unstable = ["rdf-model/unstable", "rdf-store/unstable"]
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std", "rdf-store/std"]
+unstable = []
 
 [dependencies]
-async-stream = "0.3"
-async-trait = "0.1"
-futures = "0.3"
+async-stream.workspace = true
+async-trait.workspace = true
+futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
 turso = { version = "0.6", default-features = false }
 xsd.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

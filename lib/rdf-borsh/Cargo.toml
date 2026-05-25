@@ -17,24 +17,31 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
+alloc = [
+    "rdf-model/alloc",
+    "rdf-reader/alloc",
+    "rdf-writer/alloc",
+]
 std = [
+    "alloc",
     "borsh/std",
     "rdf-model/std",
     "rdf-reader/std",
     "rdf-writer/std",
     "winnow/std",
 ]
-unstable = ["rdf-model/unstable", "rdf-reader/unstable", "rdf-writer/unstable"]
+unstable = []
 
 [dependencies]
-borsh = { workspace = true }
+borsh.workspace = true
 lz4_flex = { version = "0.11", default-features = true }
-num-traits = { version = "0.2", default-features = false }
-num-integer = { version = "0.1", default-features = false }
+num-traits.workspace = true
+num-integer.workspace = true
 rdf-model = { workspace = true, features = ["borsh"] }
 rdf-reader.workspace = true
 rdf-writer.workspace = true
 winnow = { version = "0.7", default-features = false, features = ["simd"] }
 
 [dev-dependencies]
-tempfile = { version = "3.15", default-features = false }
+tempfile.workspace = true
+tokio.workspace = true

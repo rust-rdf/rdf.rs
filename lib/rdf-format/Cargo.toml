@@ -17,18 +17,26 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["rdf-star", "serde"]
-oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "dogma/std", "rdf-model/std", "serde?/std"]
+unstable = []
+
+# Features:
 rdf-star = ["oxrdfio?/rdf-star", "rdf-model/rdf-star"]
+
+# Integrations:
+oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
 serde = ["rdf-model/serde", "dep:serde"]
 sophia = ["rdf-model/sophia", "dep:sophia"]
-std = ["dogma/std", "rdf-model/std", "serde?/std"]
-unstable = ["rdf-model/unstable"]
 
 [dependencies]
 dogma.workspace = true
-oxrdfio = { version = "0.1", default-features = false, optional = true }
 rdf-model.workspace = true
-serde = { version = "1.0", default-features = false, features = [
-    "derive",
-], optional = true }
-sophia = { version = "0.9", default-features = false, optional = true }
+
+# Integrations:
+oxrdfio = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+sophia = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio.workspace = true

@@ -17,25 +17,18 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["oxrdf", "serde"]
-oxrdf = [
-    "rdf-format/oxrdf",
-    "rdf-model/oxrdf",
-    "rdf-reader/oxrdf",
-    "rdf-writer/oxrdf",
-]
-serde = [
-    "rdf-format/serde",
-    "rdf-model/serde",
-    "rdf-reader/serde",
-    "rdf-writer/serde",
-]
-sophia = [
-    "rdf-format/sophia",
-    "rdf-model/sophia",
-    "rdf-reader/sophia",
-    "rdf-writer/sophia",
+alloc = [
+    "rdf-derive/alloc",
+    "rdf-format/alloc",
+    "rdf-model/alloc",
+    "rdf-query/alloc",
+    "rdf-reader/alloc",
+    "rdf-store/alloc",
+    "rdf-vocab/alloc",
+    "rdf-writer/alloc",
 ]
 std = [
+    "alloc",
     "rdf-derive/std",
     "rdf-format/std",
     "rdf-model/std",
@@ -56,6 +49,29 @@ unstable = [
     "rdf-writer/unstable",
 ]
 
+# Integrations:
+borsh = [
+    "rdf-model/borsh",
+]
+oxrdf = [
+    "rdf-format/oxrdf",
+    "rdf-model/oxrdf",
+    "rdf-reader/oxrdf",
+    "rdf-writer/oxrdf",
+]
+serde = [
+    "rdf-format/serde",
+    "rdf-model/serde",
+    "rdf-reader/serde",
+    "rdf-writer/serde",
+]
+sophia = [
+    "rdf-format/sophia",
+    "rdf-model/sophia",
+    "rdf-reader/sophia",
+    "rdf-writer/sophia",
+]
+
 [dependencies]
 rdf-derive.workspace = true
 rdf-format.workspace = true
@@ -65,3 +81,6 @@ rdf-reader.workspace = true
 rdf-store.workspace = true
 rdf-vocab.workspace = true
 rdf-writer.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["rdf-star", "serde"]
-alloc = []
-std = ["alloc", "dogma/std", "serde?/std"]
+alloc = ["xsd/alloc"]
+std = ["alloc", "dogma/std", "serde?/std", "xsd/std"]
 unstable = []
 
 # Features:
@@ -31,12 +31,15 @@ serde = ["dep:serde", "xsd/serde"]
 sophia = ["dep:sophia"]
 
 [dependencies]
-dogma = { workspace = true, features = [] }
+dogma.workspace = true
 stability = "0.2"
-xsd = { workspace = true, features = ["alloc", "datetime", "decimal"] }
+xsd = { workspace = true, features = ["datetime", "decimal"] }
 
 # Integrations:
 borsh = { workspace = true, optional = true }
-oxrdf = { version = "0.2", default-features = false, optional = true }
+oxrdf = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
-sophia = { version = "0.9", default-features = false, optional = true }
+sophia = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio.workspace = true

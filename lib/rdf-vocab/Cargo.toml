@@ -17,8 +17,12 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-std = ["rdf-model/std"]
-unstable = ["rdf-model/unstable"]
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std"]
+unstable = []
 
 [dependencies]
 rdf-model.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
