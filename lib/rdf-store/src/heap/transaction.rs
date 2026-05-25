@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapStore, Transaction};
+use crate::{HeapStore, ReadTransaction, Transaction, WriteTransaction};
 use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
 use async_stream::stream;
 use async_trait::async_trait;
@@ -26,8 +26,6 @@ impl HeapTransaction {
 #[async_trait]
 impl Transaction for Arc<HeapTransaction> {
     type Error = ();
-    type Term = HeapTerm;
-    type Statement = HeapQuad;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(())
@@ -45,6 +43,12 @@ impl Transaction for Arc<HeapTransaction> {
         }
         Ok(())
     }
+}
+
+#[async_trait]
+impl WriteTransaction for Arc<HeapTransaction> {
+    type Error = ();
+    type Statement = HeapQuad;
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         let quad = statement.to_quad();
@@ -59,6 +63,13 @@ impl Transaction for Arc<HeapTransaction> {
         mutations.insert(quad, false);
         Ok(())
     }
+}
+
+#[async_trait]
+impl ReadTransaction for Arc<HeapTransaction> {
+    type Error = ();
+    type Term = HeapTerm;
+    type Statement = HeapQuad;
 
     fn match_statements(
         &self,

@@ -12,7 +12,7 @@ use rdf_model::{
     Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, Statement, StatementPattern, Term,
     TermKind,
 };
-use rdf_store::Transaction;
+use rdf_store::{ReadTransaction, Transaction, WriteTransaction};
 
 type Language = String; // TODO
 
@@ -24,8 +24,6 @@ pub struct SqliteTransaction<'conn> {
 #[async_trait]
 impl<'conn> Transaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
-    type Term = HeapTerm;
-    type Statement = HeapQuad;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(self.tx.rollback().await?)
@@ -34,6 +32,12 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
     async fn commit(self) -> Result<(), Self::Error> {
         Ok(self.tx.commit().await?)
     }
+}
+
+#[async_trait]
+impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
+    type Error = SqliteError;
+    type Statement = HeapQuad;
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
         use HeapTerm::*;
@@ -73,8 +77,15 @@ impl<'conn> Transaction for SqliteTransaction<'conn> {
     }
 
     async fn remove_statement(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
-        Ok(()) // TODO
+        Ok(()) // FIXME
     }
+}
+
+#[async_trait]
+impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
+    type Error = SqliteError;
+    type Term = HeapTerm;
+    type Statement = HeapQuad;
 
     fn match_statements(
         &self,
