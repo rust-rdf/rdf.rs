@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{QuadPattern, Statement, Term, Triple, TriplePattern};
+use crate::{CowTerm, HeapTerm, QuadPattern, Statement, Term, Triple, TriplePattern};
 
 /// A quad statement.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -61,41 +61,66 @@ impl<T: Term + Clone> Quad<T> {
     }
 }
 
+impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
+    fn from(input: &'a Quad<CowTerm<'a>>) -> Self {
+        Self::new(
+            (&input.s).into(),
+            (&input.p).into(),
+            (&input.o).into(),
+            input.g.as_ref().map(|g| g.into()),
+        )
+    }
+}
+
+impl<'a> From<&'a Quad<HeapTerm>> for Quad<CowTerm<'a>> {
+    fn from(input: &'a Quad<HeapTerm>) -> Self {
+        Self::new(
+            (&input.s).into(),
+            (&input.p).into(),
+            (&input.o).into(),
+            input.g.as_ref().map(|g| g.into()),
+        )
+    }
+}
+
 impl<T: Term> From<(T, T, T)> for Quad<T> {
     fn from((s, p, o): (T, T, T)) -> Self {
-        Self { s, p, o, g: None }
+        Self::new(s, p, o, None)
     }
 }
 
 impl<T: Term + Clone> From<(&T, &T, &T)> for Quad<T> {
     fn from((s, p, o): (&T, &T, &T)) -> Self {
-        Self {
-            s: s.clone(),
-            p: p.clone(),
-            o: o.clone(),
-            g: None,
-        }
+        Self::new(s.clone(), p.clone(), o.clone(), None)
     }
 }
 
 impl<T: Term> From<(T, T, T, T)> for Quad<T> {
     fn from((s, p, o, g): (T, T, T, T)) -> Self {
-        Self {
-            s,
-            p,
-            o,
-            g: Some(g),
-        }
+        Self::new(s, p, o, Some(g))
+    }
+}
+
+impl<T: Term> From<(T, T, T, Option<T>)> for Quad<T> {
+    fn from((s, p, o, g): (T, T, T, Option<T>)) -> Self {
+        Self::new(s, p, o, g)
     }
 }
 
 impl<T: Term + Clone> From<(&T, &T, &T, &T)> for Quad<T> {
     fn from((s, p, o, g): (&T, &T, &T, &T)) -> Self {
-        Self {
-            s: s.clone(),
-            p: p.clone(),
-            o: o.clone(),
-            g: Some(g.clone()),
-        }
+        Self::new(s.clone(), p.clone(), o.clone(), Some(g.clone()))
+    }
+}
+
+impl<T: Term + Clone> From<(&T, &T, &T, &Option<T>)> for Quad<T> {
+    fn from((s, p, o, g): (&T, &T, &T, &Option<T>)) -> Self {
+        Self::new(s.clone(), p.clone(), o.clone(), g.clone())
+    }
+}
+
+impl<T: Term + Clone> From<(&T, &T, &T, Option<&T>)> for Quad<T> {
+    fn from((s, p, o, g): (&T, &T, &T, Option<&T>)) -> Self {
+        Self::new(s.clone(), p.clone(), o.clone(), g.cloned())
     }
 }

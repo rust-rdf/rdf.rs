@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::{BaseDirection, Datatype, Term, TermKind};
+use crate::{BaseDirection, Datatype, HeapTerm, Term, TermKind};
 use alloc::{
     borrow::{Cow, ToOwned},
     string::{String, ToString},
@@ -126,6 +126,21 @@ impl<'a> From<&'a dyn Term> for CowTerm<'a> {
             TermKind::Iri => Self::iri(Cow::from(term.value_str())),
             TermKind::BNode => Self::bnode(Cow::from(term.value_str())),
             TermKind::Literal => Self::string(Cow::from(term.value_str())), // TODO
+        }
+    }
+}
+
+impl<'a> From<&'a HeapTerm> for CowTerm<'a> {
+    fn from(input: &'a HeapTerm) -> Self {
+        match input {
+            HeapTerm::Iri(s) => CowTerm::Iri(s.into()),
+            HeapTerm::BNode(s) => CowTerm::BNode(s.into()),
+            HeapTerm::String(s) => CowTerm::String(s.into()),
+            HeapTerm::TaggedString(s, lang, dir) => {
+                CowTerm::TaggedString(s.into(), lang.clone(), dir.clone())
+            }
+            HeapTerm::TypedValue(v) => CowTerm::TypedValue(v.clone()),
+            HeapTerm::TypedLiteral(s, dt) => CowTerm::TypedLiteral(s.into(), dt.clone()),
         }
     }
 }

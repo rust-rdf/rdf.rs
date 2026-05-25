@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{Quad, QuadPattern, Statement, Term, TriplePattern};
+use crate::{CowTerm, HeapTerm, Quad, QuadPattern, Statement, Term, TriplePattern};
 
 /// A triple statement.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -56,18 +56,26 @@ impl<T: Term + Clone> Triple<T> {
     }
 }
 
+impl<'a> From<&'a Triple<CowTerm<'a>>> for Triple<HeapTerm> {
+    fn from(input: &'a Triple<CowTerm<'a>>) -> Self {
+        Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
+    }
+}
+
+impl<'a> From<&'a Triple<HeapTerm>> for Triple<CowTerm<'a>> {
+    fn from(input: &'a Triple<HeapTerm>) -> Self {
+        Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
+    }
+}
+
 impl<T: Term> From<(T, T, T)> for Triple<T> {
     fn from((s, p, o): (T, T, T)) -> Self {
-        Self { s, p, o }
+        Self::new(s, p, o)
     }
 }
 
 impl<T: Term + Clone> From<(&T, &T, &T)> for Triple<T> {
     fn from((s, p, o): (&T, &T, &T)) -> Self {
-        Self {
-            s: s.clone(),
-            p: p.clone(),
-            o: o.clone(),
-        }
+        Self::new(s.clone(), p.clone(), o.clone())
     }
 }

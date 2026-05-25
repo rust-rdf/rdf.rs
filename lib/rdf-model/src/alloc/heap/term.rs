@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use crate::{BaseDirection, Datatype, Term, TermKind};
+use crate::{BaseDirection, CowTerm, Datatype, Term, TermKind};
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
@@ -117,7 +117,28 @@ impl From<&dyn Term> for HeapTerm {
         match term.kind() {
             TermKind::Iri => Self::iri(term.value_str()),
             TermKind::BNode => Self::bnode(term.value_str()),
-            TermKind::Literal => Self::string(term.value_str()), // TODO
+            TermKind::Literal => Self::string(term.value_str()), // FIXME
+        }
+    }
+}
+
+impl From<CowTerm<'_>> for HeapTerm {
+    fn from(input: CowTerm<'_>) -> Self {
+        Self::from(&input)
+    }
+}
+
+impl From<&CowTerm<'_>> for HeapTerm {
+    fn from(input: &CowTerm<'_>) -> Self {
+        match input {
+            CowTerm::Iri(s) => HeapTerm::Iri(s.to_string()),
+            CowTerm::BNode(s) => HeapTerm::BNode(s.to_string()),
+            CowTerm::String(s) => HeapTerm::String(s.to_string()),
+            CowTerm::TaggedString(s, lang, dir) => {
+                HeapTerm::TaggedString(s.to_string(), lang.clone(), dir.clone())
+            }
+            CowTerm::TypedValue(v) => HeapTerm::TypedValue(v.clone()),
+            CowTerm::TypedLiteral(s, dt) => HeapTerm::TypedLiteral(s.to_string(), dt.clone()),
         }
     }
 }
