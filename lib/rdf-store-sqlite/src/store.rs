@@ -7,6 +7,7 @@ use rdf_store::{Store, Transaction};
 use turso::{Builder, Connection, Database, transaction::TransactionBehavior};
 
 #[allow(unused)]
+#[derive(Debug)]
 pub struct SqliteStore {
     pub version: u32,
     pub(crate) db: Database,

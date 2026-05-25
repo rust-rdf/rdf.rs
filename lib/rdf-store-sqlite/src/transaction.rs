@@ -9,8 +9,8 @@ use async_stream::stream;
 use async_trait::async_trait;
 use futures::{Stream, stream::select};
 use rdf_model::{
-    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, Statement, StatementPattern, Term,
-    TermKind,
+    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, QuadPattern, Statement,
+    StatementPattern, Term, TermKind,
 };
 use rdf_store::{ReadTransaction, Transaction, WriteTransaction};
 
@@ -89,9 +89,11 @@ impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
 
     fn match_statements(
         &self,
-        pattern: impl StatementPattern<Term = Self::Term>,
+        pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern.to_quad_pattern();
+        let pattern = pattern
+            .map(|s| s.to_quad_pattern())
+            .unwrap_or(QuadPattern::EMPTY);
         let stream1 = self.match_triples(pattern.clone());
         let stream2 = self.match_triples_str(pattern.clone());
         let stream3 = self.match_triples_num(pattern.clone());

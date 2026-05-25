@@ -3,7 +3,7 @@
 use alloc::boxed::Box;
 use async_trait::async_trait;
 use futures::Stream;
-use rdf_model::{AnyStatement, Statement, StatementPattern, Term};
+use rdf_model::{Statement, StatementPattern, Term};
 
 #[async_trait]
 pub trait Transaction {
@@ -14,19 +14,23 @@ pub trait Transaction {
     async fn commit(self) -> Result<(), Self::Error>;
 }
 
-#[async_trait]
+//#[async_trait]
 pub trait ReadTransaction {
     type Error;
-    type Term: Term + Clone;
     type Statement: Statement;
+    type Term: Term + Clone;
 
-    fn scan_statements(&self) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        self.match_statements(AnyStatement::<Self::Term>::new())
+    fn count_statements(
+        &self,
+        pattern: Option<impl StatementPattern<Term = Self::Term>>,
+    ) -> impl Future<Output = Result<u64, Self::Error>> {
+        use futures::StreamExt;
+        async move { Ok(self.match_statements(pattern).count().await as _) }
     }
 
     fn match_statements(
         &self,
-        pattern: impl StatementPattern<Term = Self::Term>,
+        pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
 }
 
@@ -34,6 +38,8 @@ pub trait ReadTransaction {
 pub trait WriteTransaction {
     type Error;
     type Statement: Statement;
+
+    // TODO: delete_statements
 
     async fn insert_statement(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
 

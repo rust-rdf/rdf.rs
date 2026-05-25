@@ -6,7 +6,7 @@ use async_stream::stream;
 use async_trait::async_trait;
 use futures::Stream;
 use parking_lot::RwLock;
-use rdf_model::{HeapQuad, HeapTerm, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapTerm, QuadPattern, Statement, StatementPattern};
 
 #[derive(Debug, Default)]
 pub struct HeapTransaction {
@@ -73,9 +73,11 @@ impl ReadTransaction for Arc<HeapTransaction> {
 
     fn match_statements(
         &self,
-        pattern: impl StatementPattern<Term = Self::Term>,
+        pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern.to_quad_pattern();
+        let pattern = pattern
+            .map(|s| s.to_quad_pattern())
+            .unwrap_or(QuadPattern::EMPTY);
         let mutations = self.mutations.read();
         let quads = self.store.quads.read();
         stream! {
