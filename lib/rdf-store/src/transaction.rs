@@ -3,7 +3,7 @@
 use alloc::boxed::Box;
 use async_trait::async_trait;
 use futures::Stream;
-use rdf_model::{HeapTerm, Statement, StatementPattern, Term};
+use rdf_model::{Statement, StatementPattern, Term};
 
 #[async_trait]
 pub trait Transaction {

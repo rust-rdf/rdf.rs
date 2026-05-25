@@ -3,7 +3,6 @@
 use super::Transaction;
 use alloc::boxed::Box;
 use async_trait::async_trait;
-use core::{future::Future, pin::Pin};
 
 #[async_trait]
 pub trait Store {

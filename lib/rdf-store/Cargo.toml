@@ -17,10 +17,15 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-std = ["rdf-model/std"]
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std"]
 unstable = ["rdf-model/unstable"]
 
 [dependencies]
+async-stream = "0.3"
 async-trait = "0.1"
 futures = "0.3"
 rdf-model.workspace = true
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

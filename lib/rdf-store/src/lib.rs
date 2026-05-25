@@ -6,12 +6,22 @@
 
 #![no_std]
 #![deny(unsafe_code)]
-#![allow(unused_imports)]
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
+
+#[cfg(feature = "alloc")]
+mod heap {
+    mod store;
+    pub use store::*;
+    mod transaction;
+    pub use transaction::*;
+}
+#[cfg(feature = "alloc")]
+pub use heap::*;
 
 mod store;
 pub use store::*;
