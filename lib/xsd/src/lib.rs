@@ -77,3 +77,7 @@ pub use r#type::*;
 
 mod value;
 pub use value::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

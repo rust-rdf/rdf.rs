@@ -184,6 +184,42 @@ impl From<Boolean> for PrimitiveValue {
     }
 }
 
+impl From<i8> for PrimitiveValue {
+    fn from(input: i8) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+impl From<i16> for PrimitiveValue {
+    fn from(input: i16) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+impl From<i32> for PrimitiveValue {
+    fn from(input: i32) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+impl From<i64> for PrimitiveValue {
+    fn from(input: i64) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+impl From<i128> for PrimitiveValue {
+    fn from(input: i128) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
+impl From<isize> for PrimitiveValue {
+    fn from(input: isize) -> Self {
+        Self::Decimal(input.into())
+    }
+}
+
 #[cfg(feature = "rust_decimal")]
 impl From<rust_decimal::Decimal> for PrimitiveValue {
     fn from(input: rust_decimal::Decimal) -> Self {

@@ -129,6 +129,42 @@ impl From<Boolean> for Value {
     }
 }
 
+impl From<i8> for Value {
+    fn from(input: i8) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<i16> for Value {
+    fn from(input: i16) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<i32> for Value {
+    fn from(input: i32) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<i64> for Value {
+    fn from(input: i64) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<i128> for Value {
+    fn from(input: i128) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+impl From<isize> for Value {
+    fn from(input: isize) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
 impl From<Decimal> for Value {
     fn from(input: Decimal) -> Self {
         Self::Decimal(input.into())
