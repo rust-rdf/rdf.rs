@@ -29,14 +29,16 @@
 cargo add rdf_rs --rename rdf
 ```
 
-### Installation in `Cargo.toml` (with all features enabled)
+### Installation in `Cargo.toml`
+
+Enable all default features:
 
 ```toml
 [dependencies]
 rdf = { package = "rdf_rs", version = "0.3" }
 ```
 
-### Installation in `Cargo.toml` (with only specific features enabled)
+Enable only specific features:
 
 ```toml
 [dependencies]

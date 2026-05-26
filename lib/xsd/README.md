@@ -27,11 +27,20 @@
 cargo add xsd
 ```
 
-### Installation in `Cargo.toml` (with all features enabled)
+### Installation in `Cargo.toml`
+
+Enable all default features:
 
 ```toml
 [dependencies]
 xsd = { version = "0.3" }
+```
+
+Enable only specific features:
+
+```toml
+[dependencies]
+xsd = { version = "0.3", default-features = false, features = ["alloc"] }
 ```
 
 ## 👉 Examples
