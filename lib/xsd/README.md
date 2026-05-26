@@ -30,10 +30,67 @@ cargo add xsd
 ### Importing the library
 
 ```rust
-use xsd::*;
+use xsd::{Type, Value};
+use xsd::primitives::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
+```
+
+### Parsing XSD literals
+
+```rust
+# fn main() -> Result<(), Box<dyn core::error::Error>> {
+let value = xsd::parse("Hello, world!", xsd::STRING)?;
+let value = xsd::parse("true", xsd::BOOLEAN)?;
+let value = xsd::parse("3.1415", xsd::DOUBLE)?;
+let value = xsd::parse("42", xsd::INT)?;
+let value = xsd::parse("2026-12-31", xsd::DATE)?;
+let value = xsd::parse("2026-12-31T12:34:56", xsd::DATE_TIME)?;
+# Ok(())
+# }
+```
+
+### Constructing XSD values
+
+```rust
+let value: xsd::Value = "Hello, world!".into();
+let value: xsd::Value = true.into();
+let value: xsd::Value = 3.1415.into();
+let value: xsd::Value = 42.into();
+```
+
+### Matching XSD values
+
+```rust
+use xsd::Value::*;
+
+let value = xsd::parse("3.1415", xsd::DOUBLE).unwrap();
+
+match value {
+    Decimal(value) => eprintln!("{:?}", value),
+    Primitive(value) => eprintln!("{:?}", value),
+}
+```
+
+### Matching XSD decimals
+
+```rust
+use xsd::DecimalValue::*;
+
+let value = xsd::parse("3.1415", xsd::DECIMAL).unwrap();
+
+match value.as_decimal() {
+    Decimal(_) => eprintln!("it's an xsd::decimal"),
+    Integer(_) => eprintln!("it's an xsd::integer"),
+    Long(_) => eprintln!("it's an xsd::long"),
+    Int(_) => eprintln!("it's an xsd::int"),
+    Short(_) => eprintln!("it's an xsd::short"),
+    Byte(_) => eprintln!("it's an xsd::byte"),
+    _ => unreachable!(),
+}
 ```
 
 ## 📚 Reference
+
+https://docs.rs/xsd
 
 ## 👨‍💻 Development
 

@@ -1,7 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
 //! ```rust
-//! # use xsd::*;
+//! use xsd::{Type, Value};
+//! use xsd::primitives::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
 //! ```
 
 #![no_std]

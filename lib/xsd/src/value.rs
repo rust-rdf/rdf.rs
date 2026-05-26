@@ -76,6 +76,28 @@ impl Value {
             Decimal(v) => Type::Decimal(v.r#type()),
         }
     }
+
+    pub fn as_decimal(&self) -> &DecimalValue {
+        self.to_decimal().expect("value must be a decimal")
+    }
+
+    pub fn as_primitive(&self) -> &PrimitiveValue {
+        self.to_primitive().expect("value must be a primitive")
+    }
+
+    pub fn to_decimal(&self) -> Option<&DecimalValue> {
+        match self {
+            Self::Decimal(val) => Some(&val),
+            _ => None,
+        }
+    }
+
+    pub fn to_primitive(&self) -> Option<&PrimitiveValue> {
+        match self {
+            Self::Primitive(val) => Some(&val),
+            _ => None,
+        }
+    }
 }
 
 impl From<DecimalValue> for Value {
