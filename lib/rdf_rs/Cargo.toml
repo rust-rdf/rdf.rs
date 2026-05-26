@@ -24,6 +24,7 @@ alloc = [
     "rdf-query/alloc",
     "rdf-reader/alloc",
     "rdf-store/alloc",
+    "rdf-stream/alloc",
     "rdf-vocab/alloc",
     "rdf-writer/alloc",
 ]
@@ -35,6 +36,7 @@ std = [
     "rdf-query/std",
     "rdf-reader/std",
     "rdf-store/std",
+    "rdf-stream/std",
     "rdf-vocab/std",
     "rdf-writer/std",
 ]
@@ -45,6 +47,7 @@ unstable = [
     "rdf-query/unstable",
     "rdf-reader/unstable",
     "rdf-store/unstable",
+    "rdf-stream/unstable",
     "rdf-vocab/unstable",
     "rdf-writer/unstable",
 ]
@@ -79,6 +82,7 @@ rdf-model.workspace = true
 rdf-query.workspace = true
 rdf-reader.workspace = true
 rdf-store.workspace = true
+rdf-stream.workspace = true
 rdf-vocab.workspace = true
 rdf-writer.workspace = true
 
