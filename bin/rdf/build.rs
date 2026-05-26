@@ -3,7 +3,7 @@
 use std::collections::BTreeSet;
 
 fn main() -> std::io::Result<()> {
-    // See: https://github.com/baoyachi/shadow-rs
+    // See: <https://github.com/baoyachi/shadow-rs>
     // Omit all nonpublic and/or sensitive information:
     let mut omit = BTreeSet::new();
     omit.insert(shadow_rs::CARGO_TREE);

@@ -2,7 +2,7 @@
 
 /// A base direction for directional language-tagged strings.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-base-direction
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-base-direction>
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",

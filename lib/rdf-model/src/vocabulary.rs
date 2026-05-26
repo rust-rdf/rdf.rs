@@ -2,7 +2,7 @@
 
 /// An RDF vocabulary.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-vocabulary
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-vocabulary>
 pub trait Vocabulary {}
 
 impl core::fmt::Debug for dyn Vocabulary {

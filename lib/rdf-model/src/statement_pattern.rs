@@ -4,7 +4,7 @@ use crate::{HeapTerm, QuadPattern, Term, TriplePattern};
 
 /// An RDF statement pattern.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-statement
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-statement>
 pub trait StatementPattern {
     type Term: Term + Clone;
 

@@ -9,7 +9,7 @@ const RDF_DIR_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#di
 
 /// A datatype.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#section-Datatypes
+/// See: <https://www.w3.org/TR/rdf12-concepts/#section-Datatypes>
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
@@ -17,16 +17,16 @@ const RDF_DIR_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#di
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Datatype {
-    /// See: https://www.w3.org/TR/rdf12-concepts/#section-Graph-Literal
+    /// See: <https://www.w3.org/TR/rdf12-concepts/#section-Graph-Literal>
     RdfLangString,
 
-    /// See: https://www.w3.org/TR/rdf12-concepts/#section-Graph-Literal
+    /// See: <https://www.w3.org/TR/rdf12-concepts/#section-Graph-Literal>
     RdfDirLangString,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/
+    /// See: <https://www.w3.org/TR/xmlschema-2/>
     Xsd(xsd::Type),
 
-    /// See: https://www.w3.org/TR/rdf12-concepts/#section-Datatypes
+    /// See: <https://www.w3.org/TR/rdf12-concepts/#section-Datatypes>
     Other(Cow<'static, str>),
 }
 

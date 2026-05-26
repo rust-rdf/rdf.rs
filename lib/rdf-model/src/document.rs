@@ -4,5 +4,5 @@ use crate::traits::Enumerable;
 
 /// An RDF document.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-document
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-document>
 pub trait Document: Enumerable {}

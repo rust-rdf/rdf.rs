@@ -2,7 +2,7 @@
 
 /// An RDF literal.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-literal
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-literal>
 #[instability::unstable]
 pub trait Literal {}
 

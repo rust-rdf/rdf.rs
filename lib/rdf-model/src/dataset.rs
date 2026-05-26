@@ -4,5 +4,5 @@ use crate::{Statement, traits::Enumerable};
 
 /// An RDF dataset.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset>
 pub trait Dataset: Enumerable {}

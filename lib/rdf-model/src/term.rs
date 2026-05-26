@@ -7,7 +7,7 @@ use alloc::borrow::Cow;
 
 /// An RDF term.
 ///
-/// See: https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-term
+/// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-term>
 pub trait Term {
     fn kind(&self) -> TermKind;
 
