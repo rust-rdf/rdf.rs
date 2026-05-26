@@ -1,7 +1,9 @@
 // This is free and unencumbered software released into the public domain.
 
-//! ```rust,compile_fail
-//! use rdf::{format, model, query, reader, store, stream, vocab, writer};
+//! RDF.rs is a Rust framework for working with RDF knowledge graphs.
+//!
+//! ```rust
+//! use rdf_rs::{format, model, query, reader, store, stream, vocab, writer};
 //! ```
 
 pub use rdf_derive as derive;
@@ -10,6 +12,7 @@ pub use rdf_model as model;
 pub use rdf_query as query;
 pub use rdf_reader as reader;
 pub use rdf_store as store;
+pub use rdf_stream as stream;
 pub use rdf_vocab as vocab;
 pub use rdf_writer as writer;
 
