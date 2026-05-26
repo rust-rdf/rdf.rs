@@ -1,7 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 //! ```rust,compile_fail
-//! # use rdf::*;
+//! use rdf::{format, model, query, reader, store, stream, vocab, writer};
 //! ```
 
 pub use rdf_derive as derive;

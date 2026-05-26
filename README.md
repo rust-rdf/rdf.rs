@@ -48,7 +48,7 @@ rdf = { package = "rdf_rs", version = "0.3", default-features = false, features 
 ### Importing the library
 
 ```rust,compile_fail
-use rdf::*;
+use rdf::{format, model, query, reader, store, stream, vocab, writer};
 ```
 
 ## 📚 Reference
