@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::{ParseDoubleError, ParseError};
 use core::str::FromStr;
 use decorum::Total;
 
@@ -66,10 +67,13 @@ impl From<isize> for Double {
 }
 
 impl FromStr for Double {
-    type Err = ();
+    type Err = ParseDoubleError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        input.parse::<Total<f64>>().map(Self).map_err(|_| ())
+        input
+            .parse::<Total<f64>>()
+            .map(Self)
+            .map_err(|_| ParseError)
     }
 }
 

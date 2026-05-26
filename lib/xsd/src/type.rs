@@ -73,7 +73,7 @@ impl Type {
 }
 
 impl FromStr for Type {
-    type Err = ();
+    type Err = (); // TODO
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         match TYPES.get(input) {

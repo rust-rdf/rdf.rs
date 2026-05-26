@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::{ParseBooleanError, ParseError};
 use core::str::FromStr;
 
 /// See: https://www.w3.org/TR/xmlschema-2/#boolean
@@ -58,13 +59,13 @@ impl From<Boolean> for bool {
 }
 
 impl FromStr for Boolean {
-    type Err = ();
+    type Err = ParseBooleanError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         match input {
             "0" | "false" => Ok(Self(false)),
             "1" | "true" => Ok(Self(true)),
-            _ => Err(()),
+            _ => Err(ParseError),
         }
     }
 }

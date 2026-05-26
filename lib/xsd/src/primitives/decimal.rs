@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::{ParseDecimalError, ParseError};
 use core::str::FromStr;
 
 #[cfg(feature = "rust_decimal")]
@@ -111,14 +112,11 @@ impl From<&rust_decimal::Decimal> for Decimal {
 }
 
 impl FromStr for Decimal {
-    type Err = ();
+    type Err = ParseDecimalError;
 
     #[cfg(feature = "rust_decimal")]
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        input
-            .parse::<rust_decimal::Decimal>()
-            .map(Self)
-            .map_err(|_| ())
+        Ok(Self(input.parse::<rust_decimal::Decimal>()?))
     }
 
     #[cfg(not(feature = "rust_decimal"))]
@@ -126,16 +124,16 @@ impl FromStr for Decimal {
         input
             .parse::<crate::primitives::Double>()
             .map(Self)
-            .map_err(|_| ())
+            .map_err(|_| ParseDecimalError)
     }
 }
 
 impl TryFrom<f32> for Decimal {
-    type Error = ();
+    type Error = ParseDecimalError;
 
     #[cfg(feature = "rust_decimal")]
     fn try_from(input: f32) -> Result<Self, Self::Error> {
-        Ok(Self(rust_decimal::Decimal::from_f32(input).ok_or(())?))
+        Ok(Self(rust_decimal::Decimal::try_from(input)?))
     }
 
     #[cfg(not(feature = "rust_decimal"))]
@@ -145,11 +143,11 @@ impl TryFrom<f32> for Decimal {
 }
 
 impl TryFrom<f64> for Decimal {
-    type Error = ();
+    type Error = ParseDecimalError;
 
     #[cfg(feature = "rust_decimal")]
     fn try_from(input: f64) -> Result<Self, Self::Error> {
-        Ok(Self(rust_decimal::Decimal::from_f64(input).ok_or(())?))
+        Ok(Self(rust_decimal::Decimal::try_from(input)?))
     }
 
     #[cfg(not(feature = "rust_decimal"))]
