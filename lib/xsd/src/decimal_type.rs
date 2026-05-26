@@ -6,9 +6,9 @@ use strum_macros::Display;
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, format, vec, vec::Vec};
 
-/// The XML Schema `xsd:decimal` datatypes.
+/// The `xsd:decimal` datatype hierarchy.
 ///
-/// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
+/// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
@@ -16,27 +16,27 @@ use ::alloc::{borrow::Cow, format, vec, vec::Vec};
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DecimalType {
-    /// See: https://www.w3.org/TR/xmlschema-2/#decimal
+    /// See: <https://www.w3.org/TR/xmlschema-2/#decimal>
     #[strum(to_string = "decimal")]
     Decimal,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#integer
+    /// See: <https://www.w3.org/TR/xmlschema-2/#integer>
     #[strum(to_string = "integer")]
     Integer,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#long
+    /// See: <https://www.w3.org/TR/xmlschema-2/#long>
     #[strum(to_string = "long")]
     Long,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#int
+    /// See: <https://www.w3.org/TR/xmlschema-2/#int>
     #[strum(to_string = "int")]
     Int,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#short
+    /// See: <https://www.w3.org/TR/xmlschema-2/#short>
     #[strum(to_string = "short")]
     Short,
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#byte
+    /// See: <https://www.w3.org/TR/xmlschema-2/#byte>
     #[strum(to_string = "byte")]
     Byte,
 }
@@ -97,7 +97,9 @@ impl DecimalType {
     }
 }
 
-pub static DECIMAL_TYPES: phf::Map<&'static str, DecimalType> = phf_map! {
+/// A PHF map from XSD decimal typenames to datatypes.
+#[allow(unused)]
+static DECIMAL_TYPES: phf::Map<&'static str, DecimalType> = phf_map! {
     "decimal" => DecimalType::Decimal,
     "integer" => DecimalType::Integer,
     "long" => DecimalType::Long,

@@ -8,9 +8,12 @@ use strum_macros::Display;
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 
-/// An XML Schema datatype.
+/// An XSD datatype.
 ///
-/// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
+/// Currently supports the primitive datatypes and the derived `xsd:decimal`
+/// datatypes.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
@@ -133,7 +136,8 @@ impl From<PrimitiveValue> for Type {
     }
 }
 
-pub static TYPES: phf::Map<&'static str, &Type> = phf_map! {
+/// A PHF map from XSD typenames to datatypes.
+pub static TYPES: phf::Map<&'static str, &'static Type> = phf_map! {
     "QName" => &QNAME,
     "anyURI" => &ANY_URI,
     "base64Binary" => &BASE64_BINARY,
@@ -159,26 +163,71 @@ pub static TYPES: phf::Map<&'static str, &Type> = phf_map! {
     "time" => &TIME,
 };
 
+/// The `xsd:QName` primitive datatype.
 pub const QNAME: Type = Type::Primitive(PrimitiveType::QName);
+
+/// The `xsd:anyURI` primitive datatype.
 pub const ANY_URI: Type = Type::Primitive(PrimitiveType::AnyUri);
+
+/// The `xsd:base64Binary` primitive datatype.
 pub const BASE64_BINARY: Type = Type::Primitive(PrimitiveType::Base64Binary);
+
+/// The `xsd:boolean` primitive datatype.
 pub const BOOLEAN: Type = Type::Primitive(PrimitiveType::Boolean);
+
+/// The `xsd:byte` derived datatype.
 pub const BYTE: Type = Type::Decimal(DecimalType::Byte);
+
+/// The `xsd:date` primitive datatype.
 pub const DATE: Type = Type::Primitive(PrimitiveType::Date);
+
+/// The `xsd:dateTime` primitive datatype.
 pub const DATE_TIME: Type = Type::Primitive(PrimitiveType::DateTime);
+
+/// The `xsd:decimal` primitive datatype.
 pub const DECIMAL: Type = Type::Decimal(DecimalType::Decimal);
+
+/// The `xsd:double` primitive datatype.
 pub const DOUBLE: Type = Type::Primitive(PrimitiveType::Double);
+
+/// The `xsd:duration` primitive datatype.
 pub const DURATION: Type = Type::Primitive(PrimitiveType::Duration);
+
+/// The `xsd:float` primitive datatype.
 pub const FLOAT: Type = Type::Primitive(PrimitiveType::Float);
+
+/// The `xsd:gDay` primitive datatype.
 pub const G_DAY: Type = Type::Primitive(PrimitiveType::GDay);
+
+/// The `xsd:gMonth` primitive datatype.
 pub const G_MONTH: Type = Type::Primitive(PrimitiveType::GMonth);
+
+/// The `xsd:gMonthDay` primitive datatype.
 pub const G_MONTH_DAY: Type = Type::Primitive(PrimitiveType::GMonthDay);
+
+/// The `xsd:gYear` primitive datatype.
 pub const G_YEAR: Type = Type::Primitive(PrimitiveType::GYear);
+
+/// The `xsd:gYearMonth` primitive datatype.
 pub const G_YEAR_MONTH: Type = Type::Primitive(PrimitiveType::GYearMonth);
+
+/// The `xsd:hexBinary` primitive datatype.
 pub const HEX_BINARY: Type = Type::Primitive(PrimitiveType::HexBinary);
+
+/// The `xsd:int` derived datatype.
 pub const INT: Type = Type::Decimal(DecimalType::Int);
+
+/// The `xsd:integer` derived datatype.
 pub const INTEGER: Type = Type::Decimal(DecimalType::Integer);
+
+/// The `xsd:long` derived datatype.
 pub const LONG: Type = Type::Decimal(DecimalType::Long);
+
+/// The `xsd:short` derived datatype.
 pub const SHORT: Type = Type::Decimal(DecimalType::Short);
+
+/// The `xsd:string` primitive datatype.
 pub const STRING: Type = Type::Primitive(PrimitiveType::String);
+
+/// The `xsd:time` primitive datatype.
 pub const TIME: Type = Type::Primitive(PrimitiveType::Time);

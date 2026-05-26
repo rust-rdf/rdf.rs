@@ -4,6 +4,7 @@ use crate::{ParseError, ParseFloatError};
 use core::str::FromStr;
 use decorum::Total;
 
+/// Rust type for representing values of the `xsd:float` datatype.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Float(Total<f32>);
@@ -70,10 +71,7 @@ impl FromStr for Float {
     type Err = ParseFloatError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        input
-            .parse::<Total<f32>>()
-            .map(Self)
-            .map_err(|_| ParseError)
+        input.parse::<Total<f32>>().map(Self)
     }
 }
 

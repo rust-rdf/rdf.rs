@@ -15,9 +15,9 @@ use strum_macros::Display;
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 
-/// Values based on built-in primitive datatypes.
+/// Value representation for XSD primitive datatypes.
 ///
-/// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
+/// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "alloc", derive(Display))]
 // #[cfg_attr(
@@ -26,7 +26,7 @@ use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 // )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PrimitiveValue {
-    /// See: https://www.w3.org/TR/xmlschema-2/#string
+    /// See: <https://www.w3.org/TR/xmlschema-2/#string>
     #[cfg(feature = "alloc")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(String),
@@ -34,78 +34,78 @@ pub enum PrimitiveValue {
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(&'static str),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#boolean
+    /// See: <https://www.w3.org/TR/xmlschema-2/#boolean>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Boolean(Boolean),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#decimal
+    /// See: <https://www.w3.org/TR/xmlschema-2/#decimal>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Decimal(Decimal),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#float
+    /// See: <https://www.w3.org/TR/xmlschema-2/#float>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Float(Float),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#double
+    /// See: <https://www.w3.org/TR/xmlschema-2/#double>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Double(Double),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#duration
+    /// See: <https://www.w3.org/TR/xmlschema-2/#duration>
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Duration(Duration),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#dateTime
+    /// See: <https://www.w3.org/TR/xmlschema-2/#dateTime>
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     DateTime(DateTime),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#time
+    /// See: <https://www.w3.org/TR/xmlschema-2/#time>
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Time(Time),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#date
+    /// See: <https://www.w3.org/TR/xmlschema-2/#date>
     #[cfg(feature = "jiff")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Date(Date),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#gYearMonth
+    /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
     //#[cfg_attr(feature = "alloc", strum(to_string = "{0.0}-{0.1}"))]
     GYearMonth(GYearMonth),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#gYear
+    /// See: <https://www.w3.org/TR/xmlschema-2/#gYear>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GYear(GYear),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#gMonthDay
+    /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
     //#[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
     GMonthDay(GMonthDay),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#gDay
+    /// See: <https://www.w3.org/TR/xmlschema-2/#gDay>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GDay(GDay),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#gMonth
+    /// See: <https://www.w3.org/TR/xmlschema-2/#gMonth>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GMonth(GMonth),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#hexBinary
+    /// See: <https://www.w3.org/TR/xmlschema-2/#hexBinary>
     #[cfg(feature = "alloc")]
     #[cfg_attr(feature = "alloc", strum(to_string = "HexBinary"))]
     HexBinary(Vec<u8>),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#base64Binary
+    /// See: <https://www.w3.org/TR/xmlschema-2/#base64Binary>
     #[cfg(feature = "alloc")]
     #[cfg_attr(feature = "alloc", strum(to_string = "Base64Binary"))]
     Base64Binary(Vec<u8>),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#anyURI
+    /// See: <https://www.w3.org/TR/xmlschema-2/#anyURI>
     #[cfg(feature = "alloc")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     AnyUri(String),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#QName
+    /// See: <https://www.w3.org/TR/xmlschema-2/#QName>
     #[cfg(feature = "alloc")]
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}:{1}"))]
     QName(String, String),

@@ -9,9 +9,9 @@ use strum_macros::Display;
 #[cfg(feature = "alloc")]
 use ::alloc::format;
 
-/// The XML Schema `xsd:decimal` datatypes.
+/// Value representation for `xsd:decimal` datatypes.
 ///
-/// See: https://www.w3.org/TR/xmlschema-2/#built-in-datatypes
+/// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
@@ -19,27 +19,27 @@ use ::alloc::format;
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DecimalValue {
-    /// See: https://www.w3.org/TR/xmlschema-2/#decimal
+    /// See: <https://www.w3.org/TR/xmlschema-2/#decimal>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Decimal(Decimal),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#integer
+    /// See: <https://www.w3.org/TR/xmlschema-2/#integer>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Integer(Integer),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#long
+    /// See: <https://www.w3.org/TR/xmlschema-2/#long>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Long(Long),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#int
+    /// See: <https://www.w3.org/TR/xmlschema-2/#int>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Int(Int),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#short
+    /// See: <https://www.w3.org/TR/xmlschema-2/#short>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Short(Short),
 
-    /// See: https://www.w3.org/TR/xmlschema-2/#byte
+    /// See: <https://www.w3.org/TR/xmlschema-2/#byte>
     #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Byte(Byte),
 }

@@ -11,8 +11,10 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-pub const BASE_URI: &str = "http://www.w3.org/2001/XMLSchema#";
+/// The XSD namespace base URI (`http://www.w3.org/2001/XMLSchema#`).
+pub const BASE_URI: &'static str = "http://www.w3.org/2001/XMLSchema#";
 
+/// Rust types for representing values of XSD primitive datatypes.
 #[allow(unused_imports)]
 pub mod primitives {
     mod boolean;
@@ -56,6 +58,11 @@ pub mod primitives {
 
     mod time;
     pub use time::*;
+}
+
+/// Rust types for representing values of XSD derived datatypes.
+pub mod derived {
+    // TODO
 }
 
 mod decimal_type;

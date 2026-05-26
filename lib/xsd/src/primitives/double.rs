@@ -4,6 +4,7 @@ use crate::{ParseDoubleError, ParseError};
 use core::str::FromStr;
 use decorum::Total;
 
+/// Rust type for representing values of the `xsd:double` datatype.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Double(Total<f64>);
@@ -70,10 +71,7 @@ impl FromStr for Double {
     type Err = ParseDoubleError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        input
-            .parse::<Total<f64>>()
-            .map(Self)
-            .map_err(|_| ParseError)
+        input.parse::<Total<f64>>().map(Self)
     }
 }
 

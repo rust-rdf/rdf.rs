@@ -2,4 +2,5 @@
 
 use super::{GDay, GMonth};
 
+/// Rust type for representing values of the `xsd:gMonthDay` datatype.
 pub type GMonthDay = (GMonth, GDay);

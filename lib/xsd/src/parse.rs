@@ -13,6 +13,7 @@ use crate::{
     primitives::{Date, DateTime, Duration, Time},
 };
 
+/// Parses an input string containing an XSD literal.
 pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value, ParseError> {
     use crate::{DecimalType as D, PrimitiveType as P, Type::*};
     match datatype.into() {
@@ -40,10 +41,12 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
     }
 }
 
+/// Parses an input string containing an `xsd:decimal` literal.
 pub fn parse_decimal(input: impl AsRef<str>) -> Result<Value, ParseDecimalError> {
     input.as_ref().parse::<Decimal>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:integer` literal.
 pub fn parse_integer(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -52,6 +55,7 @@ pub fn parse_integer(input: impl AsRef<str>) -> Result<Value, ParseIntegerError>
         .map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:long` literal.
 pub fn parse_long(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -60,6 +64,7 @@ pub fn parse_long(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
         .map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:int` literal.
 pub fn parse_int(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -68,6 +73,7 @@ pub fn parse_int(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
         .map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:short` literal.
 pub fn parse_short(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -76,6 +82,7 @@ pub fn parse_short(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
         .map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:byte` literal.
 pub fn parse_byte(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -84,6 +91,7 @@ pub fn parse_byte(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
         .map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:string` literal.
 #[cfg(feature = "alloc")]
 pub fn parse_string(input: impl AsRef<str>) -> Result<Value, Infallible> {
     use crate::primitives::String;
@@ -91,37 +99,45 @@ pub fn parse_string(input: impl AsRef<str>) -> Result<Value, Infallible> {
 }
 
 #[cfg(not(feature = "alloc"))]
+/// Parses an input string containing an `xsd:string` literal.
 pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, Infallible> {
     unimplemented!() // TODO
 }
 
+/// Parses an input string containing an `xsd:boolean` literal.
 pub fn parse_boolean(input: impl AsRef<str>) -> Result<Value, ParseBooleanError> {
     input.as_ref().parse::<Boolean>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:float` literal.
 pub fn parse_float(input: impl AsRef<str>) -> Result<Value, ParseFloatError> {
     input.as_ref().parse::<Float>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:double` literal.
 pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
     input.as_ref().parse::<Double>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:duration` literal.
 #[cfg(feature = "jiff")]
 pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationError> {
     input.as_ref().parse::<Duration>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:dateTime` literal.
 #[cfg(feature = "jiff")]
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     input.as_ref().parse::<DateTime>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:time` literal.
 #[cfg(feature = "jiff")]
 pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     input.as_ref().parse::<Time>().map(Value::from)
 }
 
+/// Parses an input string containing an `xsd:date` literal.
 #[cfg(feature = "jiff")]
 pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     input.as_ref().parse::<Date>().map(Value::from)

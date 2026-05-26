@@ -87,12 +87,12 @@ use xsd::DecimalValue::*;
 let value = xsd::parse("3.1415", xsd::DECIMAL).unwrap();
 
 match value.as_decimal() {
-    Decimal(_) => eprintln!("it's an xsd::decimal"),
-    Integer(_) => eprintln!("it's an xsd::integer"),
-    Long(_) => eprintln!("it's an xsd::long"),
-    Int(_) => eprintln!("it's an xsd::int"),
-    Short(_) => eprintln!("it's an xsd::short"),
-    Byte(_) => eprintln!("it's an xsd::byte"),
+    Decimal(_) => eprintln!("it's an xsd:decimal"),
+    Integer(_) => eprintln!("it's an xsd:integer"),
+    Long(_) => eprintln!("it's an xsd:long"),
+    Int(_) => eprintln!("it's an xsd:int"),
+    Short(_) => eprintln!("it's an xsd:short"),
+    Byte(_) => eprintln!("it's an xsd:byte"),
     _ => unreachable!(),
 }
 ```

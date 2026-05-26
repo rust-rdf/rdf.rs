@@ -3,7 +3,9 @@
 use crate::{ParseBooleanError, ParseError};
 use core::str::FromStr;
 
-/// See: https://www.w3.org/TR/xmlschema-2/#boolean
+/// Rust type for representing values of the `xsd:boolean` datatype.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#boolean>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(

@@ -12,9 +12,12 @@ use crate::primitives::{Date, DateTime, Duration, Time};
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, string::String};
 
-/// An XML Schema value.
+/// An XSD value.
 ///
-/// See: https://www.w3.org/TR/xmlschema-2/#built-in-dataValues
+/// Currently supports the primitive datatypes and the derived `xsd:decimal`
+/// datatypes.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#built-in-dataValues>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // #[cfg_attr(
 //     feature = "borsh",
