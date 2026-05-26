@@ -2,7 +2,7 @@
 
 use crate::{
     DecimalType, ParseDecimalError,
-    primitives::{Byte, Decimal, Int, Integer, Long, Short},
+    primitive::{Byte, Decimal, Int, Integer, Long, Short},
 };
 use strum_macros::Display;
 

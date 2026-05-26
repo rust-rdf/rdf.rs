@@ -2,7 +2,7 @@
 
 //! ```rust
 //! use xsd::{Type, Value};
-//! use xsd::primitives::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
+//! use xsd::primitive::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
 //! ```
 
 #![no_std]
@@ -16,7 +16,7 @@ pub const BASE_URI: &'static str = "http://www.w3.org/2001/XMLSchema#";
 
 /// Rust types for representing values of XSD primitive datatypes.
 #[allow(unused_imports)]
-pub mod primitives {
+pub mod primitive {
     mod boolean;
     pub use boolean::*;
 

@@ -1,13 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::primitives::{Boolean, GDay, GMonth, GMonthDay, GYear, GYearMonth};
+use crate::primitive::{Boolean, GDay, GMonth, GMonthDay, GYear, GYearMonth};
 use crate::{
     PrimitiveType,
-    primitives::{Decimal, Double, Float},
+    primitive::{Decimal, Double, Float},
 };
 
 #[cfg(feature = "jiff")]
-use crate::primitives::{Date, DateTime, Duration, Time};
+use crate::primitive::{Date, DateTime, Duration, Time};
 
 #[cfg(feature = "alloc")]
 use strum_macros::Display;

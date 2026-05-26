@@ -37,7 +37,7 @@ pub struct Decimal(
 #[cfg(not(feature = "rust_decimal"))]
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct Decimal(crate::primitives::Double);
+pub struct Decimal(crate::primitive::Double);
 
 impl Decimal {
     pub fn is_integer(&self) -> bool {
@@ -133,7 +133,7 @@ impl FromStr for Decimal {
     #[cfg(not(feature = "rust_decimal"))]
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         input
-            .parse::<crate::primitives::Double>()
+            .parse::<crate::primitive::Double>()
             .map(Self)
             .map_err(|_| ParseDecimalError)
     }

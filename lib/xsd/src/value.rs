@@ -2,12 +2,12 @@
 
 use crate::{
     DecimalValue, PrimitiveValue, Type,
-    primitives::{Boolean, Decimal, Double, Float},
+    primitive::{Boolean, Decimal, Double, Float},
 };
 use strum_macros::Display;
 
 #[cfg(feature = "jiff")]
-use crate::primitives::{Date, DateTime, Duration, Time};
+use crate::primitive::{Date, DateTime, Duration, Time};
 
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, string::String};

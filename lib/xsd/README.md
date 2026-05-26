@@ -40,7 +40,7 @@ xsd = { version = "0.3" }
 
 ```rust
 use xsd::{Type, Value};
-use xsd::primitives::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
+use xsd::primitive::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
 ```
 
 ### Parsing XSD literals

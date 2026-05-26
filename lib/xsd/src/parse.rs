@@ -3,14 +3,14 @@
 use crate::{
     DecimalValue, ParseBooleanError, ParseDecimalError, ParseDoubleError, ParseError,
     ParseFloatError, ParseIntegerError, Type, Value,
-    primitives::{Boolean, Byte, Decimal, Double, Float, Int, Integer, Long, Short},
+    primitive::{Boolean, Byte, Decimal, Double, Float, Int, Integer, Long, Short},
 };
 use core::convert::Infallible;
 
 #[cfg(feature = "jiff")]
 use crate::{
     ParseDateTimeError, ParseDurationError,
-    primitives::{Date, DateTime, Duration, Time},
+    primitive::{Date, DateTime, Duration, Time},
 };
 
 /// Parses an input string containing an XSD literal.
@@ -94,7 +94,7 @@ pub fn parse_byte(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
 /// Parses an input string containing an `xsd:string` literal.
 #[cfg(feature = "alloc")]
 pub fn parse_string(input: impl AsRef<str>) -> Result<Value, Infallible> {
-    use crate::primitives::String;
+    use crate::primitive::String;
     input.as_ref().parse::<String>().map(Value::from)
 }
 
