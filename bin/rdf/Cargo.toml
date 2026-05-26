@@ -35,6 +35,7 @@ rdf-query.workspace = true
 rdf-reader.workspace = true
 rdf-store.workspace = true
 rdf-store-sqlite.workspace = true
+rdf-store-valkey.workspace = true
 rdf-stream.workspace = true
 rdf-vocab.workspace = true
 rdf-writer.workspace = true

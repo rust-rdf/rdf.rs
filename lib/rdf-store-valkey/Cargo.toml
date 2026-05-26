@@ -1,0 +1,34 @@
+[package]
+name = "rdf-store-valkey"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+#documentation.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = []
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std", "rdf-store/std"]
+unstable = []
+
+[dependencies]
+async-stream.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+rdf-model.workspace = true
+rdf-store.workspace = true
+redis = { version = "1", default-features = false }
+xsd.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
