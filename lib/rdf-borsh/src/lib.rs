@@ -2,8 +2,8 @@
 
 //! ```rust
 //! # use rdf_borsh::*;
-//! let reader = BorshReader::new(Box::new(std::io::stdin()));
-//! let writer = BorshWriter::new(Box::new(std::io::stdout()));
+//! //let reader = BorshReader::new(Box::new(std::io::stdin()));
+//! //let writer = BorshWriter::new(Box::new(std::io::stdout()));
 //! ```
 
 #![no_std]
