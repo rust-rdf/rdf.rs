@@ -1,9 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
-use crate::prelude::{vec, Vec};
-use alloc::borrow::Cow;
+use alloc::{borrow::Cow, vec, vec::Vec};
 use dogma::traits::{Labeled, Named};
 
 pub const FORMATS: [(&'static str, Format); 11] = [

@@ -1,7 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use super::Countable;
 use crate::Statement;
 use alloc::boxed::Box;

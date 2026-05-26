@@ -2,8 +2,6 @@
 
 #![allow(unused)]
 
-extern crate alloc;
-
 use crate::{Statement, Term, TermKind};
 use alloc::{borrow::Cow, string::String};
 use oxrdf::Quad;

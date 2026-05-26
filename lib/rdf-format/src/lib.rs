@@ -9,8 +9,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-#[doc(hidden)]
-pub use rdf_model::prelude;
+extern crate alloc;
 
 mod format;
 pub use format::*;

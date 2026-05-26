@@ -10,13 +10,19 @@
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 
-#[doc(hidden)]
-pub mod prelude;
+extern crate alloc;
 
+/// TBD
 #[cfg(feature = "alloc")]
-mod alloc;
+mod cow;
 #[cfg(feature = "alloc")]
-pub use alloc::*;
+pub use cow::*;
+
+/// TBD
+#[cfg(feature = "alloc")]
+mod heap;
+#[cfg(feature = "alloc")]
+pub use heap::*;
 
 mod any_statement;
 pub use any_statement::*;

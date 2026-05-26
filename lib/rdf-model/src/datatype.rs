@@ -1,7 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-extern crate alloc;
-
 use alloc::{borrow::Cow, format, string::String};
 
 const RDF_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
