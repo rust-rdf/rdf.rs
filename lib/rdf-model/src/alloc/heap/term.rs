@@ -7,7 +7,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{PrimitiveValue, Type, Value, primitives::Boolean};
+use xsd::{ParseError, PrimitiveValue, Type, Value, primitives::Boolean};
 
 type Language = String; // TODO
 
@@ -177,7 +177,7 @@ impl From<(String, Datatype)> for HeapTerm {
     fn from((literal, datatype): (String, Datatype)) -> Self {
         let result = match &datatype {
             Datatype::Xsd(t) => xsd::parse(&literal, t),
-            _ => Err(()),
+            _ => Err(ParseError),
         };
         match result {
             Ok(value) => Self::TypedValue(value),
