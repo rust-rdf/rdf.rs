@@ -53,7 +53,7 @@ use rdf::*;
 
 ## 📚 Reference
 
-https://docs.rs/rdf_rs
+[docs.rs/rdf_rs](https://docs.rs/rdf_rs)
 
 ## 👨‍💻 Development
 

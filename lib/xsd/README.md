@@ -99,7 +99,7 @@ match value.as_decimal() {
 
 ## 📚 Reference
 
-https://docs.rs/xsd
+[docs.rs/xsd](https://docs.rs/xsd)
 
 ## 👨‍💻 Development
 

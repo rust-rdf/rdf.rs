@@ -10,7 +10,7 @@ readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 license.workspace = true
-keywords = ["xml", "schema", "xsd"]
+keywords = ["xml", "xsd", "rdf", "semantic-web"]
 categories.workspace = true
 publish.workspace = true
 
