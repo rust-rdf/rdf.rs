@@ -1,0 +1,14 @@
+# See: https://rust-lang.github.io/rustfmt/
+
+edition = "2024"
+match_block_trailing_comma = true
+reorder_imports = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+
+# Nightly-only unstable features:
+#unstable_features = true
+#style_edition = "2024"
+#group_imports = "One"
+#imports_layout = "Vertical"
+#imports_granularity = "Crate"

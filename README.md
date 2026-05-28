@@ -7,7 +7,19 @@
 
 **RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
 
-🚧 _This is presently under heavy construction._
+> [!TIP]
+> 🚧 _We are building in public. This is presently under heavy construction._
+
+<sub>
+
+[[Features](#-features)] |
+[[Prerequisites](#%EF%B8%8F-prerequisites)] |
+[[Installation](#%EF%B8%8F-installation)] |
+[[Examples](#-examples)] |
+[[Reference](#-reference)] |
+[[Development](#%E2%80%8D-development)]
+
+</sub>
 
 ## ✨ Features
 
@@ -15,7 +27,7 @@
 - Supports `no_std` environments from the get-go.
 - Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
-- 100% free and unencumbered public domain software.
+- Cuts red tape: 100% free and unencumbered public domain software.
 
 ## 🛠️ Prerequisites
 
@@ -47,7 +59,7 @@ rdf = { package = "rdf_rs", version = "0.3", default-features = false, features 
 
 ## 👉 Examples
 
-### Importing the library
+### Importing the Library
 
 ```rust,compile_fail
 use rdf::{format, model, query, reader, store, stream, vocab, writer};

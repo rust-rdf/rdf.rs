@@ -5,7 +5,21 @@
 [![Package](https://img.shields.io/crates/v/xsd)](https://crates.io/crates/xsd)
 [![Documentation](https://docs.rs/xsd/badge.svg)](https://docs.rs/xsd)
 
-🚧 _This is presently under heavy construction._
+**XSD.rs** is a [Rust] implementation of the [XML Schema] datatypes.
+
+> [!TIP]
+> 🚧 _We are building in public. This is presently under heavy construction._
+
+<sub>
+
+[[Features](#-features)] |
+[[Prerequisites](#%EF%B8%8F-prerequisites)] |
+[[Installation](#%EF%B8%8F-installation)] |
+[[Examples](#-examples)] |
+[[Reference](#-reference)] |
+[[Development](#%E2%80%8D-development)]
+
+</sub>
 
 ## ✨ Features
 
@@ -13,7 +27,7 @@
 - Supports `no_std` environments from the get-go.
 - Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
-- 100% free and unencumbered public domain software.
+- Cuts red tape: 100% free and unencumbered public domain software.
 
 ## 🛠️ Prerequisites
 
@@ -45,14 +59,14 @@ xsd = { version = "0.3", default-features = false, features = ["alloc"] }
 
 ## 👉 Examples
 
-### Importing the library
+### Importing the Library
 
 ```rust
 use xsd::{Type, Value};
 use xsd::primitive::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
 ```
 
-### Parsing XSD literals
+### Parsing XSD Literals
 
 ```rust
 # fn main() -> Result<(), Box<dyn core::error::Error>> {
@@ -66,7 +80,7 @@ let value = xsd::parse("2026-12-31T12:34:56", xsd::DATE_TIME)?;
 # }
 ```
 
-### Constructing XSD values
+### Constructing XSD Values
 
 ```rust
 let value: xsd::Value = "Hello, world!".into();
@@ -75,7 +89,7 @@ let value: xsd::Value = 3.1415.into();
 let value: xsd::Value = 42.into();
 ```
 
-### Matching XSD values
+### Matching XSD Values
 
 ```rust
 use xsd::Value::*;
@@ -88,7 +102,7 @@ match value {
 }
 ```
 
-### Matching XSD decimals
+### Matching XSD Decimals
 
 ```rust
 use xsd::DecimalValue::*;
@@ -128,3 +142,4 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [Rust]: https://rust-lang.org
+[XML Schema]: http://www.w3.org/TR/xmlschema-2/
