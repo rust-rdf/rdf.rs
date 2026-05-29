@@ -46,14 +46,14 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
             Iri(_) | BNode(_) => {
                 let o = self.intern_node(statement.object()).await?;
                 self.insert_triple(s, p, o).await?;
-            }
+            },
             String(o_val) => {
                 self.insert_triple_str(s, p, None, None, o_val).await?;
-            }
+            },
             TaggedString(o_val, o_lang, _) => {
                 self.insert_triple_str(s, p, None, Some(o_lang.as_str()), o_val)
                     .await?;
-            }
+            },
             TypedValue(value) => {
                 let o_dt = self
                     .intern_iri(value.r#type().iri_string().as_ref())
@@ -61,12 +61,12 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
                 let o_val = value.to_string();
                 self.insert_triple_str(s, p, Some(o_dt), None, &o_val)
                     .await?; // FIXME
-            }
+            },
             TypedLiteral(o_val, o_dt) => {
                 let o_dt = self.intern_iri(o_dt.iri_string().as_ref()).await?;
                 self.insert_triple_str(s, p, Some(o_dt), None, o_val)
                     .await?;
-            }
+            },
         }
         Ok(()) // TODO
     }
@@ -79,8 +79,8 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
 #[async_trait]
 impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
-    type Term = HeapTerm;
     type Statement = HeapQuad;
+    type Term = HeapTerm;
 
     fn r#match(
         &self,

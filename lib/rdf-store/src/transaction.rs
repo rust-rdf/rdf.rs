@@ -2,7 +2,7 @@
 
 use alloc::boxed::Box;
 use async_trait::async_trait;
-use futures::Stream;
+use futures::stream::{self, Stream};
 use rdf_model::{Statement, StatementPattern, Term};
 
 //#[async_trait]
@@ -21,8 +21,10 @@ pub trait ReadTransaction {
 
     fn r#match(
         &self,
-        pattern: Option<impl StatementPattern<Term = Self::Term>>,
-    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
+        _pattern: Option<impl StatementPattern<Term = Self::Term>>,
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
+        stream::empty()
+    }
 }
 
 #[async_trait]
