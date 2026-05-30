@@ -17,6 +17,10 @@ impl Double {
     pub fn as_f64(&self) -> f64 {
         self.0.into_inner()
     }
+
+    pub fn into_inner(self) -> f64 {
+        self.0.into_inner()
+    }
 }
 
 impl From<f32> for Double {

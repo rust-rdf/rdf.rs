@@ -105,6 +105,12 @@ impl HeapTerm {
             },
             Self::TypedValue(Value::Primitive(val)) => match val {
                 PrimitiveValue::Boolean(val) => JsonValue::Bool(val.into_inner()),
+                PrimitiveValue::Double(val) => JsonNumber::from_f64(val.into_inner())
+                    .map(JsonValue::Number)
+                    .unwrap(),
+                PrimitiveValue::Float(val) => JsonNumber::from_f64(val.into_inner() as _)
+                    .map(JsonValue::Number)
+                    .unwrap(),
                 PrimitiveValue::String(str) | PrimitiveValue::AnyUri(str) => JsonValue::String(str),
                 val => JsonValue::String(val.to_string()), // FIXME
             },

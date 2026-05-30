@@ -17,6 +17,10 @@ impl Float {
     pub fn as_f64(&self) -> f64 {
         self.0.into_inner() as _
     }
+
+    pub fn into_inner(self) -> f32 {
+        self.0.into_inner()
+    }
 }
 
 impl From<f32> for Float {
