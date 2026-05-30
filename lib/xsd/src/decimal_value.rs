@@ -45,6 +45,22 @@ pub enum DecimalValue {
 }
 
 impl DecimalValue {
+    pub fn as_f64(&self) -> f64 {
+        use DecimalValue::*;
+        match self {
+            Decimal(d) => return d.as_f64(),
+            Integer(n) => *n as _,
+            Long(n) => *n as _,
+            Int(n) => *n as _,
+            Short(n) => *n as _,
+            Byte(n) => *n as _,
+        }
+    }
+
+    pub fn to_f64(&self) -> Option<f64> {
+        Some(self.as_f64())
+    }
+
     pub fn r#type(&self) -> DecimalType {
         use DecimalValue::*;
         match self {

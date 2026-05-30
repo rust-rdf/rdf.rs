@@ -27,7 +27,7 @@ rdf-star = ["oxrdf?/rdf-12"]
 # Integrations:
 borsh = ["dep:borsh", "xsd/borsh"]
 oxrdf = ["dep:oxrdf"]
-serde = ["dep:serde", "xsd/serde"]
+serde = ["dep:serde", "dep:serde_json", "xsd/serde"]
 sophia = ["dep:sophia"]
 
 [dependencies]
@@ -39,6 +39,7 @@ xsd = { workspace = true, features = ["datetime", "decimal"] }
 borsh = { workspace = true, optional = true }
 oxrdf = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 sophia = { workspace = true, optional = true }
 
 [dev-dependencies]

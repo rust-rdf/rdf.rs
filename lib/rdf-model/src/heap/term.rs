@@ -88,6 +88,31 @@ impl HeapTerm {
             Self::TypedValue(v) => return Cow::Owned(v.to_string()),
         })
     }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        use serde_json::{Number as JsonNumber, Value as JsonValue};
+        match self {
+            Self::Iri(str) => JsonValue::String(str),
+            Self::BNode(str) => JsonValue::String(str),
+            Self::String(str) | Self::TaggedString(str, _, _) | Self::TypedLiteral(str, _) => {
+                JsonValue::String(str)
+            },
+            Self::TypedValue(Value::Primitive(val)) => match val {
+                PrimitiveValue::Boolean(val) => JsonValue::Bool(val.into_inner()),
+                PrimitiveValue::String(str) | PrimitiveValue::AnyUri(str) => JsonValue::String(str),
+                val => JsonValue::String(val.to_string()), // FIXME
+            },
+            Self::TypedValue(Value::Decimal(val)) => JsonNumber::from_f64(val.as_f64())
+                .map(JsonValue::Number)
+                .unwrap(),
+        }
+    }
 }
 
 impl Term for HeapTerm {
@@ -134,7 +159,7 @@ impl From<&CowTerm<'_>> for HeapTerm {
             CowTerm::String(s) => HeapTerm::String(s.to_string()),
             CowTerm::TaggedString(s, lang, dir) => {
                 HeapTerm::TaggedString(s.to_string(), lang.clone(), dir.clone())
-            }
+            },
             CowTerm::TypedValue(v) => HeapTerm::TypedValue(v.clone()),
             CowTerm::TypedLiteral(s, dt) => HeapTerm::TypedLiteral(s.to_string(), dt.clone()),
         }
