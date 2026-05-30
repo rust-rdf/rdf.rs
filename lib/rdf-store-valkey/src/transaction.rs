@@ -6,19 +6,21 @@ use async_trait::async_trait;
 use derive_more::Debug;
 use rdf_model::{HeapQuad, HeapTerm};
 use rdf_store::{ReadTransaction, WriteTransaction};
-use redis::Connection;
+use redis::aio::MultiplexedConnection;
 
+/// See: <https://valkey.io/topics/transactions/>
 #[derive(Debug)]
 pub struct ValkeyTransaction {
     #[allow(dead_code)]
     #[debug(skip)]
-    pub(crate) conn: Connection,
+    pub(crate) conn: MultiplexedConnection,
     pub(crate) writable: bool,
 }
 
 impl ValkeyTransaction {
-    pub fn begin(store: &ValkeyStore, writable: bool) -> Result<Self, ValkeyError> {
-        let conn = store.client.get_connection()?;
+    pub async fn begin(store: &ValkeyStore, writable: bool) -> Result<Self, ValkeyError> {
+        let mut conn = store.client.get_multiplexed_async_connection().await?;
+        redis::cmd("MULTI").exec_async(&mut conn).await?;
         Ok(Self { conn, writable })
     }
 
@@ -32,19 +34,19 @@ impl WriteTransaction for ValkeyTransaction {
     type Error = ValkeyError;
     type Statement = HeapQuad;
 
-    async fn rollback(self) -> Result<(), Self::Error> {
+    async fn rollback(mut self) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(ValkeyError::ReadOnly);
         }
-        // TODO
+        redis::cmd("DISCARD").exec_async(&mut self.conn).await?;
         Ok(())
     }
 
-    async fn commit(self) -> Result<(), Self::Error> {
+    async fn commit(mut self) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(ValkeyError::ReadOnly);
         }
-        // TODO
+        redis::cmd("EXEC").exec_async(&mut self.conn).await?;
         Ok(())
     }
 

@@ -26,10 +26,10 @@ impl Store for ValkeyStore {
     type Write = ValkeyTransaction;
 
     async fn read(&mut self) -> Result<Self::Read, Self::Error> {
-        ValkeyTransaction::begin(self, false)
+        ValkeyTransaction::begin(self, false).await
     }
 
     async fn write(&mut self) -> Result<Self::Write, Self::Error> {
-        ValkeyTransaction::begin(self, true)
+        ValkeyTransaction::begin(self, true).await
     }
 }
