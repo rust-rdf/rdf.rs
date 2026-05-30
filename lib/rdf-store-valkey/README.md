@@ -53,7 +53,7 @@ Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-valkey = { version = "0.3", default-features = false, features = ["alloc"] }
+rdf-store-valkey = { version = "0.3", default-features = false, features = ["tls"] }
 ```
 
 ## 👉 Examples
