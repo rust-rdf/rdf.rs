@@ -15,6 +15,10 @@ impl<T: Term> Triple<T> {
     pub const fn new(s: T, p: T, o: T) -> Self {
         Self { s, p, o }
     }
+
+    pub fn into_inner(self) -> (T, T, T) {
+        (self.s, self.p, self.o)
+    }
 }
 
 impl<T: Term + Clone> Statement for Triple<T> {

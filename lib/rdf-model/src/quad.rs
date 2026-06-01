@@ -16,6 +16,10 @@ impl<T: Term> Quad<T> {
     pub const fn new(s: T, p: T, o: T, g: Option<T>) -> Self {
         Self { s, p, o, g }
     }
+
+    pub fn into_inner(self) -> (T, T, T, Option<T>) {
+        (self.s, self.p, self.o, self.g)
+    }
 }
 
 impl<T: Term + Clone> Statement for Quad<T> {

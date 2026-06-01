@@ -16,6 +16,12 @@ extern crate std;
 
 pub use rdf_store::*;
 
+mod document;
+pub use document::*;
+
+mod document_set;
+pub use document_set::*;
+
 mod error;
 pub use error::*;
 

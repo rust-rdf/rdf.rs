@@ -1,14 +1,14 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{HeapTransaction, Store};
-use alloc::{boxed::Box, collections::BTreeSet, sync::Arc};
+use alloc::{boxed::Box, sync::Arc};
 use async_trait::async_trait;
 use parking_lot::RwLock;
-use rdf_model::HeapQuad;
+use rdf_model::HeapQuadSet;
 
 #[derive(Debug, Default)]
 pub struct HeapStore {
-    pub(crate) quads: RwLock<BTreeSet<HeapQuad>>,
+    pub(crate) quads: RwLock<HeapQuadSet>,
 }
 
 impl HeapStore {
