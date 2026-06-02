@@ -90,7 +90,7 @@ impl WriteTransaction for ValkeyTransaction {
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
-        let triple_id = triple.id();
+        let triple_id = triple.id().clone();
         let triple_key = ValkeyTripleKey::from(&triple_id);
         let triple_json: Value = triple.into();
 
@@ -120,9 +120,9 @@ impl WriteTransaction for ValkeyTransaction {
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
-        let triple_id = triple.id();
+        let triple_id = triple.id().clone();
 
-        let _: () = tx.srem(graph_key, &triple_id).await?;
+        let _: () = tx.srem(graph_key, triple_id).await?;
 
         Ok(())
     }

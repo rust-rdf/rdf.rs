@@ -1,28 +1,37 @@
 // This is free and unencumbered software released into the public domain.
 
-use std::string::String;
-
-use alloc::string::ToString;
+use alloc::{
+    format,
+    string::{String, ToString},
+};
 use rdf_model::HeapTriple;
 use serde_json::{Map, Value};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTriple {
+    pub(crate) id: String,
     pub(crate) s: Value,
     pub(crate) p: Value,
     pub(crate) o: Value,
 }
 
 impl ValkeyTriple {
-    pub fn id(&self) -> String {
-        "s1".to_string() // FIXME
+    pub fn id(&self) -> &String {
+        &self.id
     }
 }
 
 impl From<HeapTriple> for ValkeyTriple {
     fn from(input: HeapTriple) -> Self {
         let (s, p, o) = input.into_inner();
+        let id = format!(
+            "{}:{}:{}",
+            s.to_b3().to_hex()[0..16].to_lowercase(),
+            p.to_b3().to_hex()[0..16].to_lowercase(),
+            o.to_b3().to_hex()[0..16].to_lowercase()
+        );
         Self {
+            id,
             s: s.into_json(),
             p: p.into_json(),
             o: o.into_json(),
