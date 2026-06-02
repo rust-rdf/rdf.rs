@@ -22,21 +22,25 @@ std = ["alloc", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 # Features:
-tls = ["redis/tokio-rustls-comp"]
-tokio = ["redis/tokio-comp"]
+tls = ["dep:rustls", "fred/enable-rustls"]
+tokio = []
+tracing = ["fred/partial-tracing"]
 
 [dependencies]
 async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
+fred = { version = "10.1", default-features = false, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
 futures.workspace = true
 itertools.workspace = true
 rdf-model = { workspace = true, features = ["serde"] }
 rdf-store.workspace = true
-redis = { version = "1", default-features = false, features = ["aio", "json"] }
 serde_json.workspace = true
 thiserror.workspace = true
 xsd.workspace = true
+
+# Features:
+rustls = { version = "0.23", default-features = false, optional = true }
 
 [dev-dependencies]
 tokio.workspace = true

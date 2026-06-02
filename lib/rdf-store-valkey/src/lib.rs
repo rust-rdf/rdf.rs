@@ -16,20 +16,20 @@ extern crate std;
 
 pub use rdf_store::*;
 
-mod document;
-pub use document::*;
-
-mod document_set;
-pub use document_set::*;
-
 mod error;
 pub use error::*;
 
-mod path;
-pub use path::*;
+mod graph_key;
+pub use graph_key::*;
 
 mod store;
 pub use store::*;
 
 mod transaction;
 pub use transaction::*;
+
+mod triple;
+pub use triple::*;
+
+mod triple_key;
+pub use triple_key::*;

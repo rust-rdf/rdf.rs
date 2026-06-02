@@ -4,18 +4,18 @@ use crate::{ValkeyError, ValkeyTransaction};
 use alloc::boxed::Box;
 use async_trait::async_trait;
 use derive_more::Debug;
+use fred::prelude::*;
 use rdf_store::Store;
-use redis::Client;
 
 #[derive(Debug)]
 pub struct ValkeyStore {
-    pub(crate) client: Client,
+    pub(crate) config: Config,
 }
 
 impl ValkeyStore {
     pub fn open(url: impl AsRef<str>) -> Result<Self, ValkeyError> {
-        let client = redis::Client::open(url.as_ref())?;
-        Ok(Self { client })
+        let config = Config::from_url(url.as_ref())?;
+        Ok(Self { config })
     }
 }
 
