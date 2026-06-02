@@ -25,6 +25,9 @@ pub use document_set::*;
 mod error;
 pub use error::*;
 
+mod path;
+pub use path::*;
+
 mod store;
 pub use store::*;
 
