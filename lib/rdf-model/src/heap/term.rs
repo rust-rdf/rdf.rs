@@ -119,6 +119,11 @@ impl HeapTerm {
                 .unwrap(),
         }
     }
+
+    #[cfg(feature = "blake3")]
+    pub fn to_b3(&self) -> blake3::Hash {
+        blake3::hash(self.value_str().as_ref().as_bytes()) // TODO: N-Triples
+    }
 }
 
 impl Term for HeapTerm {
