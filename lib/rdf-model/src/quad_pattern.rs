@@ -6,10 +6,10 @@ use crate::{StatementPattern, Term, TriplePattern};
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct QuadPattern<T: Term> {
-    s: Option<T>,
-    p: Option<T>,
-    o: Option<T>,
-    g: Option<T>,
+    pub(crate) s: Option<T>,
+    pub(crate) p: Option<T>,
+    pub(crate) o: Option<T>,
+    pub(crate) g: Option<T>,
 }
 
 impl<T: Term> Default for QuadPattern<T> {

@@ -179,3 +179,35 @@ impl<T: Term + Clone> From<(&T, &T, &T, Option<&T>)> for Quad<T> {
         Self::new(s.clone(), p.clone(), o.clone(), g.cloned())
     }
 }
+
+impl<T: Term> TryFrom<TriplePattern<T>> for Quad<T> {
+    type Error = ();
+
+    fn try_from(input: TriplePattern<T>) -> Result<Self, Self::Error> {
+        if !input.is_constant() {
+            return Err(());
+        }
+        Ok(Self::new(
+            input.s.unwrap(),
+            input.p.unwrap(),
+            input.o.unwrap(),
+            None,
+        ))
+    }
+}
+
+impl<T: Term> TryFrom<QuadPattern<T>> for Quad<T> {
+    type Error = ();
+
+    fn try_from(input: QuadPattern<T>) -> Result<Self, Self::Error> {
+        if !input.is_constant() {
+            return Err(());
+        }
+        Ok(Self::new(
+            input.s.unwrap(),
+            input.p.unwrap(),
+            input.o.unwrap(),
+            input.g,
+        ))
+    }
+}
