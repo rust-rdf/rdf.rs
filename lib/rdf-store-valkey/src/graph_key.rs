@@ -7,8 +7,14 @@ use alloc::{
 use fred::types::Key;
 use serde_json::Value;
 
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ValkeyGraphKey(pub(crate) String);
+
+impl Default for ValkeyGraphKey {
+    fn default() -> Self {
+        Self("default".to_string())
+    }
+}
 
 impl From<&Cow<'_, str>> for ValkeyGraphKey {
     fn from(input: &Cow<'_, str>) -> Self {
@@ -42,6 +48,12 @@ impl From<&ValkeyGraphKey> for String {
 
 impl From<ValkeyGraphKey> for Key {
     fn from(input: ValkeyGraphKey) -> Self {
+        Key::from(input.to_string())
+    }
+}
+
+impl From<&ValkeyGraphKey> for Key {
+    fn from(input: &ValkeyGraphKey) -> Self {
         Key::from(input.to_string())
     }
 }

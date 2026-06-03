@@ -51,6 +51,10 @@ impl<T: Term> TriplePattern<T> {
     pub fn is_variable(&self) -> bool {
         !self.is_constant()
     }
+
+    pub fn into_inner(self) -> (Option<T>, Option<T>, Option<T>) {
+        (self.s, self.p, self.o)
+    }
 }
 
 impl<T: Term + Clone> TriplePattern<T> {

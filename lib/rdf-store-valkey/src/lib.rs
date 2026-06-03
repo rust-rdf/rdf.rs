@@ -33,3 +33,6 @@ pub use triple::*;
 
 mod triple_key;
 pub use triple_key::*;
+
+mod triple_pattern;
+pub use triple_pattern::*;

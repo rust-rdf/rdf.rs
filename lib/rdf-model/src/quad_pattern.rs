@@ -56,6 +56,10 @@ impl<T: Term> QuadPattern<T> {
     pub fn is_variable(&self) -> bool {
         !self.is_constant()
     }
+
+    pub fn into_inner(self) -> (Option<T>, Option<T>, Option<T>, Option<T>) {
+        (self.s, self.p, self.o, self.g)
+    }
 }
 
 impl<T: Term + Clone> QuadPattern<T> {
