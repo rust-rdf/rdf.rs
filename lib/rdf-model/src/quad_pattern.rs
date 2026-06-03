@@ -48,6 +48,14 @@ impl<T: Term> QuadPattern<T> {
     pub fn is_empty(&self) -> bool {
         self.s.is_none() && self.p.is_none() && self.o.is_none() && self.g.is_none()
     }
+
+    pub fn is_constant(&self) -> bool {
+        self.s.is_some() && self.p.is_some() && self.o.is_some() && self.g.is_some()
+    }
+
+    pub fn is_variable(&self) -> bool {
+        !self.is_constant()
+    }
 }
 
 impl<T: Term + Clone> QuadPattern<T> {
