@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{Statement, traits::Enumerable};
+use crate::traits::Enumerable;
 
 /// An RDF graph.
 ///

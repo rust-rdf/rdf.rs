@@ -3,13 +3,19 @@
 use crate::{StatementPattern, Term, TriplePattern};
 
 /// A quad statement pattern.
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct QuadPattern<T: Term> {
     s: Option<T>,
     p: Option<T>,
     o: Option<T>,
     g: Option<T>,
+}
+
+impl<T: Term> Default for QuadPattern<T> {
+    fn default() -> Self {
+        Self::EMPTY
+    }
 }
 
 impl<T: Term> QuadPattern<T> {

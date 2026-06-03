@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapTerm, QuadPattern, Term, TriplePattern};
+use crate::{QuadPattern, Term, TriplePattern};
 
 /// An RDF statement pattern.
 ///
