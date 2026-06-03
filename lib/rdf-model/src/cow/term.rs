@@ -2,7 +2,7 @@
 
 use crate::{BaseDirection, Datatype, HeapTerm, Term, TermKind};
 use alloc::{
-    borrow::{Cow, ToOwned},
+    borrow::Cow,
     string::{String, ToString},
 };
 use xsd::{PrimitiveValue, Value, primitive::Boolean};
@@ -128,6 +128,21 @@ impl<'a> From<&'a dyn Term> for CowTerm<'a> {
     }
 }
 
+impl<'a> From<HeapTerm> for CowTerm<'a> {
+    fn from(input: HeapTerm) -> Self {
+        match input {
+            HeapTerm::Iri(s) => CowTerm::Iri(s.into()),
+            HeapTerm::BNode(s) => CowTerm::BNode(s.into()),
+            HeapTerm::String(s) => CowTerm::String(s.into()),
+            HeapTerm::TaggedString(s, lang, dir) => {
+                CowTerm::TaggedString(s.into(), lang.clone(), dir.clone())
+            },
+            HeapTerm::TypedValue(v) => CowTerm::TypedValue(v.clone()),
+            HeapTerm::TypedLiteral(s, dt) => CowTerm::TypedLiteral(s.into(), dt.clone()),
+        }
+    }
+}
+
 impl<'a> From<&'a HeapTerm> for CowTerm<'a> {
     fn from(input: &'a HeapTerm) -> Self {
         match input {
@@ -136,7 +151,7 @@ impl<'a> From<&'a HeapTerm> for CowTerm<'a> {
             HeapTerm::String(s) => CowTerm::String(s.into()),
             HeapTerm::TaggedString(s, lang, dir) => {
                 CowTerm::TaggedString(s.into(), lang.clone(), dir.clone())
-            }
+            },
             HeapTerm::TypedValue(v) => CowTerm::TypedValue(v.clone()),
             HeapTerm::TypedLiteral(s, dt) => CowTerm::TypedLiteral(s.into(), dt.clone()),
         }

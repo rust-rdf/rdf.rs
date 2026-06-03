@@ -5,7 +5,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{ParseError, PrimitiveValue, Type, Value, primitive::Boolean};
+use xsd::{ParseError, PrimitiveValue, Value, primitive::Boolean};
 
 type Language = String; // TODO
 

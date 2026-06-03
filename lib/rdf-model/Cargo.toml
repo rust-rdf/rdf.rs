@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["hash", "rdf-star", "serde", "oxrdf"]
-alloc = ["xsd/alloc"]
-std = ["alloc", "dogma/std", "serde?/std", "xsd/std"]
+alloc = ["serde_json?/alloc", "xsd/alloc"]
+std = ["alloc", "dogma/std", "serde?/std", "serde_json?/std", "xsd/std"]
 unstable = []
 
 # Features:

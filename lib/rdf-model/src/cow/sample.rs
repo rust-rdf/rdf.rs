@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{Cow, CowQuad, CowTerm, CowTriple, RDFS_LABEL};
+use crate::{CowQuad, CowTerm, CowTriple, RDFS_LABEL};
 
 /// A sample resource term.
 pub const SAMPLE_RESOURCE: CowTerm<'static> = CowTerm::static_iri("https://example.org/resource");

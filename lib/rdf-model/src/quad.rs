@@ -65,6 +65,12 @@ impl<T: Term + Clone> Quad<T> {
     }
 }
 
+impl From<Triple<CowTerm<'_>>> for Quad<HeapTerm> {
+    fn from(input: Triple<CowTerm<'_>>) -> Self {
+        Self::new(input.s.into(), input.p.into(), input.o.into(), None)
+    }
+}
+
 impl<'a> From<&'a Triple<CowTerm<'a>>> for Quad<HeapTerm> {
     fn from(input: &'a Triple<CowTerm<'a>>) -> Self {
         Self::new(
@@ -72,6 +78,17 @@ impl<'a> From<&'a Triple<CowTerm<'a>>> for Quad<HeapTerm> {
             (&input.p).into(),
             (&input.o).into(),
             None,
+        )
+    }
+}
+
+impl From<Quad<CowTerm<'_>>> for Quad<HeapTerm> {
+    fn from(input: Quad<CowTerm<'_>>) -> Self {
+        Self::new(
+            input.s.into(),
+            input.p.into(),
+            input.o.into(),
+            input.g.map(|g| g.into()),
         )
     }
 }
@@ -87,6 +104,12 @@ impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
     }
 }
 
+impl<'a> From<Triple<HeapTerm>> for Quad<CowTerm<'a>> {
+    fn from(input: Triple<HeapTerm>) -> Self {
+        Self::new(input.s.into(), input.p.into(), input.o.into(), None)
+    }
+}
+
 impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: &'a Triple<HeapTerm>) -> Self {
         Self::new(
@@ -95,6 +118,12 @@ impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
             (&input.o).into(),
             None,
         )
+    }
+}
+
+impl<'a> From<Quad<HeapTerm>> for Quad<CowTerm<'a>> {
+    fn from(input: Quad<HeapTerm>) -> Self {
+        Self::new(input.s.into(), input.p.into(), input.o.into(), None)
     }
 }
 
