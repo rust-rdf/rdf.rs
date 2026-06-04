@@ -121,7 +121,7 @@ impl HeapTerm {
     }
 
     #[cfg(feature = "blake3")]
-    pub fn to_b3(&self) -> blake3::Hash {
+    pub fn to_b3(&self) -> crate::TermHash {
         blake3::hash(self.value_str().as_ref().as_bytes()) // TODO: N-Triples
     }
 }
