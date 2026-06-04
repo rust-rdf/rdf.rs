@@ -18,20 +18,29 @@ impl<T: Term> Triple<T> {
         Self { s, p, o }
     }
 
-    pub fn with_subject(self, s: T) -> Self {
-        Self { s, ..self }
+    pub fn with_subject(self, s: impl Into<T>) -> Self {
+        Self {
+            s: s.into(),
+            ..self
+        }
     }
 
-    pub fn with_predicate(self, p: T) -> Self {
-        Self { p, ..self }
+    pub fn with_predicate(self, p: impl Into<T>) -> Self {
+        Self {
+            p: p.into(),
+            ..self
+        }
     }
 
-    pub fn with_object(self, o: T) -> Self {
-        Self { o, ..self }
+    pub fn with_object(self, o: impl Into<T>) -> Self {
+        Self {
+            o: o.into(),
+            ..self
+        }
     }
 
-    pub fn with_context(self, g: Option<T>) -> Quad<T> {
-        Quad::new(self.s, self.p, self.o, g)
+    pub fn with_context(self, g: impl Into<Option<T>>) -> Quad<T> {
+        Quad::new(self.s, self.p, self.o, g.into())
     }
 
     pub fn into_inner(self) -> (T, T, T) {

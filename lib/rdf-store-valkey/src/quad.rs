@@ -9,7 +9,7 @@ use serde_json::Value;
 pub struct ValkeyQuad(ValkeyTripleKey, Quad<ValkeyTerm>);
 
 impl ValkeyQuad {
-    pub fn with_context(self, g: Option<ValkeyTerm>) -> Self {
+    pub fn with_context(self, g: impl Into<Option<ValkeyTerm>>) -> Self {
         Self(self.0, self.1.with_context(g))
     }
 
