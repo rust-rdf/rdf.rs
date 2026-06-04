@@ -37,7 +37,7 @@ rdf-model = { workspace = true, features = ["hash", "serde"] }
 rdf-store.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
-xsd.workspace = true
+xsd = { workspace = true, features = ["serde"] }
 
 # Features:
 rustls = { version = "0.23", default-features = false, optional = true }

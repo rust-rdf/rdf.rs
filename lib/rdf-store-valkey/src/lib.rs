@@ -22,8 +22,14 @@ pub use error::*;
 mod graph_key;
 pub use graph_key::*;
 
+mod quad;
+pub use quad::*;
+
 mod store;
 pub use store::*;
+
+mod term;
+pub use term::*;
 
 mod transaction;
 pub use transaction::*;

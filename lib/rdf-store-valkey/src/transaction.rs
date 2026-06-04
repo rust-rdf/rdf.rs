@@ -1,16 +1,18 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{
-    ValkeyError, ValkeyGraphKey, ValkeyStore, ValkeyTriple, ValkeyTripleKey, ValkeyTriplePattern,
+    ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple,
+    ValkeyTripleKey, ValkeyTriplePattern,
 };
-use alloc::{borrow::Cow, boxed::Box, vec, vec::Vec};
+use alloc::{borrow::Cow, boxed::Box, string::ToString, vec::Vec};
 use async_trait::async_trait;
 use core::time::Duration;
 use derive_more::Debug;
 use fred::prelude::*;
+use fred::util::NONE;
 use fred::{clients::Transaction, types::scan::Scanner};
 use futures::{Stream, TryStreamExt, stream};
-use rdf_model::{HeapQuad, HeapTerm, SAMPLE_QUAD, Statement, StatementPattern};
+use rdf_model::{HeapQuad, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
 
@@ -134,15 +136,15 @@ impl WriteTransaction for ValkeyTransaction {
 #[async_trait]
 impl ReadTransaction for ValkeyTransaction {
     type Error = ValkeyError;
-    type Statement = HeapQuad;
-    type Term = HeapTerm;
+    type Statement = ValkeyQuad;
+    type Term = ValkeyTerm;
 
     fn count(
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Future<Output = Result<u64, Self::Error>> {
         use futures::StreamExt;
-        async move { Ok(self.r#match(pattern).count().await as _) }
+        async move { Ok(self.r#match(pattern).count().await as _) } // TODO: optimize
     }
 
     fn r#match(
@@ -167,14 +169,25 @@ impl ReadTransaction for ValkeyTransaction {
         let stream = self.client.sscan(graph_key, pattern.glob, None);
         stream
             .and_then(|mut sscan_result| async move {
-                Ok(stream::iter(match sscan_result.take_results() {
-                    None => vec![], // an empty page
-                    Some(page) => page
-                        .into_iter()
-                        .flat_map(|triple_id| triple_id.into_string().map(ValkeyTripleKey::from))
-                        .map(|_triple_key| Ok(HeapQuad::from(SAMPLE_QUAD))) // TODO
-                        .collect::<Vec<_>>(),
-                }))
+                let mut output: Vec<Result<Self::Statement, Self::Error>> = Vec::new();
+
+                let Some(page) = sscan_result.take_results() else {
+                    return Ok(stream::iter(output)); // an empty page
+                };
+
+                let client = sscan_result.create_client();
+                for element in page {
+                    let triple_key = ValkeyTripleKey::from(element.into_string().unwrap());
+                    let triple_json: Value = client
+                        .json_get(triple_key.to_string(), NONE, NONE, NONE, "")
+                        .await?;
+                    //std::eprintln!("{:?}", triple_json); // DEBUG
+                    output.push(match ValkeyQuad::try_from((triple_key, triple_json)) {
+                        Ok(triple) => Ok(triple.with_context(None)),
+                        Err(err) => Err(err),
+                    });
+                }
+                Ok(stream::iter(output))
             })
             .try_flatten_unordered(1)
     }

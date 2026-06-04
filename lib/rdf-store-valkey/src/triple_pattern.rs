@@ -1,12 +1,39 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::ValkeyTerm;
 use alloc::{format, string::String};
 use rdf_model::{HeapTerm, QuadPattern};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTriplePattern {
     pub(crate) glob: String,
-    pub(crate) matcher: QuadPattern<HeapTerm>,
+    pub(crate) matcher: QuadPattern<ValkeyTerm>,
+}
+
+impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
+    fn from(input: QuadPattern<ValkeyTerm>) -> Self {
+        let (s, p, o, g) = input.into_inner();
+        Self {
+            glob: format!(
+                "{}:{}:{}",
+                s.as_ref()
+                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
+                    .unwrap_or_else(|| "*".into()),
+                p.as_ref()
+                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
+                    .unwrap_or_else(|| "*".into()),
+                o.as_ref()
+                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
+                    .unwrap_or_else(|| "*".into()),
+            ),
+            matcher: QuadPattern::new(
+                s.map(|s| s.into()),
+                p.map(|p| p.into()),
+                o.map(|o| o.into()),
+                g.map(|g| g.into()),
+            ),
+        }
+    }
 }
 
 impl From<QuadPattern<HeapTerm>> for ValkeyTriplePattern {
@@ -25,7 +52,12 @@ impl From<QuadPattern<HeapTerm>> for ValkeyTriplePattern {
                     .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
                     .unwrap_or_else(|| "*".into()),
             ),
-            matcher: QuadPattern::new(s, p, o, g),
+            matcher: QuadPattern::new(
+                s.map(|s| s.into()),
+                p.map(|p| p.into()),
+                o.map(|o| o.into()),
+                g.map(|g| g.into()),
+            ),
         }
     }
 }
