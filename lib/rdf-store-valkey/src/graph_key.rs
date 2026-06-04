@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::ValkeyTerm;
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
@@ -13,6 +14,15 @@ pub struct ValkeyGraphKey(pub(crate) String);
 impl Default for ValkeyGraphKey {
     fn default() -> Self {
         Self("default".to_string())
+    }
+}
+
+impl From<&Option<ValkeyTerm>> for ValkeyGraphKey {
+    fn from(input: &Option<ValkeyTerm>) -> Self {
+        match input {
+            None => Self::default(),
+            Some(term) => Self(term.0.as_str().unwrap().to_string()),
+        }
     }
 }
 

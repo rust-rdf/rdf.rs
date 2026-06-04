@@ -4,8 +4,9 @@ use crate::{
     ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple,
     ValkeyTripleKey, ValkeyTriplePattern,
 };
-use alloc::{borrow::Cow, boxed::Box, string::ToString, vec::Vec};
+use alloc::{borrow::Cow, boxed::Box, string::ToString, sync::Arc, vec::Vec};
 use async_trait::async_trait;
+use core::ops::Deref;
 use core::time::Duration;
 use derive_more::Debug;
 use fred::prelude::*;
@@ -151,10 +152,10 @@ impl ReadTransaction for ValkeyTransaction {
         &self,
         pattern: Option<impl StatementPattern<Term = Self::Term>>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern =
-            ValkeyTriplePattern::from(pattern.map(|p| p.to_quad_pattern()).unwrap_or_default());
-        //let g = pattern.context().unwrap_or_default();
-        let graph_key = ValkeyGraphKey::default(); // TODO
+        let pattern = pattern.map(|p| p.to_quad_pattern()).unwrap_or_default();
+        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern.context().cloned());
+        let pattern: ValkeyTriplePattern = pattern.into();
+        let graph_key: ValkeyGraphKey = (&*context).into();
 
         // if pattern.matcher.is_constant() {
         //     async_stream::stream! {
@@ -168,26 +169,29 @@ impl ReadTransaction for ValkeyTransaction {
 
         let stream = self.client.sscan(graph_key, pattern.glob, None);
         stream
-            .and_then(|mut sscan_result| async move {
-                let mut output: Vec<Result<Self::Statement, Self::Error>> = Vec::new();
+            .and_then(move |mut sscan_result| {
+                let context = Arc::clone(&context);
+                async move {
+                    let mut output: Vec<Result<Self::Statement, Self::Error>> = Vec::new();
 
-                let Some(page) = sscan_result.take_results() else {
-                    return Ok(stream::iter(output)); // an empty page
-                };
+                    let Some(page) = sscan_result.take_results() else {
+                        return Ok(stream::iter(output)); // an empty page
+                    };
 
-                let client = sscan_result.create_client();
-                for element in page {
-                    let triple_key = ValkeyTripleKey::from(element.into_string().unwrap());
-                    let triple_json: Value = client
-                        .json_get(triple_key.to_string(), NONE, NONE, NONE, "")
-                        .await?;
-                    //std::eprintln!("{:?}", triple_json); // DEBUG
-                    output.push(match ValkeyQuad::try_from((triple_key, triple_json)) {
-                        Ok(triple) => Ok(triple.with_context(None)),
-                        Err(err) => Err(err),
-                    });
+                    let client = sscan_result.create_client();
+                    for element in page {
+                        let triple_key = ValkeyTripleKey::from(element.into_string().unwrap());
+                        let triple_json: Value = client
+                            .json_get(triple_key.to_string(), NONE, NONE, NONE, "")
+                            .await?;
+                        //std::eprintln!("{:?}", triple_json); // DEBUG
+                        output.push(match ValkeyQuad::try_from((triple_key, triple_json)) {
+                            Ok(triple) => Ok(triple.with_context((*context).clone())),
+                            Err(err) => Err(err),
+                        });
+                    }
+                    Ok(stream::iter(output))
                 }
-                Ok(stream::iter(output))
             })
             .try_flatten_unordered(1)
     }
