@@ -2,6 +2,8 @@
 
 use crate::{CowTerm, HeapTerm, Quad, QuadPattern, Statement, Term, TriplePattern};
 
+pub type TripleSlot = crate::StatementSlot;
+
 /// A triple statement.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

@@ -69,6 +69,9 @@ pub use statement::*;
 mod statement_pattern;
 pub use statement_pattern::*;
 
+mod statement_slot;
+pub use statement_slot::*;
+
 mod term;
 pub use term::*;
 
