@@ -179,3 +179,25 @@ impl TryFrom<f64> for DecimalValue {
         Ok(Self::Decimal(input.try_into()?))
     }
 }
+
+#[cfg(feature = "serde")]
+impl From<DecimalValue> for serde_json::Value {
+    fn from(input: DecimalValue) -> Self {
+        (&input).into()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl From<&DecimalValue> for serde_json::Value {
+    fn from(input: &DecimalValue) -> Self {
+        use DecimalValue::*;
+        match input {
+            Decimal(d) => d.as_f64().into(),
+            Integer(n) => (*n as f64).into(),
+            Long(n) => (*n).into(),
+            Int(n) => (*n).into(),
+            Short(n) => (*n).into(),
+            Byte(n) => (*n).into(),
+        }
+    }
+}

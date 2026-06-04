@@ -28,6 +28,7 @@ decimal = ["rust_decimal"]
 # Integrations:
 jiff = ["dep:jiff"]
 rust_decimal = ["dep:rust_decimal"]
+serde = ["dep:serde", "dep:serde_json"]
 
 [dependencies]
 decorum = { workspace = true, features = ["serde"] }
@@ -40,3 +41,4 @@ borsh = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
 rust_decimal = { version = "1.42", default-features = false, features = ["borsh", "serde-with-str"], optional = true }
 serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }

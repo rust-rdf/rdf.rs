@@ -60,6 +60,12 @@ impl From<Boolean> for bool {
     }
 }
 
+impl From<&Boolean> for bool {
+    fn from(input: &Boolean) -> Self {
+        input.0
+    }
+}
+
 impl FromStr for Boolean {
     type Err = ParseBooleanError;
 

@@ -71,6 +71,30 @@ impl From<isize> for Float {
     }
 }
 
+impl From<Float> for f32 {
+    fn from(input: Float) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<&Float> for f32 {
+    fn from(input: &Float) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<Float> for f64 {
+    fn from(input: Float) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<&Float> for f64 {
+    fn from(input: &Float) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
 impl FromStr for Float {
     type Err = ParseFloatError;
 

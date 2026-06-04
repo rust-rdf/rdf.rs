@@ -71,6 +71,30 @@ impl From<isize> for Double {
     }
 }
 
+impl From<Double> for f32 {
+    fn from(input: Double) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<&Double> for f32 {
+    fn from(input: &Double) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<Double> for f64 {
+    fn from(input: Double) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
+impl From<&Double> for f64 {
+    fn from(input: &Double) -> Self {
+        input.0.into_inner() as _
+    }
+}
+
 impl FromStr for Double {
     type Err = ParseDoubleError;
 

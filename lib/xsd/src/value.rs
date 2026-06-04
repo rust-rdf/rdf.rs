@@ -247,3 +247,20 @@ impl From<Date> for Value {
         Self::Primitive(input.into())
     }
 }
+
+#[cfg(feature = "serde")]
+impl From<Value> for serde_json::Value {
+    fn from(input: Value) -> Self {
+        (&input).into()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl From<&Value> for serde_json::Value {
+    fn from(input: &Value) -> Self {
+        match input {
+            Value::Primitive(p) => p.into(),
+            Value::Decimal(d) => d.into(),
+        }
+    }
+}

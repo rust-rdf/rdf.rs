@@ -336,3 +336,49 @@ impl TryFrom<jiff::Span> for PrimitiveValue {
         Ok(Self::Duration(jiff::SignedDuration::try_from(input)?))
     }
 }
+
+#[cfg(feature = "serde")]
+impl From<PrimitiveValue> for serde_json::Value {
+    fn from(input: PrimitiveValue) -> Self {
+        (&input).into()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl From<&PrimitiveValue> for serde_json::Value {
+    fn from(input: &PrimitiveValue) -> Self {
+        use PrimitiveValue::*;
+        #[cfg(feature = "jiff")]
+        use alloc::string::ToString;
+        use serde_json::{Number, Value};
+        #[allow(unused)]
+        match input {
+            String(s) => Value::String(s.clone()),
+            Boolean(b) => Value::Bool(b.into()),
+            Decimal(d) => Value::String(d.to_string()),
+            Float(f) => Value::Number(Number::from_f64(f.into()).unwrap()),
+            Double(d) => Value::Number(Number::from_f64(d.into()).unwrap()),
+            #[cfg(feature = "jiff")]
+            Duration(d) => Value::String(d.to_string()),
+            #[cfg(feature = "jiff")]
+            DateTime(d) => Value::String(d.to_string()),
+            #[cfg(feature = "jiff")]
+            Time(t) => Value::String(t.to_string()),
+            #[cfg(feature = "jiff")]
+            Date(d) => Value::String(d.to_string()),
+            GYearMonth((y, m)) => Value::String(format!("{}-{}", y, m)),
+            GYear(y) => Value::String(y.to_string()),
+            GMonthDay((m, d)) => Value::String(format!("{}-{}", m, d)),
+            GDay(d) => Value::String(d.to_string()),
+            GMonth(m) => Value::String(m.to_string()),
+            #[cfg(feature = "alloc")]
+            HexBinary(_b) => Value::String(todo!()), // FIXME
+            #[cfg(feature = "alloc")]
+            Base64Binary(_b) => Value::String(todo!()), // FIXME
+            #[cfg(feature = "alloc")]
+            AnyUri(u) => Value::String(u.clone()),
+            #[cfg(feature = "alloc")]
+            QName(n, s) => Value::String(format!("{}:{}", n, s)),
+        }
+    }
+}
