@@ -17,6 +17,22 @@ impl<T: Term> Quad<T> {
         Self { s, p, o, g }
     }
 
+    pub fn with_subject(self, s: T) -> Self {
+        Self { s, ..self }
+    }
+
+    pub fn with_predicate(self, p: T) -> Self {
+        Self { p, ..self }
+    }
+
+    pub fn with_object(self, o: T) -> Self {
+        Self { o, ..self }
+    }
+
+    pub fn with_context(self, g: Option<T>) -> Self {
+        Self { g, ..self }
+    }
+
     pub fn into_inner(self) -> (T, T, T, Option<T>) {
         (self.s, self.p, self.o, self.g)
     }
