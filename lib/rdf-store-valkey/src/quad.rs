@@ -2,7 +2,7 @@
 
 use crate::{ValkeyError, ValkeyTerm, ValkeyTripleKey};
 use alloc::{format, string::String};
-use rdf_model::{HeapTriple, Quad, Statement};
+use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
 use serde_json::Value;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
@@ -56,21 +56,15 @@ impl TryFrom<(ValkeyTripleKey, Value)> for ValkeyQuad {
     fn try_from((key, input): (ValkeyTripleKey, Value)) -> Result<Self, Self::Error> {
         match input {
             Value::Object(mut input) => {
-                let s = ValkeyTerm(
-                    input
-                        .remove("s")
-                        .ok_or_else(|| ValkeyError::InvalidTerm(key.clone()))?,
-                );
-                let p = ValkeyTerm(
-                    input
-                        .remove("p")
-                        .ok_or_else(|| ValkeyError::InvalidTerm(key.clone()))?,
-                );
-                let o = ValkeyTerm(
-                    input
-                        .remove("o")
-                        .ok_or_else(|| ValkeyError::InvalidTerm(key.clone()))?,
-                );
+                let s = ValkeyTerm(input.remove("s").ok_or_else(|| {
+                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Subject)
+                })?);
+                let p = ValkeyTerm(input.remove("p").ok_or_else(|| {
+                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Predicate)
+                })?);
+                let o = ValkeyTerm(input.remove("o").ok_or_else(|| {
+                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Object)
+                })?);
                 Ok(Self(key, Quad::new(s, p, o, None)))
             },
             _ => Err(ValkeyError::InvalidTriple(key)),

@@ -1,6 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::ValkeyTripleKey;
+use rdf_model::TripleSlot;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -12,7 +13,7 @@ pub enum ValkeyError {
     #[error("invalid triple: {0}")]
     InvalidTriple(ValkeyTripleKey),
     #[error("invalid term: {0}")]
-    InvalidTerm(ValkeyTripleKey),
+    InvalidTripleTerm(ValkeyTripleKey, TripleSlot),
     #[error("other error")]
     Other,
 }
