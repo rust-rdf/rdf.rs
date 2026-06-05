@@ -1,12 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::ValkeyTerm;
-use alloc::{format, string::String};
+use crate::{ValkeyTerm, ValkeyTripleId};
+use alloc::string::ToString;
 use rdf_model::{HeapTerm, QuadPattern};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTriplePattern {
-    pub(crate) glob: String,
+    pub(crate) glob: ValkeyTripleId,
     pub(crate) matcher: QuadPattern<ValkeyTerm>,
 }
 
@@ -18,25 +18,18 @@ impl ValkeyTriplePattern {
 
 impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
     fn from(input: QuadPattern<ValkeyTerm>) -> Self {
-        let (s, p, o, g) = input.into_inner();
+        let (s, p, o, _) = input.into_inner();
         Self {
-            glob: format!(
-                "{}:{}:{}",
-                s.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
-                p.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
-                o.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
+            glob: ValkeyTripleId(
+                s.as_ref().map(|s| s.to_b3()),
+                p.as_ref().map(|p| p.to_b3()),
+                o.as_ref().map(|o| o.to_b3()),
             ),
             matcher: QuadPattern::new(
                 s.map(|s| s.into()),
                 p.map(|p| p.into()),
                 o.map(|o| o.into()),
-                g.map(|g| g.into()),
+                None,
             ),
         }
     }
@@ -44,38 +37,37 @@ impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
 
 impl From<QuadPattern<HeapTerm>> for ValkeyTriplePattern {
     fn from(input: QuadPattern<HeapTerm>) -> Self {
-        let (s, p, o, g) = input.into_inner();
+        let (s, p, o, _) = input.into_inner();
         Self {
-            glob: format!(
-                "{}:{}:{}",
-                s.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
-                p.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
-                o.as_ref()
-                    .map(|term| term.to_b3().to_hex()[0..16].to_lowercase())
-                    .unwrap_or_else(|| "*".into()),
+            glob: ValkeyTripleId(
+                s.as_ref().map(|s| s.to_b3()),
+                p.as_ref().map(|p| p.to_b3()),
+                o.as_ref().map(|o| o.to_b3()),
             ),
             matcher: QuadPattern::new(
                 s.map(|s| s.into()),
                 p.map(|p| p.into()),
                 o.map(|o| o.into()),
-                g.map(|g| g.into()),
+                None,
             ),
         }
     }
 }
 
+impl From<ValkeyTriplePattern> for fred::bytes_utils::Str {
+    fn from(input: ValkeyTriplePattern) -> Self {
+        input.glob.to_string().into()
+    }
+}
+
 impl From<ValkeyTriplePattern> for fred::types::Value {
     fn from(input: ValkeyTriplePattern) -> Self {
-        fred::types::Value::String(input.glob.clone().into())
+        input.glob.into()
     }
 }
 
 impl From<&ValkeyTriplePattern> for fred::types::Value {
     fn from(input: &ValkeyTriplePattern) -> Self {
-        fred::types::Value::String(input.glob.clone().into())
+        input.glob.clone().into()
     }
 }

@@ -46,12 +46,14 @@ serde = { version = "1.0", default-features = false, features = ["derive"] }
 sophia = { version = "0.10", default-features = false }
 
 # Implementation:
+arrayvec = { version = "0.7", default-features = false }
 async-stream = "0.3"
 async-trait = "0.1"
 decorum = { version = "0.4", default-features = false }
 derive_more = { version = "2", default-features = false }
 float-ord = { version = "0.3", default-features = false }
 futures = "0.3"
+hex = { version = "0.4", default-features = false }
 itertools = { version = "0.14", default-features = false }
 num-traits = { version = "0.2", default-features = false }
 num-integer = { version = "0.1", default-features = false }

@@ -1,85 +1,24 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{ValkeyError, ValkeyTerm, ValkeyTripleKey, ValkeyTriplePattern};
-use alloc::{format, string::String};
-use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
-use serde_json::Value;
+use crate::{
+    ValkeyError, ValkeyTerm, ValkeyTriple, ValkeyTripleId, ValkeyTripleKey, ValkeyTriplePattern,
+};
+use rdf_model::Statement;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub struct ValkeyQuad(ValkeyTripleKey, Quad<ValkeyTerm>);
+pub struct ValkeyQuad(pub(crate) ValkeyTriple, pub(crate) Option<ValkeyTerm>);
 
 impl ValkeyQuad {
     pub fn with_context(self, g: impl Into<Option<ValkeyTerm>>) -> Self {
-        Self(self.0, self.1.with_context(g))
+        Self(self.0, g.into())
     }
 
-    pub fn id(&self) -> &String {
-        &self.0.0
+    pub fn id(&self) -> &ValkeyTripleId {
+        self.0.id()
     }
-}
 
-impl From<HeapTriple> for ValkeyQuad {
-    fn from(input: HeapTriple) -> Self {
-        let (s, p, o) = input.into_inner();
-        let id = format!(
-            "{}:{}:{}",
-            s.to_b3().to_hex()[0..16].to_lowercase(),
-            p.to_b3().to_hex()[0..16].to_lowercase(),
-            o.to_b3().to_hex()[0..16].to_lowercase()
-        );
-        Self(
-            ValkeyTripleKey(id),
-            Quad::new(
-                ValkeyTerm(s.into_json()),
-                ValkeyTerm(p.into_json()),
-                ValkeyTerm(o.into_json()),
-                None,
-            ),
-        )
-    }
-}
-
-impl From<ValkeyQuad> for Value {
-    fn from(input: ValkeyQuad) -> Self {
-        let (s, p, o, _) = input.1.into_inner();
-        let mut output = serde_json::Map::new();
-        output.insert("s".into(), s.0);
-        output.insert("p".into(), p.0);
-        output.insert("o".into(), o.0);
-        Value::Object(output)
-    }
-}
-
-impl TryFrom<ValkeyTriplePattern> for ValkeyQuad {
-    type Error = ValkeyError;
-
-    fn try_from(input: ValkeyTriplePattern) -> Result<Self, Self::Error> {
-        let (Some(s), Some(p), Some(o), g) = input.matcher.into_inner() else {
-            return Err(ValkeyError::Other);
-        };
-        Ok(Self(input.glob.into(), Quad::new(s, p, o, g)))
-    }
-}
-
-impl TryFrom<(ValkeyTripleKey, Value)> for ValkeyQuad {
-    type Error = ValkeyError;
-
-    fn try_from((key, input): (ValkeyTripleKey, Value)) -> Result<Self, Self::Error> {
-        match input {
-            Value::Object(mut input) => {
-                let s = ValkeyTerm(input.remove("s").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Subject)
-                })?);
-                let p = ValkeyTerm(input.remove("p").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Predicate)
-                })?);
-                let o = ValkeyTerm(input.remove("o").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(key.clone(), TripleSlot::Object)
-                })?);
-                Ok(Self(key, Quad::new(s, p, o, None)))
-            },
-            _ => Err(ValkeyError::InvalidTriple(key)),
-        }
+    pub fn key(&self) -> ValkeyTripleKey {
+        self.0.key()
     }
 }
 
@@ -87,18 +26,32 @@ impl Statement for ValkeyQuad {
     type Term = ValkeyTerm;
 
     fn subject(&self) -> &Self::Term {
-        self.1.subject()
+        self.0.subject()
     }
 
     fn predicate(&self) -> &Self::Term {
-        self.1.predicate()
+        self.0.predicate()
     }
 
     fn object(&self) -> &Self::Term {
-        self.1.object()
+        self.0.object()
     }
 
     fn context(&self) -> Option<&Self::Term> {
-        self.1.context()
+        self.1.as_ref()
+    }
+}
+
+impl From<ValkeyTriple> for ValkeyQuad {
+    fn from(input: ValkeyTriple) -> Self {
+        Self(input, None)
+    }
+}
+
+impl TryFrom<ValkeyTriplePattern> for ValkeyQuad {
+    type Error = ValkeyError;
+
+    fn try_from(input: ValkeyTriplePattern) -> Result<Self, Self::Error> {
+        Ok(Self(input.try_into()?, None))
     }
 }

@@ -1,16 +1,14 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{
-    ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple,
+    ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple, ValkeyTripleId,
     ValkeyTripleKey, ValkeyTriplePattern,
 };
-use alloc::{borrow::Cow, boxed::Box, string::ToString, sync::Arc, vec::Vec};
+use alloc::{borrow::Cow, boxed::Box, sync::Arc, vec::Vec};
 use async_trait::async_trait;
 use core::time::Duration;
 use derive_more::Debug;
-use fred::prelude::*;
-use fred::util::NONE;
-use fred::{clients::Transaction, types::scan::Scanner};
+use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
 use rdf_model::{HeapQuad, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
@@ -95,9 +93,9 @@ impl WriteTransaction for ValkeyTransaction {
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
-        let triple_id = triple.id().clone();
-        let triple_key = ValkeyTripleKey::from(&triple_id);
-        let triple_json: Value = triple.into();
+        let triple_id = triple.id();
+        let triple_key: ValkeyTripleKey = triple_id.into();
+        let triple_json: Value = (&triple).into();
 
         let _: () = tx.json_set(triple_key, "$", triple_json, None).await?;
 
@@ -125,7 +123,7 @@ impl WriteTransaction for ValkeyTransaction {
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
-        let triple_id = triple.id().clone();
+        let triple_id = triple.id();
 
         let _: () = tx.srem(&graph_key, triple_id).await?;
 
@@ -177,7 +175,7 @@ impl ReadTransaction for ValkeyTransaction {
                 .boxed();
         }
 
-        let stream = self.client.sscan(graph_key, pattern.glob, None);
+        let stream = self.client.sscan(graph_key, pattern, None);
         stream
             .and_then(move |mut sscan_result| {
                 let context = Arc::clone(&context);
@@ -190,12 +188,13 @@ impl ReadTransaction for ValkeyTransaction {
 
                     let client = sscan_result.create_client();
                     for element in page {
-                        let triple_key = ValkeyTripleKey::from(element.into_string().unwrap());
-                        let triple_json: Value = client
-                            .json_get(triple_key.to_string(), NONE, NONE, NONE, "")
-                            .await?;
+                        let triple_id: ValkeyTripleId =
+                            element.into_string().unwrap().as_str().parse().unwrap();
+                        let triple_key: ValkeyTripleKey = (&triple_id).into();
+                        let triple_json: Value =
+                            client.json_get(triple_key, NONE, NONE, NONE, "").await?;
                         //std::eprintln!("{:?}", triple_json); // DEBUG
-                        output.push(match ValkeyQuad::try_from((triple_key, triple_json)) {
+                        output.push(match ValkeyTriple::try_from((triple_id, triple_json)) {
                             Ok(triple) => Ok(triple.with_context((*context).clone())),
                             Err(err) => Err(err),
                         });

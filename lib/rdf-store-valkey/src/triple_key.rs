@@ -1,33 +1,34 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::ValkeyTripleId;
 use alloc::string::{String, ToString};
 use fred::types::Key;
 use serde_json::Value;
 
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct ValkeyTripleKey(pub(crate) String);
+#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+pub struct ValkeyTripleKey(pub(crate) ValkeyTripleId);
 
-impl From<String> for ValkeyTripleKey {
-    fn from(input: String) -> Self {
+impl From<ValkeyTripleId> for ValkeyTripleKey {
+    fn from(input: ValkeyTripleId) -> Self {
         Self(input)
     }
 }
 
-impl From<&String> for ValkeyTripleKey {
-    fn from(input: &String) -> Self {
+impl From<&ValkeyTripleId> for ValkeyTripleKey {
+    fn from(input: &ValkeyTripleId) -> Self {
         Self(input.clone())
     }
 }
 
 impl From<ValkeyTripleKey> for String {
     fn from(input: ValkeyTripleKey) -> Self {
-        input.0
+        input.to_string()
     }
 }
 
 impl From<&ValkeyTripleKey> for String {
     fn from(input: &ValkeyTripleKey) -> Self {
-        input.0.clone()
+        input.to_string()
     }
 }
 

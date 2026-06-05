@@ -37,6 +37,9 @@ pub use transaction::*;
 mod triple;
 pub use triple::*;
 
+mod triple_id;
+pub use triple_id::*;
+
 mod triple_key;
 pub use triple_key::*;
 

@@ -18,7 +18,7 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["tokio"]
 alloc = ["itertools/use_alloc", "rdf-model/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "arrayvec/std", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 # Features:
@@ -27,11 +27,13 @@ tokio = []
 tracing = ["fred/partial-tracing"]
 
 [dependencies]
+arrayvec = { workspace = true, features = ["serde"] }
 async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 fred = { version = "10.1", default-features = false, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
 futures.workspace = true
+hex.workspace = true
 itertools.workspace = true
 rdf-model = { workspace = true, features = ["hash", "serde"] }
 rdf-store.workspace = true
