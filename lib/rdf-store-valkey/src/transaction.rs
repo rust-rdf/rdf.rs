@@ -6,13 +6,12 @@ use crate::{
 };
 use alloc::{borrow::Cow, boxed::Box, string::ToString, sync::Arc, vec::Vec};
 use async_trait::async_trait;
-use core::ops::Deref;
 use core::time::Duration;
 use derive_more::Debug;
 use fred::prelude::*;
 use fred::util::NONE;
 use fred::{clients::Transaction, types::scan::Scanner};
-use futures::{Stream, TryStreamExt, stream};
+use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
 use rdf_model::{HeapQuad, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
@@ -157,15 +156,26 @@ impl ReadTransaction for ValkeyTransaction {
         let pattern: ValkeyTriplePattern = pattern.into();
         let graph_key: ValkeyGraphKey = (&*context).into();
 
-        // if pattern.matcher.is_constant() {
-        //     async_stream::stream! {
-        //         let is_match: bool = self.client.sismember(&graph_key, &pattern).await?;
-        //         if is_match {
-        //             yield Ok(pattern.matcher.try_into().unwrap());
-        //         }
-        //         return;
-        //     }
-        // }
+        if pattern.is_constant() {
+            return self
+                .client
+                .sismember::<bool, ValkeyGraphKey, ValkeyTriplePattern>(
+                    graph_key.clone(),
+                    pattern.clone(),
+                )
+                .into_stream()
+                .filter_map(move |result| {
+                    let pattern = pattern.clone();
+                    async move {
+                        match result {
+                            Ok(false) => None,
+                            Ok(true) => Some(Ok(pattern.try_into().unwrap())),
+                            Err(err) => Some(Err(err.into())),
+                        }
+                    }
+                })
+                .boxed();
+        }
 
         let stream = self.client.sscan(graph_key, pattern.glob, None);
         stream
@@ -194,5 +204,6 @@ impl ReadTransaction for ValkeyTransaction {
                 }
             })
             .try_flatten_unordered(1)
+            .boxed()
     }
 }

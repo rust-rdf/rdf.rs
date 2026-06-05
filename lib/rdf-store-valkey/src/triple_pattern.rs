@@ -10,6 +10,12 @@ pub struct ValkeyTriplePattern {
     pub(crate) matcher: QuadPattern<ValkeyTerm>,
 }
 
+impl ValkeyTriplePattern {
+    pub fn is_constant(&self) -> bool {
+        self.matcher.is_constant()
+    }
+}
+
 impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
     fn from(input: QuadPattern<ValkeyTerm>) -> Self {
         let (s, p, o, g) = input.into_inner();
@@ -59,6 +65,12 @@ impl From<QuadPattern<HeapTerm>> for ValkeyTriplePattern {
                 g.map(|g| g.into()),
             ),
         }
+    }
+}
+
+impl From<ValkeyTriplePattern> for fred::types::Value {
+    fn from(input: ValkeyTriplePattern) -> Self {
+        fred::types::Value::String(input.glob.clone().into())
     }
 }
 

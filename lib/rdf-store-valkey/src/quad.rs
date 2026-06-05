@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{ValkeyError, ValkeyTerm, ValkeyTripleKey};
+use crate::{ValkeyError, ValkeyTerm, ValkeyTripleKey, ValkeyTriplePattern};
 use alloc::{format, string::String};
 use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
 use serde_json::Value;
@@ -47,6 +47,17 @@ impl From<ValkeyQuad> for Value {
         output.insert("p".into(), p.0);
         output.insert("o".into(), o.0);
         Value::Object(output)
+    }
+}
+
+impl TryFrom<ValkeyTriplePattern> for ValkeyQuad {
+    type Error = ValkeyError;
+
+    fn try_from(input: ValkeyTriplePattern) -> Result<Self, Self::Error> {
+        let (Some(s), Some(p), Some(o), g) = input.matcher.into_inner() else {
+            return Err(ValkeyError::Other);
+        };
+        Ok(Self(input.glob.into(), Quad::new(s, p, o, g)))
     }
 }
 
