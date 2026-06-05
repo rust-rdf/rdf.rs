@@ -34,6 +34,16 @@ impl Boolean {
         self.0
     }
 
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        serde_json::Value::Bool(self.as_bool())
+    }
+
     pub fn into_inner(self) -> bool {
         self.0
     }

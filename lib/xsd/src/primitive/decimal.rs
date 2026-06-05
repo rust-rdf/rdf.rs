@@ -64,6 +64,17 @@ impl Decimal {
         #[cfg(not(feature = "rust_decimal"))]
         return Some(self.as_f64() as i128);
     }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        use alloc::string::ToString;
+        serde_json::Value::String(self.to_string())
+    }
 }
 
 impl core::fmt::Display for Decimal {

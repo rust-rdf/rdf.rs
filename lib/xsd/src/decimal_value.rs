@@ -100,6 +100,24 @@ impl DecimalValue {
             Byte(_) => None, // already the narrowest derived type
         }
     }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        use DecimalValue::*;
+        match self {
+            Decimal(d) => d.as_f64().into(), // TODO: string
+            Integer(n) => (n as f64).into(), // TODO: string
+            Long(n) => n.into(),
+            Int(n) => n.into(),
+            Short(n) => n.into(),
+            Byte(n) => n.into(),
+        }
+    }
 }
 
 impl From<i8> for DecimalValue {
@@ -183,21 +201,13 @@ impl TryFrom<f64> for DecimalValue {
 #[cfg(feature = "serde")]
 impl From<DecimalValue> for serde_json::Value {
     fn from(input: DecimalValue) -> Self {
-        (&input).into()
+        input.into_json()
     }
 }
 
 #[cfg(feature = "serde")]
 impl From<&DecimalValue> for serde_json::Value {
     fn from(input: &DecimalValue) -> Self {
-        use DecimalValue::*;
-        match input {
-            Decimal(d) => d.as_f64().into(),
-            Integer(n) => (*n as f64).into(),
-            Long(n) => (*n).into(),
-            Int(n) => (*n).into(),
-            Short(n) => (*n).into(),
-            Byte(n) => (*n).into(),
-        }
+        input.clone().into_json()
     }
 }

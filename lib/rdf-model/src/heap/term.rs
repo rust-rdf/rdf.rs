@@ -5,7 +5,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{ParseError, PrimitiveValue, Value, primitive::Boolean};
+use xsd::{DecimalValue, ParseError, PrimitiveValue, Value, primitive::Boolean};
 
 type Language = String; // TODO
 
@@ -96,27 +96,31 @@ impl HeapTerm {
 
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
-        use serde_json::{Number as JsonNumber, Value as JsonValue};
+        use serde_json::{Number as JsonNumber, Value as JsonValue, json};
         match self {
             Self::Iri(str) => JsonValue::String(str),
-            Self::BNode(str) => JsonValue::String(str),
-            Self::String(str) | Self::TaggedString(str, _, _) | Self::TypedLiteral(str, _) => {
-                JsonValue::String(str)
+            Self::BNode(id) => JsonValue::String(id),
+            Self::String(val) => json!({ "@value": val }),
+            Self::TaggedString(val, lang, _) => json!({ "@value": val, "@language": lang }), // TODO: direction
+            Self::TypedLiteral(val, r#type) => {
+                json!({ "@value": val, "@type": r#type.to_string() })
             },
             Self::TypedValue(Value::Primitive(val)) => match val {
-                PrimitiveValue::Boolean(val) => JsonValue::Bool(val.into_inner()),
-                PrimitiveValue::Double(val) => JsonNumber::from_f64(val.into_inner())
-                    .map(JsonValue::Number)
-                    .unwrap(),
-                PrimitiveValue::Float(val) => JsonNumber::from_f64(val.into_inner() as _)
-                    .map(JsonValue::Number)
-                    .unwrap(),
-                PrimitiveValue::String(str) | PrimitiveValue::AnyUri(str) => JsonValue::String(str),
-                val => JsonValue::String(val.to_string()), // FIXME
+                PrimitiveValue::String(val) => json!({ "@value": val }),
+                PrimitiveValue::Boolean(val) => val.into_json(),
+                PrimitiveValue::Double(val) => val.into_json(),
+                val => {
+                    let r#type = val.r#type();
+                    json!({ "@value": val.into_json(), "@type": r#type.curie() })
+                },
             },
-            Self::TypedValue(Value::Decimal(val)) => JsonNumber::from_f64(val.as_f64())
-                .map(JsonValue::Number)
-                .unwrap(),
+            Self::TypedValue(Value::Decimal(val)) => match val {
+                DecimalValue::Integer(val) => json!({ "@value": val, "@type": "xsd:integer" }),
+                val => {
+                    let r#type = val.r#type();
+                    json!({ "@value": val.into_json(), "@type": r#type.curie() })
+                },
+            },
         }
     }
 

@@ -15,14 +15,7 @@ impl ValkeyTerm {
 
 impl From<HeapTerm> for ValkeyTerm {
     fn from(input: HeapTerm) -> Self {
-        match input {
-            HeapTerm::Iri(s) => ValkeyTerm(Value::String(s)),
-            HeapTerm::BNode(s) => ValkeyTerm(Value::String(s)),
-            HeapTerm::String(s) => ValkeyTerm(Value::String(s)),
-            HeapTerm::TaggedString(s, _, _) => ValkeyTerm(Value::String(s)), // TODO
-            HeapTerm::TypedValue(v) => ValkeyTerm(v.into()),
-            HeapTerm::TypedLiteral(s, _) => ValkeyTerm(Value::String(s)), // TODO
-        }
+        ValkeyTerm(input.into_json())
     }
 }
 

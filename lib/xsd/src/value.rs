@@ -101,6 +101,19 @@ impl Value {
             _ => None,
         }
     }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        match self {
+            Self::Primitive(val) => val.into_json(),
+            Self::Decimal(val) => val.into_json(),
+        }
+    }
 }
 
 impl From<DecimalValue> for Value {
@@ -251,16 +264,13 @@ impl From<Date> for Value {
 #[cfg(feature = "serde")]
 impl From<Value> for serde_json::Value {
     fn from(input: Value) -> Self {
-        (&input).into()
+        input.into_json()
     }
 }
 
 #[cfg(feature = "serde")]
 impl From<&Value> for serde_json::Value {
     fn from(input: &Value) -> Self {
-        match input {
-            Value::Primitive(p) => p.into(),
-            Value::Decimal(d) => d.into(),
-        }
+        input.clone().into_json()
     }
 }

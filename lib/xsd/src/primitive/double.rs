@@ -18,6 +18,18 @@ impl Double {
         self.0.into_inner()
     }
 
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> Option<serde_json::Value> {
+        Some(self.clone().into_json())
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn into_json(self) -> serde_json::Value {
+        serde_json::Number::from_f64(self.as_f64())
+            .map(serde_json::Value::Number)
+            .unwrap()
+    }
+
     pub fn into_inner(self) -> f64 {
         self.0.into_inner()
     }
