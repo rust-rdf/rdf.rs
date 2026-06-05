@@ -1,6 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use alloc::{borrow::Cow, string::String};
+use core::str::FromStr;
 
 const RDF_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 const RDF_DIR_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
@@ -59,6 +60,24 @@ impl core::fmt::Display for Datatype {
         } else {
             f.write_str(self.iri_string().as_ref())
         }
+    }
+}
+
+impl FromStr for Datatype {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        Ok(match input {
+            "rdf:langString" => Datatype::RdfLangString,
+            "rdf:dirLangString" => Datatype::RdfDirLangString,
+            _ => {
+                if let Some(input) = input.strip_prefix("xsd:") {
+                    Datatype::Xsd(xsd::Type::from(input))
+                } else {
+                    Self::from(input)
+                }
+            },
+        })
     }
 }
 

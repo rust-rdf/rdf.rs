@@ -234,3 +234,47 @@ impl From<(String, Option<Datatype>, Option<Language>)> for HeapTerm {
         }
     }
 }
+
+#[cfg(feature = "serde")]
+impl TryFrom<serde_json::Value> for HeapTerm {
+    type Error = ();
+
+    fn try_from(input: serde_json::Value) -> Result<Self, Self::Error> {
+        use serde_json::Value;
+        Ok(match input {
+            Value::Null => return Err(()), // not supported
+            Value::Bool(b) => HeapTerm::TypedValue(b.into()),
+            Value::Number(n) => HeapTerm::TypedValue(n.as_f64().unwrap().into()), // FIXME
+            Value::String(s) if s.starts_with("_:") => HeapTerm::BNode(s.clone()),
+            Value::String(s) => HeapTerm::Iri(s.clone()),
+            Value::Array(_) => return Err(()), // not supported
+            Value::Object(mut input) => {
+                let value = input.remove("@value").ok_or(())?;
+                let r#type = input
+                    .remove("@type")
+                    .and_then(|s| s.as_str().map(|s| s.parse::<Datatype>().ok()))
+                    .flatten();
+                let language = input
+                    .remove("@language")
+                    .and_then(|s| s.as_str().map(|s| s.to_string()));
+                match (r#type, language) {
+                    (None, None) => HeapTerm::String(value.to_string()),
+                    (None, Some(lang)) => {
+                        HeapTerm::TaggedString(value.to_string(), lang.into(), None)
+                    },
+                    (Some(r#type), None) => HeapTerm::TypedLiteral(value.to_string(), r#type),
+                    (Some(_), Some(_)) => return Err(()), // invalid literal
+                }
+            },
+        })
+    }
+}
+
+#[cfg(feature = "serde")]
+impl TryFrom<&serde_json::Value> for HeapTerm {
+    type Error = ();
+
+    fn try_from(input: &serde_json::Value) -> Result<Self, Self::Error> {
+        input.clone().try_into()
+    }
+}
