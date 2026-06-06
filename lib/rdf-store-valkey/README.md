@@ -5,7 +5,8 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-valkey)](https://crates.io/crates/rdf-store-valkey)
 [![Documentation](https://docs.rs/rdf-store-valkey/badge.svg)](https://docs.rs/rdf-store-valkey)
 
-**RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
+A [Valkey] storage adapter for **RDF.rs**, a [Rust] framework for [RDF]
+knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -167,3 +168,4 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [Rust]: https://rust-lang.org
+[Valkey]: https://valkey.io

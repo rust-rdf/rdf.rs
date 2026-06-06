@@ -4,6 +4,7 @@ use alloc::{borrow::Cow, string::ToString};
 use rdf_model::{HeapTerm, Term, TermHash, TermKind};
 use serde_json::Value;
 
+/// A term that can be stored in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTerm(pub(crate) Value);
 

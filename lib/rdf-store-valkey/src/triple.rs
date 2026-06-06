@@ -6,6 +6,7 @@ use crate::{
 use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
 use serde_json::Value;
 
+/// A triple statement (S, P, O) in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTriple(pub(crate) ValkeyTripleId, pub(crate) Quad<ValkeyTerm>);
 

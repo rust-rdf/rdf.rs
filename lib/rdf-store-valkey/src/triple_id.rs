@@ -9,6 +9,7 @@ use core::{hash::Hash, str::FromStr};
 use rdf_model::{TERM_HASH_LEN, TermHash};
 use serde_json::Value;
 
+/// A triple ID used to identify a triple in Valkey.
 #[derive(Clone, Default, Eq, Hash, PartialEq)]
 pub struct ValkeyTripleId(
     pub(crate) Option<TermHash>,

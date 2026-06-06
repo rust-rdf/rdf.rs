@@ -8,6 +8,7 @@ use alloc::{
 use fred::types::Key;
 use serde_json::Value;
 
+/// A graph key for fetching a graph from Valkey.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ValkeyGraphKey(pub(crate) String);
 

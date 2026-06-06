@@ -16,6 +16,8 @@ use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
+/// A transaction for reading and writing statements in Valkey.
+///
 /// ```mermaid
 /// sequenceDiagram
 ///   participant App as Application

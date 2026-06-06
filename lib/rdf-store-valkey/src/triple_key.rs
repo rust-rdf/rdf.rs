@@ -5,6 +5,7 @@ use alloc::string::{String, ToString};
 use fred::types::Key;
 use serde_json::Value;
 
+/// A triple key for fetching a triple from Valkey.
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ValkeyTripleKey(pub(crate) ValkeyTripleId);
 

@@ -5,6 +5,7 @@ use crate::{
 };
 use rdf_model::Statement;
 
+/// A quad statement (S, P, O, C) in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyQuad(pub(crate) ValkeyTriple, pub(crate) Option<ValkeyTerm>);
 

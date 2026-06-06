@@ -4,6 +4,7 @@ use crate::ValkeyTripleId;
 use rdf_model::TripleSlot;
 use thiserror::Error;
 
+/// An error when interacting with a Valkey store.
 #[derive(Error, Debug)]
 pub enum ValkeyError {
     #[error("read-only transaction")]

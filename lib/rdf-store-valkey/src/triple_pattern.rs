@@ -4,6 +4,7 @@ use crate::{ValkeyTerm, ValkeyTripleId};
 use alloc::string::ToString;
 use rdf_model::{HeapTerm, QuadPattern};
 
+/// A triple statement pattern for matching triples in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTriplePattern {
     pub(crate) glob: ValkeyTripleId,

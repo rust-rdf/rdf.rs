@@ -8,6 +8,8 @@ use fred::prelude::*;
 use rdf_store::Store;
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
+/// A quad store backed by a Valkey database.
+///
 /// ```mermaid
 /// graph TD
 ///   RG["rdf:g — set of graph IDs"]:::accent2 --> G["rdf:g:{graph_id} — set of triple IDs"]:::accent3

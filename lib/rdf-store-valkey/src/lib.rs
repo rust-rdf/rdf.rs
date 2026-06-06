@@ -1,9 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
-//! RDF.rs is a Rust framework for working with RDF knowledge graphs.
+//! A Valkey storage adapter for RDF.rs, a Rust framework for RDF
+//! knowledge graphs.
 //!
 //! ```rust
-//! # use rdf_store_valkey::*;
+//! use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
 //! ```
 
 #![no_std]
@@ -14,7 +15,7 @@ extern crate alloc;
 #[cfg(feature = "std")]
 extern crate std;
 
-pub use rdf_store::*;
+pub use rdf_store::{ReadTransaction, Store, StoreOptions, WriteTransaction};
 
 mod error;
 pub use error::*;
