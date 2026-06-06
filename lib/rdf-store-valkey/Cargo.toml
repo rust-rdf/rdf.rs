@@ -27,6 +27,7 @@ tokio = []
 tracing = ["fred/partial-tracing"]
 
 [dependencies]
+aquamarine.workspace = true
 arrayvec = { workspace = true, features = ["serde"] }
 async-stream.workspace = true
 async-trait.workspace = true

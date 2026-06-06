@@ -85,67 +85,67 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant Client as Client
-    participant Valkey as Valkey Server
-    Client->>Valkey: JSON.SET rdf:j:{triple_id} $ <triple-json>
-    Client->>Valkey: SADD rdf:g:{graph_id} {triple_id}
-    Client->>Valkey: SADD rdf:g {graph_id}
-    Valkey-->>Client: QUEUED
+  participant Client as Client
+  participant Valkey as Valkey Server
+  Client->>Valkey: JSON.SET rdf:j:{triple_id} $ {triple-json}
+  Client->>Valkey: SADD rdf:g:{graph_id} {triple_id}
+  Client->>Valkey: SADD rdf:g {graph_id}
+  Valkey-->>Client: QUEUED
 ```
 
 #### Remove Statement
 
 ```mermaid
 sequenceDiagram
-    participant Client as Client
-    participant Valkey as Valkey Server
-    Client->>Valkey: SREM rdf:g:{graph_id} {triple_id}
-    Valkey-->>Client: QUEUED
+  participant Client as Client
+  participant Valkey as Valkey Server
+  Client->>Valkey: SREM rdf:g:{graph_id} {triple_id}
+  Valkey-->>Client: QUEUED
 ```
 
 #### Write Transaction
 
 ```mermaid
 sequenceDiagram
-    participant App as Application
-    participant Client as Client (rdf-store-valkey)
-    participant Valkey as Valkey Server
+  participant App as Application
+  participant Client as Client (rdf-store-valkey)
+  participant Valkey as Valkey Server
 
-    rect transparent
-    Note over App,Client: Begin transaction
-    App->>Client: store.begin(writable: true)
-    Client->>Valkey: MULTI
-    Valkey-->>Client: OK
-    Client-->>App: tx
-    end
+  rect transparent
+  Note over App,Client: Begin transaction
+  App->>Client: store.begin(writable: true)
+  Client->>Valkey: MULTI
+  Valkey-->>Client: OK
+  Client-->>App: tx
+  end
 
-    rect transparent
-    Note over App,Client: Enqueue mutations
-    App->>Client: tx.remove(statement)
-    Client->>Valkey: SREM rdf:g:{graph_id} {triple_id}
-    Valkey-->>Client: QUEUED
-    App->>Client: tx.insert(statement)
-    Client->>Valkey: JSON.SET rdf:j:{triple_id} $ <triple-json>
-    Client->>Valkey: SADD rdf:g:{graph_id} {triple_id}
-    Client->>Valkey: SADD rdf:g {graph_id}
-    Valkey-->>Client: QUEUED
-    end
+  rect transparent
+  Note over App,Client: Enqueue mutations
+  App->>Client: tx.remove(statement)
+  Client->>Valkey: SREM rdf:g:{graph_id} {triple_id}
+  Valkey-->>Client: QUEUED
+  App->>Client: tx.insert(statement)
+  Client->>Valkey: JSON.SET rdf:j:{triple_id} $ {triple-json}
+  Client->>Valkey: SADD rdf:g:{graph_id} {triple_id}
+  Client->>Valkey: SADD rdf:g {graph_id}
+  Valkey-->>Client: QUEUED
+  end
 
-    rect transparent
-    Note over App,Client: Commit transaction
-    App->>Client: tx.commit()
-    Client->>Valkey: EXEC
-    Valkey-->>Client: RESP array
-    Client-->>App: drop(tx)
-    end
+  rect transparent
+  Note over App,Client: Commit transaction
+  App->>Client: tx.commit()
+  Client->>Valkey: EXEC
+  Valkey-->>Client: RESP array
+  Client-->>App: drop(tx)
+  end
 
-    rect transparent
-    Note over App,Client: Rollback transaction
-    App->>Client: tx.rollback()
-    Client->>Valkey: DISCARD
-    Valkey-->>Client: OK
-    Client-->>App: drop(tx)
-    end
+  rect transparent
+  Note over App,Client: Rollback transaction
+  App->>Client: tx.rollback()
+  Client->>Valkey: DISCARD
+  Valkey-->>Client: OK
+  Client-->>App: drop(tx)
+  end
 ```
 
 ## 👨‍💻 Development
