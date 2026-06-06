@@ -4,7 +4,8 @@ use crate::{
     ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple, ValkeyTripleId,
     ValkeyTripleKey, ValkeyTriplePattern,
 };
-use alloc::{borrow::Cow, boxed::Box, sync::Arc, vec::Vec};
+use alloc::{borrow::Cow, boxed::Box, string::String, sync::Arc, vec::Vec};
+use async_stream::stream;
 use async_trait::async_trait;
 use core::time::Duration;
 use derive_more::Debug;
@@ -136,6 +137,19 @@ impl ReadTransaction for ValkeyTransaction {
     type Error = ValkeyError;
     type Statement = ValkeyQuad;
     type Term = ValkeyTerm;
+
+    fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>> {
+        stream! {
+            let graph_ids: Vec<String> = self.client.smembers("rdf:g").await.unwrap_or_default();
+            for graph_id in graph_ids {
+                let graph_term = match graph_id.as_str() {
+                    "default" => continue, // skip the default graph
+                    _ => ValkeyTerm(Value::String(graph_id.into())),
+                };
+                yield Ok(graph_term);
+            }
+        }
+    }
 
     fn count(
         &self,

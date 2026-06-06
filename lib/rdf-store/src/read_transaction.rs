@@ -1,15 +1,18 @@
 // This is free and unencumbered software released into the public domain.
 
-use alloc::boxed::Box;
 use async_trait::async_trait;
 use futures::stream::{self, Stream};
 use rdf_model::{Statement, StatementPattern, Term};
 
-//#[async_trait]
+#[async_trait]
 pub trait ReadTransaction {
     type Error;
     type Statement: Statement;
     type Term: Term + Clone;
+
+    fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>> {
+        stream::empty()
+    }
 
     fn count(
         &self,
@@ -25,20 +28,4 @@ pub trait ReadTransaction {
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty()
     }
-}
-
-#[async_trait]
-pub trait WriteTransaction {
-    type Error;
-    type Statement: Statement;
-
-    async fn rollback(self) -> Result<(), Self::Error>;
-
-    async fn commit(self) -> Result<(), Self::Error>;
-
-    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
-
-    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error>;
-
-    // TODO: delete(&mut self, pattern)
 }
