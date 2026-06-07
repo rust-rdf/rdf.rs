@@ -1,20 +1,22 @@
 // This is free and unencumbered software released into the public domain.
 
-//! RDF.rs is a Rust framework for working with RDF knowledge graphs.
+//! A PostgreSQL storage adapter for RDF.rs, a Rust framework for RDF
+//! knowledge graphs.
 //!
 //! ```rust
-//! # use rdf_store_postgres::*;
+//! use rdf_store_postgres::{PostgresStore, PostgresTransaction};
 //! ```
 
 #![no_std]
 #![deny(unsafe_code)]
+#![allow(unused_imports)]
 
 extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
 
-pub use rdf_store::*;
+pub use rdf_store::{ReadTransaction, Store, StoreOptions, WriteTransaction};
 
 mod error;
 pub use error::*;

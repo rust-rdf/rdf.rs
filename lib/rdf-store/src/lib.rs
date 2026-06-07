@@ -1,9 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
-//! RDF.rs is a Rust framework for working with RDF knowledge graphs.
+//! An in-memory storage adapter for RDF.rs, a Rust framework for RDF
+//! knowledge graphs.
 //!
 //! ```rust
-//! use rdf_store::*;
+//! use rdf_store::{HeapStore, HeapTransaction};
 //! ```
 
 #![no_std]
