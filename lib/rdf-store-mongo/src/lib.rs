@@ -3,8 +3,10 @@
 //! A MongoDB storage adapter for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
+//! # Examples
+//!
 //! ```rust
-//! use rdf_store_mongo::*;
+//! use rdf_store_mongo::{MongoStore, MongoTransaction};
 //! ```
 
 #![no_std]

@@ -56,7 +56,7 @@ Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-qlever = { version = "0.3", default-features = false, features = ["rocksdb"] }
+rdf-store-qlever = { version = "0.3", default-features = false, features = ["libqlever"] }
 ```
 
 ## 👉 Examples

@@ -3,6 +3,8 @@
 //! An Oxigraph storage adapter for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
+//! # Examples
+//!
 //! ```rust
 //! use rdf_store_oxigraph::{OxigraphStore, OxigraphTransaction};
 //! ```
