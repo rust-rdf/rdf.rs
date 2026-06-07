@@ -3,8 +3,24 @@
 //! A Valkey storage adapter for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
-//! ```rust
+//! # Examples
+//!
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use rdf_model::SAMPLE_QUAD;
+//! use rdf_store::{Store, WriteTransaction};
 //! use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
+//!
+//! let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+//!
+//! let mut tx = store.write().await?;
+//!
+//! tx.insert(&(SAMPLE_QUAD.into())).await?;
+//!
+//! tx.commit().await?;
+//! # Ok(())
+//! # }
 //! ```
 
 #![no_std]
@@ -46,3 +62,7 @@ pub use triple_key::*;
 
 mod triple_pattern;
 pub use triple_pattern::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

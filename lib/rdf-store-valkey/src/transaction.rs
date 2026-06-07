@@ -18,6 +18,34 @@ use serde_json::Value;
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A transaction for reading and writing statements in Valkey.
 ///
+/// # Examples
+///
+/// Mutate the store in a write transaction:
+///
+/// ```rust,compile_fail
+/// let mut tx = store.write().await?;
+///
+/// tx.remove(old_quad.into()).await?;
+/// tx.insert(new_quad.into()).await?;
+///
+/// tx.commit().await?; // ...or:
+/// //tx.rollback().await?;
+/// ```
+///
+/// Access the store in a read-only transaction:
+///
+/// ```rust,compile_fail
+/// let tx = store.read().await?;
+///
+/// tx.r#match(quad_pattern)
+///     .for_each(|quad| async move {
+///         eprintln!("{:?}", quad);
+///     })
+///     .await;
+/// ```
+///
+/// # Flows
+///
 /// ```mermaid
 /// sequenceDiagram
 ///   participant App as Application

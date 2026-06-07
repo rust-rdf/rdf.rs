@@ -10,6 +10,19 @@ use rdf_store::Store;
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A quad store backed by a Valkey database.
 ///
+/// # Examples
+///
+/// ```rust,no_run
+/// # #[tokio::main]
+/// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # use rdf_store_valkey::ValkeyStore;
+/// let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// # Schema
+///
 /// ```mermaid
 /// graph TD
 ///   RG["rdf:g — set of graph IDs"]:::accent2 --> G["rdf:g:{graph_id} — set of triple IDs"]:::accent3

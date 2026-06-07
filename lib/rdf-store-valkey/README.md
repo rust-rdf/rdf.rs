@@ -5,8 +5,8 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-valkey)](https://crates.io/crates/rdf-store-valkey)
 [![Documentation](https://docs.rs/rdf-store-valkey/badge.svg)](https://docs.rs/rdf-store-valkey)
 
-A [Valkey] storage adapter for **RDF.rs**, a [Rust] framework for [RDF]
-knowledge graphs.
+A [Valkey] (fka Redis) storage adapter for **RDF.rs**, a [Rust] framework for
+[RDF] knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -24,6 +24,9 @@ knowledge graphs.
 
 ## ✨ Features
 
+- Implements a scalable, high-performance RDF quad store backed by [Valkey].
+- Compatible with [Valkey Bundle] (requires the [Valkey JSON] module).
+- Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
@@ -59,6 +62,12 @@ rdf-store-valkey = { version = "0.3", default-features = false, features = ["tls
 
 ## 👉 Examples
 
+### Running a Valkey Server
+
+```bash
+docker run -d -p 6379:6379 valkey/valkey-bundle
+```
+
 ### Importing the Library
 
 ```rust
@@ -67,13 +76,13 @@ use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
 
 ### Connecting to the Store
 
-```rust
+```rust,compile_fail
 let mut store = ValkeyStore::open("redis://127.0.0.1")?;
 ```
 
 ### Mutating the Store
 
-```rust
+```rust,compile_fail
 let mut tx = store.write().await?;
 
 tx.remove(old_quad.into()).await?;
@@ -85,7 +94,7 @@ tx.commit().await?; // ...or:
 
 ### Accessing the Store
 
-```rust
+```rust,compile_fail
 let tx = store.read().await?;
 
 tx.r#match(quad_pattern)
@@ -199,3 +208,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [Rust]: https://rust-lang.org
 [Valkey]: https://valkey.io
+[Valkey Bundle]: https://valkey.io/topics/valkey-bundle/
+[Valkey JSON]: https://valkey.io/topics/valkey-json/
