@@ -1,11 +1,11 @@
-# RDF.rs: SQLite Store
+# RDF.rs: Heap Store
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
 [![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
-[![Package](https://img.shields.io/crates/v/rdf-store-sqlite)](https://crates.io/crates/rdf-store-sqlite)
-[![Documentation](https://docs.rs/rdf-store-sqlite/badge.svg)](https://docs.rs/rdf-store-sqlite)
+[![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store)
+[![Documentation](https://docs.rs/rdf-store/badge.svg)](https://docs.rs/rdf-store)
 
-A [SQLite] storage adapter for **RDF.rs**, a [Rust] framework for
+An in-memory storage adapter for **RDF.rs**, a [Rust] framework for
 [RDF] knowledge graphs.
 
 > [!TIP]
@@ -24,7 +24,7 @@ A [SQLite] storage adapter for **RDF.rs**, a [Rust] framework for
 
 ## ✨ Features
 
-- Implements a scalable, high-performance RDF quad store backed by [SQLite].
+- Implements a scalable, high-performance in-memory RDF quad store.
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -40,7 +40,7 @@ A [SQLite] storage adapter for **RDF.rs**, a [Rust] framework for
 ### Installation via Cargo
 
 ```bash
-cargo add rdf-store-sqlite
+cargo add rdf-store
 ```
 
 ### Installation in `Cargo.toml`
@@ -49,14 +49,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-sqlite = { version = "0.3" }
+rdf-store = { version = "0.3" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-sqlite = { version = "0.3", default-features = false, features = ["alloc"] }
+rdf-store = { version = "0.3", default-features = false, features = ["unstable"] }
 ```
 
 ## 👉 Examples
@@ -64,13 +64,13 @@ rdf-store-sqlite = { version = "0.3", default-features = false, features = ["all
 ### Importing the Library
 
 ```rust
-use rdf_store_sqlite::{SqliteStore, SqliteTransaction};
+use rdf_store::{HeapStore, HeapTransaction};
 ```
 
 ### Creating a Store
 
 ```rust,compile_fail
-let mut store = SqliteStore::new().await?;  // in-memory store
+let mut store = HeapStore::new();
 ```
 
 ### Mutating the Store
@@ -99,7 +99,7 @@ tx.r#match(quad_pattern)
 
 ## 📚 Reference
 
-[docs.rs/rdf-store-sqlite](https://docs.rs/rdf-store-sqlite)
+[docs.rs/rdf-store](https://docs.rs/rdf-store)
 
 ## 👨‍💻 Development
 
@@ -109,16 +109,14 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 ---
 
-[![Share on X](https://img.shields.io/badge/share%20on-x-03A9F4?logo=x)](https://x.com/intent/post?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite&text=rdf-store-sqlite)
-[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite&title=rdf-store-sqlite)
-[![Share on Hacker News](https://img.shields.io/badge/share%20on-hn-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite&t=rdf-store-sqlite)
-[![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite)
-[![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite)
+[![Share on X](https://img.shields.io/badge/share%20on-x-03A9F4?logo=x)](https://x.com/intent/post?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store&text=rdf-store)
+[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store&title=rdf-store)
+[![Share on Hacker News](https://img.shields.io/badge/share%20on-hn-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store&t=rdf-store)
+[![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store)
+[![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store)
 
-[feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf-store-sqlite/Cargo.toml
+[feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf-store/Cargo.toml
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [Rust]: https://rust-lang.org
-[SQLite]: https://sqlite.org
-[Turso]: https://turso.tech

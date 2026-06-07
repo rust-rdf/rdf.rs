@@ -5,7 +5,8 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-postgres)](https://crates.io/crates/rdf-store-postgres)
 [![Documentation](https://docs.rs/rdf-store-postgres/badge.svg)](https://docs.rs/rdf-store-postgres)
 
-**RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
+A [PostgreSQL] storage adapter for **RDF.rs**, a [Rust] framework for
+[RDF] knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -23,6 +24,8 @@
 
 ## ✨ Features
 
+- Implements a scalable, high-performance RDF quad store backed by [PostgreSQL].
+- Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
@@ -64,6 +67,36 @@ rdf-store-postgres = { version = "0.3", default-features = false, features = ["t
 use rdf_store_postgres::{PostgresStore, PostgresTransaction};
 ```
 
+### Connecting to the Store
+
+```rust,compile_fail
+let mut store = PostgresStore::open("postgres://").await?;
+```
+
+### Mutating the Store
+
+```rust,compile_fail
+let mut tx = store.write().await?;
+
+tx.remove(old_quad.into()).await?;
+tx.insert(new_quad.into()).await?;
+
+tx.commit().await?; // ...or:
+//tx.rollback().await?;
+```
+
+### Accessing the Store
+
+```rust,compile_fail
+let tx = store.read().await?;
+
+tx.r#match(quad_pattern)
+    .for_each(|quad| async move {
+        eprintln!("{:?}", quad);
+    })
+    .await;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-postgres](https://docs.rs/rdf-store-postgres)
@@ -85,5 +118,6 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf-store-postgres/Cargo.toml
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
+[PostgreSQL]: https://postgresql.org
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [Rust]: https://rust-lang.org
