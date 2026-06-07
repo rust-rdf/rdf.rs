@@ -30,6 +30,13 @@ impl ValkeyStore {
     }
 }
 
+impl Default for ValkeyStore {
+    /// Connects to `redis://127.0.0.1` by default.
+    fn default() -> Self {
+        Self::open("redis://127.0.0.1").expect("should connect to redis://127.0.0.1")
+    }
+}
+
 #[async_trait]
 impl Store for ValkeyStore {
     type Error = ValkeyError;

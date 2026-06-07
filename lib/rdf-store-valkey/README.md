@@ -65,6 +65,36 @@ rdf-store-valkey = { version = "0.3", default-features = false, features = ["tls
 use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
 ```
 
+### Connecting to the Store
+
+```rust
+let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+```
+
+### Mutating the Store
+
+```rust
+let mut tx = store.write().await?;
+
+tx.remove(old_quad.into()).await?;
+tx.insert(new_quad.into()).await?;
+
+tx.commit().await?; // ...or:
+//tx.rollback().await?;
+```
+
+### Accessing the Store
+
+```rust
+let tx = store.read().await?;
+
+tx.r#match(quad_pattern)
+    .for_each(|quad| async move {
+        eprintln!("{:?}", quad);
+    })
+    .await;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-valkey](https://docs.rs/rdf-store-valkey)
