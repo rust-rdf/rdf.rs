@@ -1,0 +1,38 @@
+[package]
+name = "rdf-store-oxigraph"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "An Oxigraph storage adapter for RDF.rs."
+#documentation.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = ["rocksdb"]
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std", "rdf-store/std"]
+unstable = []
+
+# Features:
+rocksdb = []
+
+[dependencies]
+async-stream.workspace = true
+async-trait.workspace = true
+derive_more = { workspace = true, features = ["debug"] }
+futures.workspace = true
+rdf-model.workspace = true
+rdf-store.workspace = true
+thiserror.workspace = true
+xsd.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
