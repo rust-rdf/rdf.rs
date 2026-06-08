@@ -58,6 +58,21 @@ Enable only specific features:
 rdf-store-virtuoso = { version = "0.3", default-features = false, features = ["tracing"] }
 ```
 
+### Installation of the ODBC Driver
+
+<details>
+  <summary>Install the ODBC Driver on macOS with Homebrew</summary>
+
+  ```bash
+  brew install virtuoso
+  brew unlink virtuoso
+  brew install unixodbc
+  ```
+
+  Find the ODBC driver configuration file at `/opt/homebrew/etc/odbcinst.ini`
+  and the ODBC driver at `/opt/homebrew/opt/virtuoso/lib/virtodbc.so`.
+</details>
+
 ## 👉 Examples
 
 ### Running a Virtuoso Server
