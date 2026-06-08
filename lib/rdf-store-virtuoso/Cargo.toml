@@ -29,7 +29,7 @@ async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-odbc-api = { version = "28.1", no-default-features = true }
+odbc-api = { version = "28.1", default-features = true }
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true

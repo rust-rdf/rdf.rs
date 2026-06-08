@@ -63,7 +63,7 @@ rdf-store-virtuoso = { version = "0.3", default-features = false, features = ["t
 ### Running a Virtuoso Server
 
 ```bash
-docker run -p 1111:1111 -p 8890:8890 openlink/virtuoso-opensource-7
+docker run -p 1111:1111 -p 8890:8890 -e DBA_PASSWORD=mysecret openlink/virtuoso-opensource-7
 ```
 
 ### Importing the Library
