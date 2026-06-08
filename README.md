@@ -69,6 +69,21 @@ use rdf::{format, model, query, reader, store, stream, vocab, writer};
 
 [docs.rs/rdf_rs](https://docs.rs/rdf_rs)
 
+### Storage Adapters
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+| [rdf-store](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store#readme) | [![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store) | [![Documentation](https://img.shields.io/docsrs/rdf-store?label=docs.rs)](https://docs.rs/rdf-store) |
+| [rdf-store-mongo](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-mongo#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-mongo)](https://crates.io/crates/rdf-store-mongo) | [![Documentation](https://img.shields.io/docsrs/rdf-store-mongo?label=docs.rs)](https://docs.rs/rdf-store-mongo) |
+| [rdf-store-neo4j](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-neo4j#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-neo4j)](https://crates.io/crates/rdf-store-neo4j) | [![Documentation](https://img.shields.io/docsrs/rdf-store-neo4j?label=docs.rs)](https://docs.rs/rdf-store-neo4j) |
+| [rdf-store-oxigraph](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-oxigraph#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-oxigraph)](https://crates.io/crates/rdf-store-oxigraph) | [![Documentation](https://img.shields.io/docsrs/rdf-store-oxigraph?label=docs.rs)](https://docs.rs/rdf-store-oxigraph) |
+| [rdf-store-postgres](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-postgres#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-postgres)](https://crates.io/crates/rdf-store-postgres) | [![Documentation](https://img.shields.io/docsrs/rdf-store-postgres?label=docs.rs)](https://docs.rs/rdf-store-postgres) |
+| [rdf-store-qlever](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-qlever#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-qlever)](https://crates.io/crates/rdf-store-qlever) | [![Documentation](https://img.shields.io/docsrs/rdf-store-qlever?label=docs.rs)](https://docs.rs/rdf-store-qlever) |
+| [rdf-store-sqlite](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-sqlite)](https://crates.io/crates/rdf-store-sqlite) | [![Documentation](https://img.shields.io/docsrs/rdf-store-sqlite?label=docs.rs)](https://docs.rs/rdf-store-sqlite) |
+| [rdf-store-turso](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-turso#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-turso)](https://crates.io/crates/rdf-store-turso) | [![Documentation](https://img.shields.io/docsrs/rdf-store-turso?label=docs.rs)](https://docs.rs/rdf-store-turso) |
+| [rdf-store-valkey](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-valkey#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-valkey)](https://crates.io/crates/rdf-store-valkey) | [![Documentation](https://img.shields.io/docsrs/rdf-store-valkey?label=docs.rs)](https://docs.rs/rdf-store-valkey) |
+| [rdf-store-virtuoso](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-virtuoso#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-virtuoso)](https://crates.io/crates/rdf-store-virtuoso) | [![Documentation](https://img.shields.io/docsrs/rdf-store-virtuoso?label=docs.rs)](https://docs.rs/rdf-store-virtuoso) |
+
 ## 👨‍💻 Development
 
 ```bash
