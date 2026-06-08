@@ -29,6 +29,7 @@ async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
+neo4rs = { version = "0.8", default-features = false }
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
