@@ -27,6 +27,7 @@ unstable = []
 aquamarine.workspace = true
 async-stream.workspace = true
 async-trait.workspace = true
+derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
