@@ -5,8 +5,7 @@
 [![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store)
 [![Documentation](https://docs.rs/rdf-store/badge.svg)](https://docs.rs/rdf-store)
 
-An in-memory storage adapter for **RDF.rs**, a [Rust] framework for
-[RDF] knowledge graphs.
+An in-memory storage adapter for **[RDF.rs]** knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -119,4 +118,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org

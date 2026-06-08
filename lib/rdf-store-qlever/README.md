@@ -5,8 +5,7 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-qlever)](https://crates.io/crates/rdf-store-qlever)
 [![Documentation](https://docs.rs/rdf-store-qlever/badge.svg)](https://docs.rs/rdf-store-qlever)
 
-A [QLever] storage adapter for **RDF.rs**, a [Rust] framework for
-[RDF] knowledge graphs.
+A [QLever] storage adapter for **[RDF.rs]** knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -24,7 +23,7 @@ A [QLever] storage adapter for **RDF.rs**, a [Rust] framework for
 
 ## ✨ Features
 
-- Implements a scalable, high-performance RDF quad store backed by [QLever].
+- Implements a scalable, high-performance RDF store backed by [QLever].
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -90,4 +89,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 [QLever]: https://qlever.dev
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org

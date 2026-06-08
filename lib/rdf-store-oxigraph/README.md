@@ -5,8 +5,7 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-oxigraph)](https://crates.io/crates/rdf-store-oxigraph)
 [![Documentation](https://docs.rs/rdf-store-oxigraph/badge.svg)](https://docs.rs/rdf-store-oxigraph)
 
-An [Oxigraph] storage adapter for **RDF.rs**, a [Rust] framework for
-[RDF] knowledge graphs.
+An [Oxigraph] storage adapter for **[RDF.rs]** knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -24,7 +23,7 @@ An [Oxigraph] storage adapter for **RDF.rs**, a [Rust] framework for
 
 ## ✨ Features
 
-- Implements a scalable, high-performance RDF quad store backed by [Oxigraph].
+- Implements a scalable, high-performance RDF store backed by [Oxigraph].
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -90,4 +89,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 [Oxigraph]: https://oxigraph.org
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org

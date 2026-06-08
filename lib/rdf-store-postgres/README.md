@@ -5,8 +5,7 @@
 [![Package](https://img.shields.io/crates/v/rdf-store-postgres)](https://crates.io/crates/rdf-store-postgres)
 [![Documentation](https://docs.rs/rdf-store-postgres/badge.svg)](https://docs.rs/rdf-store-postgres)
 
-A [PostgreSQL] storage adapter for **RDF.rs**, a [Rust] framework for
-[RDF] knowledge graphs.
+A [PostgreSQL] storage adapter for **[RDF.rs]** knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -24,7 +23,7 @@ A [PostgreSQL] storage adapter for **RDF.rs**, a [Rust] framework for
 
 ## ✨ Features
 
-- Implements a scalable, high-performance RDF quad store backed by [PostgreSQL].
+- Implements a scalable, high-performance RDF store backed by [PostgreSQL].
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -126,4 +125,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 [PostgreSQL]: https://postgresql.org
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
