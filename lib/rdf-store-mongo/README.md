@@ -61,6 +61,12 @@ rdf-store-mongo = { version = "0.3", default-features = false, features = ["tls"
 
 ## 👉 Examples
 
+### Running a MongoDB Server
+
+```bash
+docker run -p 27017:27017 mongodb/mongodb-community-server
+```
+
 ### Importing the Library
 
 ```rust

@@ -61,6 +61,12 @@ rdf-store-neo4j = { version = "0.3", default-features = false, features = ["tls"
 
 ## 👉 Examples
 
+### Running a Neo4j Server
+
+```bash
+docker run -p 7474:7474 -p 7687:7687 neo4j
+```
+
 ### Importing the Library
 
 ```rust

@@ -61,6 +61,12 @@ rdf-store-postgres = { version = "0.3", default-features = false, features = ["t
 
 ## 👉 Examples
 
+### Running a PostgreSQL Server
+
+```bash
+docker run -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres
+```
+
 ### Importing the Library
 
 ```rust

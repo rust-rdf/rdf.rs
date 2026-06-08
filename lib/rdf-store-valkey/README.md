@@ -65,7 +65,7 @@ rdf-store-valkey = { version = "0.3", default-features = false, features = ["tls
 ### Running a Valkey Server
 
 ```bash
-docker run -d -p 6379:6379 valkey/valkey-bundle
+docker run -p 6379:6379 valkey/valkey-bundle
 ```
 
 ### Importing the Library
