@@ -23,6 +23,9 @@ pub use rdf_store::{ReadTransaction, Store, StoreOptions, WriteTransaction};
 mod error;
 pub use error::*;
 
+mod schema;
+pub use schema::*;
+
 mod store;
 pub use store::*;
 
