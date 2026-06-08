@@ -22,6 +22,7 @@ std = ["alloc", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 [dependencies]
+aquamarine.workspace = true
 async-stream.workspace = true
 async-trait.workspace = true
 futures.workspace = true
