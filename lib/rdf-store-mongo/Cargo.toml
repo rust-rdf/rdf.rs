@@ -22,13 +22,15 @@ std = ["alloc", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 # Features:
-tls = []
+tls = ["mongodb/rustls-tls"]
+tracing = ["mongodb/tracing-unstable"]
 
 [dependencies]
 async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
+mongodb = { version = "3.7", default-features = false, features = ["compat-3-0-0", "dns-resolver"] }
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
