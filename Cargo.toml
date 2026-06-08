@@ -2,7 +2,20 @@
 
 [workspace]
 members = ["bin/*", "lib/*"]
-default-members = ["bin/*", "lib/*"]
+default-members = [
+    "lib/rdf_rs",
+    "lib/rdf-borsh",
+    "lib/rdf-derive",
+    "lib/rdf-format",
+    "lib/rdf-model",
+    "lib/rdf-query",
+    "lib/rdf-reader",
+    "lib/rdf-store",
+    "lib/rdf-stream",
+    "lib/rdf-vocab",
+    "lib/rdf-writer",
+    "lib/xsd",
+]
 resolver = "2"
 
 [workspace.package]
@@ -29,9 +42,15 @@ rdf-model = { version = "=0.3.3", default-features = true }
 rdf-query = { version = "=0.3.3", default-features = true }
 rdf-reader = { version = "=0.3.3", default-features = true }
 rdf-store = { version = "=0.3.3", default-features = true }
+rdf-store-mongo = { version = "=0.3.3", default-features = true }
+rdf-store-neo4j = { version = "=0.3.3", default-features = true }
+rdf-store-oxigraph = { version = "=0.3.3", default-features = true }
 rdf-store-postgres = { version = "=0.3.3", default-features = true }
+rdf-store-qlever = { version = "=0.3.3", default-features = true }
 rdf-store-sqlite = { version = "=0.3.3", default-features = true }
+rdf-store-turso = { version = "=0.3.3", default-features = true }
 rdf-store-valkey = { version = "=0.3.3", default-features = true }
+rdf-store-virtuoso = { version = "=0.3.3", default-features = true }
 rdf-stream = { version = "=0.3.3", default-features = true }
 rdf-vocab = { version = "=0.3.3", default-features = true }
 rdf-writer = { version = "=0.3.3", default-features = true }
@@ -77,9 +96,15 @@ rdf-model = { path = "lib/rdf-model" }
 rdf-query = { path = "lib/rdf-query" }
 rdf-reader = { path = "lib/rdf-reader" }
 rdf-store = { path = "lib/rdf-store" }
+rdf-store-mongo = { path = "lib/rdf-store-mongo" }
+rdf-store-neo4j = { path = "lib/rdf-store-neo4j" }
+rdf-store-oxigraph = { path = "lib/rdf-store-oxigraph" }
 rdf-store-postgres = { path = "lib/rdf-store-postgres" }
+rdf-store-qlever = { path = "lib/rdf-store-qlever" }
 rdf-store-sqlite = { path = "lib/rdf-store-sqlite" }
+rdf-store-turso = { path = "lib/rdf-store-turso" }
 rdf-store-valkey = { path = "lib/rdf-store-valkey" }
+rdf-store-virtuoso = { path = "lib/rdf-store-virtuoso" }
 rdf-stream = { path = "lib/rdf-stream" }
 rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
