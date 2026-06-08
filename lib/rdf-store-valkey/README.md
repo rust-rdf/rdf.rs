@@ -76,7 +76,7 @@ use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
 ### Connecting to the Store
 
 ```rust,compile_fail
-let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+let mut store = ValkeyStore::open("redis://localhost")?;
 ```
 
 ### Mutating the Store

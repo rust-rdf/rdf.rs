@@ -1,9 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::MongoError;
+use crate::{MongoError, MongoTransaction};
+use alloc::boxed::Box;
+use async_trait::async_trait;
 use derive_more::Debug;
 use futures::executor::block_on;
 use mongodb::Client;
+use rdf_store::Store;
 
 /// The default localhost connection URL for MongoDB.
 ///
@@ -25,6 +28,7 @@ pub const DEFAULT_URL: &str = "mongodb://localhost:27017";
 /// ```
 #[derive(Clone, Debug)]
 pub struct MongoStore {
+    #[debug(skip)]
     pub client: Client,
 }
 
@@ -36,7 +40,23 @@ impl MongoStore {
 }
 
 impl Default for MongoStore {
+    /// Connects to `mongodb://localhost:27017` by default.
     fn default() -> Self {
         block_on(Self::open(DEFAULT_URL)).expect("should connect to mongodb://localhost:27017")
+    }
+}
+
+#[async_trait]
+impl Store for MongoStore {
+    type Error = MongoError;
+    type Read = MongoTransaction;
+    type Write = MongoTransaction;
+
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        MongoTransaction::begin(self, false).await
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
+        MongoTransaction::begin(self, true).await
     }
 }

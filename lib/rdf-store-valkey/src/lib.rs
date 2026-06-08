@@ -12,7 +12,7 @@
 //! use rdf_store::{Store, WriteTransaction};
 //! use rdf_store_valkey::{ValkeyStore, ValkeyTransaction};
 //!
-//! let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+//! let mut store = ValkeyStore::open("redis://localhost:6379")?;
 //!
 //! let mut tx = store.write().await?;
 //!

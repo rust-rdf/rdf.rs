@@ -1,9 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::VirtuosoError;
+use crate::{VirtuosoError, VirtuosoTransaction};
 use alloc::boxed::Box;
+use async_trait::async_trait;
 use derive_more::Debug;
 use odbc_api::{Connection, ConnectionOptions, Environment};
+use rdf_store::Store;
 use std::sync::LazyLock;
 
 /// The default localhost ODBC connection string for Virtuoso.
@@ -43,7 +45,23 @@ impl VirtuosoStore {
 }
 
 impl Default for VirtuosoStore {
+    /// Connects to `tcp://localhost:1111` by default.
     fn default() -> Self {
-        Self::open(DEFAULT_CONNECTION_STRING).expect("should connect to localhost:1111")
+        Self::open(DEFAULT_CONNECTION_STRING).expect("should connect to tcp://localhost:1111")
+    }
+}
+
+#[async_trait]
+impl Store for VirtuosoStore {
+    type Error = VirtuosoError;
+    type Read = VirtuosoTransaction;
+    type Write = VirtuosoTransaction;
+
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        todo!() // FIXME: VirtuosoTransaction::begin(self, false).await
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
+        todo!() // FIXME: VirtuosoTransaction::begin(self, true).await
     }
 }

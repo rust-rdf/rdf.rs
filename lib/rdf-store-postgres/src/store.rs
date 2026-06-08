@@ -1,8 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::PostgresError;
+use crate::{PostgresError, PostgresTransaction};
+use alloc::boxed::Box;
+use async_trait::async_trait;
 use derive_more::Debug;
 use futures::executor::block_on;
+use rdf_store::Store;
 use tokio_postgres::{Client, Connection, NoTls, Socket, tls::NoTlsStream};
 
 /// The default localhost connection URL for PostgreSQL.
@@ -39,8 +42,24 @@ impl PostgresStore {
 }
 
 impl Default for PostgresStore {
+    /// Connects to `postgres://postgres@localhost:5432` by default.
     fn default() -> Self {
         block_on(Self::open(DEFAULT_URL))
             .expect("should connect to postgres://postgres@localhost:5432")
+    }
+}
+
+#[async_trait]
+impl Store for PostgresStore {
+    type Error = PostgresError;
+    type Read = PostgresTransaction;
+    type Write = PostgresTransaction;
+
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        todo!() // FIXME: PostgresTransaction::begin(self, false).await
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
+        todo!() // FIXME: PostgresTransaction::begin(self, true).await
     }
 }

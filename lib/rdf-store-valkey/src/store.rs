@@ -7,6 +7,11 @@ use derive_more::Debug;
 use fred::prelude::*;
 use rdf_store::Store;
 
+/// The default localhost connection URL for Valkey.
+///
+/// See: <https://valkey.io/topics/cli/>
+pub const DEFAULT_URL: &str = "redis://localhost:6379";
+
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A quad store backed by a Valkey database.
 ///
@@ -16,7 +21,7 @@ use rdf_store::Store;
 /// # #[tokio::main]
 /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// # use rdf_store_valkey::ValkeyStore;
-/// let mut store = ValkeyStore::open("redis://127.0.0.1")?;
+/// let mut store = ValkeyStore::open("redis://localhost:6379")?;
 /// # Ok(())
 /// # }
 /// ```
@@ -44,9 +49,9 @@ impl ValkeyStore {
 }
 
 impl Default for ValkeyStore {
-    /// Connects to `redis://127.0.0.1` by default.
+    /// Connects to `redis://localhost:6379` by default.
     fn default() -> Self {
-        Self::open("redis://127.0.0.1").expect("should connect to redis://127.0.0.1")
+        Self::open(DEFAULT_URL).expect("should connect to redis://localhost:6379")
     }
 }
 

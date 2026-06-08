@@ -1,10 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::Neo4jError;
-use alloc::string::String;
+use crate::{Neo4jError, Neo4jTransaction};
+use alloc::{boxed::Box, string::String};
+use async_trait::async_trait;
 use derive_more::Debug;
 use futures::executor::block_on;
 use neo4rs::Graph;
+use rdf_store::Store;
 
 /// The default localhost connection URL for Neo4j.
 ///
@@ -52,8 +54,24 @@ impl Neo4jStore {
 }
 
 impl Default for Neo4jStore {
+    /// Connects to `bolt://localhost:7687` by default.
     fn default() -> Self {
         block_on(Self::open(DEFAULT_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .expect("should connect to bolt://localhost:7687")
+    }
+}
+
+#[async_trait]
+impl Store for Neo4jStore {
+    type Error = Neo4jError;
+    type Read = Neo4jTransaction;
+    type Write = Neo4jTransaction;
+
+    async fn read(&mut self) -> Result<Self::Read, Self::Error> {
+        Neo4jTransaction::begin(self, false).await
+    }
+
+    async fn write(&mut self) -> Result<Self::Write, Self::Error> {
+        Neo4jTransaction::begin(self, true).await
     }
 }

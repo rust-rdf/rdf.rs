@@ -75,7 +75,7 @@ use rdf_store_postgres::{PostgresStore, PostgresTransaction};
 ### Connecting to the Store
 
 ```rust,compile_fail
-let mut store = PostgresStore::open("postgres://").await?;
+let mut store = PostgresStore::open("postgres://localhost").await?;
 ```
 
 ### Mutating the Store
