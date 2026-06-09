@@ -75,6 +75,18 @@ impl Decimal {
         use alloc::string::ToString;
         serde_json::Value::String(self.to_string())
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        use alloc::string::ToString;
+        // TODO: bson::Bson::Decimal128
+        bson::Bson::String(self.to_string())
+    }
 }
 
 impl core::fmt::Display for Decimal {
@@ -191,5 +203,12 @@ impl TryFrom<&Decimal> for i128 {
 
     fn try_from(input: &Decimal) -> Result<Self, Self::Error> {
         input.to_i128().ok_or(())
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<Decimal> for bson::Bson {
+    fn from(input: Decimal) -> Self {
+        input.into_bson()
     }
 }

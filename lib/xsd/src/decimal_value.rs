@@ -118,6 +118,33 @@ impl DecimalValue {
             Byte(n) => n.into(),
         }
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        use DecimalValue::*;
+        use bson::{Bson, Decimal128};
+        match self {
+            Decimal(d) => d.into_bson(),
+            Integer(n) => {
+                if n >= i64::MIN as _ && n <= i64::MAX as _ {
+                    Bson::Int64(n as _)
+                } else {
+                    use alloc::string::ToString;
+                    use core::str::FromStr;
+                    Bson::Decimal128(Decimal128::from_str(n.to_string().as_str()).unwrap()) // FIXME
+                }
+            },
+            Long(n) => Bson::Int64(n),
+            Int(n) => Bson::Int32(n),
+            Short(n) => Bson::Int32(n.into()),
+            Byte(n) => Bson::Int32(n.into()),
+        }
+    }
 }
 
 impl From<i8> for DecimalValue {
@@ -209,5 +236,12 @@ impl From<DecimalValue> for serde_json::Value {
 impl From<&DecimalValue> for serde_json::Value {
     fn from(input: &DecimalValue) -> Self {
         input.clone().into_json()
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<DecimalValue> for bson::Bson {
+    fn from(input: DecimalValue) -> Self {
+        bson::Bson::Double(input.as_f64())
     }
 }

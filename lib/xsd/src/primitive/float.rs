@@ -30,6 +30,16 @@ impl Float {
             .unwrap()
     }
 
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        bson::Bson::Double(self.as_f64())
+    }
+
     pub fn into_inner(self) -> f32 {
         self.0.into_inner()
     }
@@ -148,5 +158,12 @@ impl borsh::BorshDeserialize for Float {
     fn deserialize_reader<R: borsh::io::Read>(reader: &mut R) -> borsh::io::Result<Self> {
         let value = f32::deserialize_reader(reader)?;
         Ok(Float(value.into()))
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<Float> for bson::Bson {
+    fn from(input: Float) -> Self {
+        input.into_bson()
     }
 }

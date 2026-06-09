@@ -185,6 +185,54 @@ impl PrimitiveValue {
             QName(n, s) => Value::String(format!("{}:{}", n, s)),
         }
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        use PrimitiveValue::*;
+        #[cfg(feature = "jiff")]
+        use alloc::string::ToString;
+        use bson::{Binary, Bson, spec::BinarySubtype};
+        #[allow(unused)]
+        match self {
+            String(s) => Bson::String(s),
+            Boolean(b) => b.into_bson(),
+            Decimal(d) => d.into_bson(),
+            Float(f) => f.into_bson(),
+            Double(d) => d.into_bson(),
+            #[cfg(feature = "jiff")]
+            Duration(d) => Bson::String(d.to_string()),
+            #[cfg(feature = "jiff")]
+            DateTime(d) => Bson::String(d.to_string()),
+            #[cfg(feature = "jiff")]
+            Time(t) => Bson::String(t.to_string()),
+            #[cfg(feature = "jiff")]
+            Date(d) => Bson::String(d.to_string()),
+            GYearMonth((y, m)) => Bson::String(format!("{}-{}", y, m)),
+            GYear(y) => Bson::String(y.to_string()),
+            GMonthDay((m, d)) => Bson::String(format!("{}-{}", m, d)),
+            GDay(d) => Bson::String(d.to_string()),
+            GMonth(m) => Bson::String(m.to_string()),
+            #[cfg(feature = "alloc")]
+            HexBinary(b) => Bson::Binary(Binary {
+                bytes: b,
+                subtype: BinarySubtype::Generic,
+            }),
+            #[cfg(feature = "alloc")]
+            Base64Binary(b) => Bson::Binary(Binary {
+                bytes: b,
+                subtype: BinarySubtype::Generic,
+            }),
+            #[cfg(feature = "alloc")]
+            AnyUri(u) => Bson::String(u.to_string()),
+            #[cfg(feature = "alloc")]
+            QName(n, s) => Bson::String(format!("{}:{}", n, s)),
+        }
+    }
 }
 
 impl From<&'static str> for PrimitiveValue {
@@ -390,5 +438,12 @@ impl From<PrimitiveValue> for serde_json::Value {
 impl From<&PrimitiveValue> for serde_json::Value {
     fn from(input: &PrimitiveValue) -> Self {
         input.clone().into_json()
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<PrimitiveValue> for bson::Bson {
+    fn from(input: PrimitiveValue) -> Self {
+        input.into_bson()
     }
 }

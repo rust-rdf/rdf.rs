@@ -44,6 +44,16 @@ impl Boolean {
         serde_json::Value::Bool(self.as_bool())
     }
 
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        bson::Bson::Boolean(self.as_bool())
+    }
+
     pub fn into_inner(self) -> bool {
         self.0
     }
@@ -85,5 +95,12 @@ impl FromStr for Boolean {
             "1" | "true" => Ok(Self(true)),
             _ => Err(ParseError),
         }
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<Boolean> for bson::Bson {
+    fn from(input: Boolean) -> Self {
+        input.into_bson()
     }
 }

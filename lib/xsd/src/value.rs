@@ -114,6 +114,19 @@ impl Value {
             Self::Decimal(val) => val.into_json(),
         }
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        match self {
+            Self::Primitive(val) => val.into_bson(),
+            Self::Decimal(val) => val.into_bson(),
+        }
+    }
 }
 
 impl From<DecimalValue> for Value {
@@ -272,5 +285,12 @@ impl From<Value> for serde_json::Value {
 impl From<&Value> for serde_json::Value {
     fn from(input: &Value) -> Self {
         input.clone().into_json()
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<Value> for bson::Bson {
+    fn from(input: Value) -> Self {
+        input.into_bson()
     }
 }
