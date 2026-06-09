@@ -96,7 +96,7 @@ impl HeapTerm {
 
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
-        use serde_json::{Number as JsonNumber, Value as JsonValue, json};
+        use serde_json::{Value as JsonValue, json};
         match self {
             Self::Iri(str) => JsonValue::String(str),
             Self::BNode(id) => JsonValue::String(id),
@@ -123,6 +123,44 @@ impl HeapTerm {
             },
         }
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        use bson::{Bson, Document};
+        match self {
+            HeapTerm::Iri(str) => Bson::String(str),
+            HeapTerm::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
+            HeapTerm::String(val) => {
+                let mut doc = Document::new();
+                doc.insert("@value", val);
+                Bson::Document(doc)
+            },
+            HeapTerm::TaggedString(val, lang, _) => {
+                let mut doc = Document::new();
+                doc.insert("@value", val);
+                doc.insert("@language", lang);
+                Bson::Document(doc)
+            },
+            HeapTerm::TypedLiteral(lit, r#type) => {
+                let mut doc = Document::new();
+                doc.insert("@value", lit);
+                doc.insert("@type", r#type.to_string());
+                Bson::Document(doc)
+            },
+            HeapTerm::TypedValue(val) => {
+                let r#type = val.r#type();
+                let mut doc = Document::new();
+                doc.insert("@value", val.into_bson());
+                doc.insert("@type", r#type.curie());
+                Bson::Document(doc)
+            },
+        }
+    }
 }
 
 impl Term for HeapTerm {
@@ -145,6 +183,15 @@ impl Term for &HeapTerm {
     }
 }
 
+impl<T> From<&T> for HeapTerm
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<&dyn Term> for HeapTerm {
     fn from(term: &dyn Term) -> Self {
         match term.kind() {
@@ -157,12 +204,6 @@ impl From<&dyn Term> for HeapTerm {
 
 impl From<CowTerm<'_>> for HeapTerm {
     fn from(input: CowTerm<'_>) -> Self {
-        Self::from(&input)
-    }
-}
-
-impl From<&CowTerm<'_>> for HeapTerm {
-    fn from(input: &CowTerm<'_>) -> Self {
         match input {
             CowTerm::Iri(s) => HeapTerm::Iri(s.to_string()),
             CowTerm::BNode(s) => HeapTerm::BNode(s.to_string()),
@@ -185,12 +226,6 @@ impl From<&str> for HeapTerm {
 impl From<String> for HeapTerm {
     fn from(value: String) -> Self {
         Self::String(value)
-    }
-}
-
-impl From<&String> for HeapTerm {
-    fn from(value: &String) -> Self {
-        Self::String(value.clone())
     }
 }
 
@@ -227,6 +262,13 @@ impl From<(String, Option<Datatype>, Option<Language>)> for HeapTerm {
             (Some(language), None) => Self::tagged_string(literal, language),
             (Some(language), Some(_)) => Self::tagged_string(literal, language), // TODO
         }
+    }
+}
+
+#[cfg(feature = "bson")]
+impl From<HeapTerm> for bson::Bson {
+    fn from(input: HeapTerm) -> Self {
+        input.into_bson()
     }
 }
 

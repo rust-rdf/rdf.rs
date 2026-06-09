@@ -28,3 +28,9 @@ pub use store::*;
 
 mod transaction;
 pub use transaction::*;
+
+mod triple;
+pub use triple::*;
+
+mod triple_id;
+pub use triple_id::*;

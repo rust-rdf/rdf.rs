@@ -96,6 +96,44 @@ impl<'a> CowTerm<'a> {
             Self::TypedValue(v) => return Cow::Owned(ToString::to_string(&v)),
         })
     }
+
+    #[cfg(feature = "bson")]
+    pub fn to_bson(&self) -> Option<bson::Bson> {
+        Some(self.clone().into_bson())
+    }
+
+    #[cfg(feature = "bson")]
+    pub fn into_bson(self) -> bson::Bson {
+        use bson::{Bson, Document};
+        match self {
+            CowTerm::Iri(str) => Bson::String(str.to_string()),
+            CowTerm::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
+            CowTerm::String(val) => {
+                let mut doc = Document::new();
+                doc.insert("@value", val.as_ref());
+                Bson::Document(doc)
+            },
+            CowTerm::TaggedString(val, lang, _) => {
+                let mut doc = Document::new();
+                doc.insert("@value", val.as_ref());
+                doc.insert("@language", lang);
+                Bson::Document(doc)
+            },
+            CowTerm::TypedLiteral(lit, r#type) => {
+                let mut doc = Document::new();
+                doc.insert("@value", lit.as_ref());
+                doc.insert("@type", r#type.to_string());
+                Bson::Document(doc)
+            },
+            CowTerm::TypedValue(val) => {
+                let r#type = val.r#type();
+                let mut doc = Document::new();
+                doc.insert("@value", val.into_bson());
+                doc.insert("@type", r#type.curie());
+                Bson::Document(doc)
+            },
+        }
+    }
 }
 
 impl<'a> Term for CowTerm<'a> {
@@ -115,6 +153,27 @@ impl<'a> Term for &CowTerm<'a> {
 
     fn value_str(&self) -> Cow<'_, str> {
         (*self).value_str()
+    }
+}
+
+impl<'a, T> From<&'a T> for CowTerm<'a>
+where
+    T: Clone + Into<Self> + 'a,
+{
+    fn from(t: &'a T) -> Self {
+        t.clone().into()
+    }
+}
+
+impl<'a> From<&'a str> for CowTerm<'a> {
+    fn from(value: &'a str) -> Self {
+        Self::String(Cow::from(value))
+    }
+}
+
+impl<'a> From<String> for CowTerm<'a> {
+    fn from(value: String) -> Self {
+        Self::String(Cow::from(value))
     }
 }
 
@@ -143,35 +202,9 @@ impl<'a> From<HeapTerm> for CowTerm<'a> {
     }
 }
 
-impl<'a> From<&'a HeapTerm> for CowTerm<'a> {
-    fn from(input: &'a HeapTerm) -> Self {
-        match input {
-            HeapTerm::Iri(s) => CowTerm::Iri(s.into()),
-            HeapTerm::BNode(s) => CowTerm::BNode(s.into()),
-            HeapTerm::String(s) => CowTerm::String(s.into()),
-            HeapTerm::TaggedString(s, lang, dir) => {
-                CowTerm::TaggedString(s.into(), lang.clone(), dir.clone())
-            },
-            HeapTerm::TypedValue(v) => CowTerm::TypedValue(v.clone()),
-            HeapTerm::TypedLiteral(s, dt) => CowTerm::TypedLiteral(s.into(), dt.clone()),
-        }
-    }
-}
-
-impl<'a> From<&'a str> for CowTerm<'a> {
-    fn from(value: &'a str) -> Self {
-        Self::string(Cow::from(value))
-    }
-}
-
-impl<'a> From<String> for CowTerm<'a> {
-    fn from(value: String) -> Self {
-        Self::String(Cow::from(value))
-    }
-}
-
-impl<'a> From<&'a String> for CowTerm<'a> {
-    fn from(value: &'a String) -> Self {
-        Self::String(Cow::from(value))
+#[cfg(feature = "bson")]
+impl<'a> From<CowTerm<'a>> for bson::Bson {
+    fn from(input: CowTerm<'a>) -> Self {
+        input.into_bson()
     }
 }

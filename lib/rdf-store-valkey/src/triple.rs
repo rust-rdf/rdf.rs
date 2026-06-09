@@ -3,7 +3,6 @@
 use crate::{
     ValkeyError, ValkeyQuad, ValkeyTerm, ValkeyTripleId, ValkeyTripleKey, ValkeyTriplePattern,
 };
-use rdf_hash::TermHash;
 use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
 use serde_json::Value;
 
