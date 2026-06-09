@@ -20,6 +20,8 @@ all = ["oxrdf", "serde"]
 alloc = [
     "rdf-derive/alloc",
     "rdf-format/alloc",
+    "rdf-hash/alloc",
+    "rdf-id/alloc",
     "rdf-model/alloc",
     "rdf-query/alloc",
     "rdf-reader/alloc",
@@ -32,6 +34,8 @@ std = [
     "alloc",
     "rdf-derive/std",
     "rdf-format/std",
+    "rdf-hash/std",
+    "rdf-id/std",
     "rdf-model/std",
     "rdf-query/std",
     "rdf-reader/std",
@@ -43,6 +47,8 @@ std = [
 unstable = [
     "rdf-derive/unstable",
     "rdf-format/unstable",
+    "rdf-hash/unstable",
+    "rdf-id/unstable",
     "rdf-model/unstable",
     "rdf-query/unstable",
     "rdf-reader/unstable",
@@ -78,6 +84,8 @@ sophia = [
 [dependencies]
 rdf-derive.workspace = true
 rdf-format.workspace = true
+rdf-hash.workspace = true
+rdf-id.workspace = true
 rdf-model.workspace = true
 rdf-query.workspace = true
 rdf-reader.workspace = true

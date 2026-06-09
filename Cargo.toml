@@ -7,6 +7,8 @@ default-members = [
     "lib/rdf-borsh",
     "lib/rdf-derive",
     "lib/rdf-format",
+    "lib/rdf-hash",
+    "lib/rdf-id",
     "lib/rdf-model",
     "lib/rdf-query",
     "lib/rdf-reader",
@@ -38,6 +40,8 @@ rdf = { package = "rdf_rs", version = "=0.3.4", default-features = true }
 rdf-borsh = { version = "=0.3.4", default-features = true }
 rdf-derive = { version = "=0.3.4", default-features = true }
 rdf-format = { version = "=0.3.4", default-features = true }
+rdf-hash = { version = "=0.3.4", default-features = true }
+rdf-id = { version = "=0.3.4", default-features = true }
 rdf-model = { version = "=0.3.4", default-features = true }
 rdf-query = { version = "=0.3.4", default-features = true }
 rdf-reader = { version = "=0.3.4", default-features = true }
@@ -92,6 +96,8 @@ rdf_rs = { path = "lib/rdf_rs" }
 rdf-borsh = { path = "lib/rdf-borsh" }
 rdf-derive = { path = "lib/rdf-derive" }
 rdf-format = { path = "lib/rdf-format" }
+rdf-hash = { path = "lib/rdf-hash" }
+rdf-id = { path = "lib/rdf-id" }
 rdf-model = { path = "lib/rdf-model" }
 rdf-query = { path = "lib/rdf-query" }
 rdf-reader = { path = "lib/rdf-reader" }
