@@ -18,13 +18,13 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["blake3"]
 alloc = ["rdf-model/alloc"]
-std = ["alloc", "rdf-model/std"]
+std = ["alloc", "blake3?/std", "rdf-model/std"]
 unstable = []
 
 # Integrations:
 blake3 = ["dep:blake3"]
-serde = ["dep:serde"]
-zeroize = ["dep:zeroize"]
+serde = ["dep:serde", "dep:serde_json", "blake3/serde"]
+zeroize = ["dep:zeroize", "blake3/zeroize"]
 
 [dependencies]
 heapless.workspace = true
@@ -33,6 +33,7 @@ rdf-model.workspace = true
 # Integrations:
 blake3 = { version = "1.8", optional = true }
 serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 zeroize = { workspace = true, optional = true }
 
 [dev-dependencies]

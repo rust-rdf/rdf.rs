@@ -29,6 +29,22 @@ impl TermHash {
     pub fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
     }
+
+    pub fn to_hex(&self) -> heapless::String<64> {
+        let mut result = heapless::String::<64>::new();
+        result.push_str(self.0.to_hex().as_str()).ok();
+        result
+    }
+
+    #[cfg(feature = "alloc")]
+    pub fn to_vec(&self) -> alloc::vec::Vec<u8> {
+        self.0.as_bytes().to_vec()
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> serde_json::Value {
+        serde_json::Value::String(self.0.to_hex().to_lowercase())
+    }
 }
 
 impl core::fmt::Display for TermHash {
@@ -114,7 +130,7 @@ impl From<&CowTerm<'_>> for TermHash {
             CowTerm::TaggedString(val, lang, dir) => {
                 let mut lang_lower: String<64> = String::new();
                 for c in lang.chars() {
-                    lang_lower.push(c.to_ascii_lowercase()).unwrap();
+                    lang_lower.push(c.to_ascii_lowercase()).ok();
                 }
                 hasher.update(b"\"");
                 hasher.update(val.as_bytes()); // TODO: escaping

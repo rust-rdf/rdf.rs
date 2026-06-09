@@ -2,7 +2,7 @@
 
 use crate::TermHash;
 use blake3::{Hash, Hasher};
-use rdf_model::{CowTerm, HeapTerm};
+use rdf_model::{CowQuad, CowTerm, CowTriple, HeapQuad, HeapTerm, HeapTriple, Statement};
 
 /// The length of a triple hash in bytes.
 pub const TRIPLE_HASH_LEN: usize = blake3::OUT_LEN;
@@ -29,6 +29,22 @@ impl TripleHash {
 
     pub fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
+    }
+
+    pub fn to_hex(&self) -> heapless::String<64> {
+        let mut result = heapless::String::<64>::new();
+        result.push_str(self.0.to_hex().as_str()).ok();
+        result
+    }
+
+    #[cfg(feature = "alloc")]
+    pub fn to_vec(&self) -> alloc::vec::Vec<u8> {
+        self.0.as_bytes().to_vec()
+    }
+
+    #[cfg(feature = "serde")]
+    pub fn to_json(&self) -> serde_json::Value {
+        serde_json::Value::String(self.0.to_hex().to_lowercase())
     }
 }
 
@@ -83,6 +99,30 @@ impl From<TripleHash> for Hash {
 impl From<&TripleHash> for Hash {
     fn from(input: &TripleHash) -> Self {
         input.0.clone()
+    }
+}
+
+impl From<&CowTriple<'_>> for TripleHash {
+    fn from(input: &CowTriple<'_>) -> Self {
+        (input.subject(), input.predicate(), input.object()).into()
+    }
+}
+
+impl From<&CowQuad<'_>> for TripleHash {
+    fn from(input: &CowQuad<'_>) -> Self {
+        (input.subject(), input.predicate(), input.object()).into()
+    }
+}
+
+impl From<&HeapTriple> for TripleHash {
+    fn from(input: &HeapTriple) -> Self {
+        (input.subject(), input.predicate(), input.object()).into()
+    }
+}
+
+impl From<&HeapQuad> for TripleHash {
+    fn from(input: &HeapQuad) -> Self {
+        (input.subject(), input.predicate(), input.object()).into()
     }
 }
 
