@@ -16,13 +16,19 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
+all = ["blake3"]
 alloc = ["rdf-model/alloc"]
 std = ["alloc", "rdf-model/std"]
 unstable = []
 
+# Integrations:
+blake3 = ["dep:blake3"]
+
 [dependencies]
 rdf-model.workspace = true
+
+# Integrations:
+blake3 = { version = "1.8", optional = true }
 
 [dev-dependencies]
 tokio.workspace = true
