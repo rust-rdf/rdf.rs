@@ -1,6 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
-use blake3::Hash;
+use blake3::{Hash, Hasher};
+use rdf_model::{CowTerm, HeapTerm};
 
 /// The length of a term hash in bytes.
 pub const TERM_HASH_LEN: usize = blake3::OUT_LEN;
@@ -27,6 +28,12 @@ impl TermHash {
 
     pub fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
+    }
+}
+
+impl core::fmt::Display for TermHash {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
@@ -75,5 +82,77 @@ impl From<TermHash> for Hash {
 impl From<&TermHash> for Hash {
     fn from(input: &TermHash) -> Self {
         input.0.clone()
+    }
+}
+
+impl From<CowTerm<'_>> for TermHash {
+    fn from(input: CowTerm<'_>) -> Self {
+        (&input).into()
+    }
+}
+
+impl From<&CowTerm<'_>> for TermHash {
+    fn from(input: &CowTerm<'_>) -> Self {
+        // See: https://www.w3.org/TR/rdf12-n-triples/
+        use heapless::String;
+        let mut hasher = Hasher::new();
+        match input {
+            CowTerm::Iri(str) => {
+                hasher.update(b"<");
+                hasher.update(str.as_bytes()); // TODO: escaping
+                hasher.update(b">");
+            },
+            CowTerm::BNode(id) => {
+                hasher.update(b"_:");
+                hasher.update(id.as_bytes());
+            },
+            CowTerm::String(val) => {
+                hasher.update(b"\"");
+                hasher.update(val.as_bytes()); // TODO: escaping
+                hasher.update(b"\"");
+            },
+            CowTerm::TaggedString(val, lang, dir) => {
+                let mut lang_lower: String<64> = String::new();
+                for c in lang.chars() {
+                    lang_lower.push(c.to_ascii_lowercase()).unwrap();
+                }
+                hasher.update(b"\"");
+                hasher.update(val.as_bytes()); // TODO: escaping
+                hasher.update(b"\"@");
+                hasher.update(lang_lower.as_bytes());
+                if let Some(dir) = dir {
+                    hasher.update(b"--");
+                    hasher.update(dir.as_str().as_bytes());
+                }
+            },
+            CowTerm::TypedLiteral(lit, r#type) => {
+                hasher.update(b"\"");
+                hasher.update(lit.as_bytes()); // TODO: escaping
+                hasher.update(b"\"^^<");
+                hasher.update(r#type.iri_string().as_bytes());
+                hasher.update(b">");
+            },
+            CowTerm::TypedValue(val) => {
+                use alloc::string::ToString; // FIXME
+                hasher.update(b"\"");
+                hasher.update(val.to_string().as_bytes()); // TODO: escaping
+                hasher.update(b"\"^^<");
+                hasher.update(val.r#type().iri_string().as_bytes());
+                hasher.update(b">");
+            },
+        };
+        Self(hasher.finalize())
+    }
+}
+
+impl From<HeapTerm> for TermHash {
+    fn from(input: HeapTerm) -> Self {
+        CowTerm::from(input).into()
+    }
+}
+
+impl From<&HeapTerm> for TermHash {
+    fn from(input: &HeapTerm) -> Self {
+        CowTerm::from(input).into()
     }
 }

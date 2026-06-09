@@ -24,13 +24,16 @@ unstable = []
 # Integrations:
 blake3 = ["dep:blake3"]
 serde = ["dep:serde"]
+zeroize = ["dep:zeroize"]
 
 [dependencies]
+heapless.workspace = true
 rdf-model.workspace = true
 
 # Integrations:
 blake3 = { version = "1.8", optional = true }
 serde = { workspace = true, optional = true }
+zeroize = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio.workspace = true

@@ -2,6 +2,7 @@
 
 use crate::TermHash;
 use blake3::{Hash, Hasher};
+use rdf_model::{CowTerm, HeapTerm};
 
 /// The length of a triple hash in bytes.
 pub const TRIPLE_HASH_LEN: usize = blake3::OUT_LEN;
@@ -28,6 +29,12 @@ impl TripleHash {
 
     pub fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
+    }
+}
+
+impl core::fmt::Display for TripleHash {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
@@ -104,5 +111,53 @@ impl From<(TermHash, TermHash, TermHash, TermHash)> for TripleHash {
 impl From<(&TermHash, &TermHash, &TermHash, &TermHash)> for TripleHash {
     fn from((s, p, o, _): (&TermHash, &TermHash, &TermHash, &TermHash)) -> Self {
         (s, p, o).into()
+    }
+}
+
+impl From<(CowTerm<'_>, CowTerm<'_>, CowTerm<'_>)> for TripleHash {
+    fn from((s, p, o): (CowTerm<'_>, CowTerm<'_>, CowTerm<'_>)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(&CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>)> for TripleHash {
+    fn from((s, p, o): (&CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(CowTerm<'_>, CowTerm<'_>, CowTerm<'_>, CowTerm<'_>)> for TripleHash {
+    fn from((s, p, o, _): (CowTerm<'_>, CowTerm<'_>, CowTerm<'_>, CowTerm<'_>)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(&CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>)> for TripleHash {
+    fn from((s, p, o, _): (&CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>, &CowTerm<'_>)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(HeapTerm, HeapTerm, HeapTerm)> for TripleHash {
+    fn from((s, p, o): (HeapTerm, HeapTerm, HeapTerm)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(&HeapTerm, &HeapTerm, &HeapTerm)> for TripleHash {
+    fn from((s, p, o): (&HeapTerm, &HeapTerm, &HeapTerm)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(HeapTerm, HeapTerm, HeapTerm, HeapTerm)> for TripleHash {
+    fn from((s, p, o, _): (HeapTerm, HeapTerm, HeapTerm, HeapTerm)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
+    }
+}
+
+impl From<(&HeapTerm, &HeapTerm, &HeapTerm, &HeapTerm)> for TripleHash {
+    fn from((s, p, o, _): (&HeapTerm, &HeapTerm, &HeapTerm, &HeapTerm)) -> Self {
+        (TermHash::from(s), TermHash::from(p), TermHash::from(o)).into()
     }
 }

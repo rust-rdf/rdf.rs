@@ -76,6 +76,7 @@ decorum = { version = "0.4", default-features = false }
 derive_more = { version = "2", default-features = false }
 float-ord = { version = "0.3", default-features = false }
 futures = "0.3"
+heapless = { version = "0.9", default-features = false }
 hex = { version = "0.4", default-features = false }
 itertools = { version = "0.14", default-features = false }
 num-traits = { version = "0.2", default-features = false }
@@ -84,6 +85,7 @@ parking_lot = { version = "0.12", default-features = false }
 serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 tempfile = { version = "3.15", default-features = false }
 thiserror = { version = "2", default-features = false }
+zeroize = { version = "1.8", default-features = false }
 
 # Development:
 aquamarine = { version = "0.6", default-features = false }
