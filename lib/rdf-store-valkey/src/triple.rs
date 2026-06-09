@@ -3,6 +3,7 @@
 use crate::{
     ValkeyError, ValkeyQuad, ValkeyTerm, ValkeyTripleId, ValkeyTripleKey, ValkeyTriplePattern,
 };
+use rdf_hash::TermHash;
 use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
 use serde_json::Value;
 
@@ -62,7 +63,7 @@ impl From<ValkeyQuad> for ValkeyTriple {
 impl From<HeapTriple> for ValkeyTriple {
     fn from(input: HeapTriple) -> Self {
         let (s, p, o) = input.into_inner();
-        let id = ValkeyTripleId::from((s.to_b3(), p.to_b3(), o.to_b3()));
+        let id = ValkeyTripleId::from(((&s).into(), (&p).into(), (&o).into()));
         Self(
             id,
             Quad::new(

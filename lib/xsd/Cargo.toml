@@ -16,8 +16,8 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["datetime", "decimal"]
-alloc = []
+all = ["datetime", "decimal", "bson"]
+alloc = ["heapless/alloc"]
 std = ["alloc"]
 unstable = []
 
@@ -33,6 +33,7 @@ serde = ["dep:serde", "dep:serde_json"]
 
 [dependencies]
 decorum = { workspace = true, features = ["serde"] }
+heapless.workspace = true
 phf = { version = "0.13", default-features = false, features = ["macros"] }
 strum = "0.28"
 strum_macros = "0.28"

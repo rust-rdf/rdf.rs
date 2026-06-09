@@ -16,17 +16,15 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["hash", "rdf-star", "serde", "oxrdf"]
+all = ["rdf-star", "serde", "oxrdf"]
 alloc = ["serde_json?/alloc", "xsd/alloc"]
 std = ["alloc", "dogma/std", "serde?/std", "serde_json?/std", "xsd/std"]
 unstable = []
 
 # Features:
-hash = ["blake3"]
 rdf-star = ["oxrdf?/rdf-12"]
 
 # Integrations:
-blake3 = ["dep:blake3"]
 borsh = ["dep:borsh", "xsd/borsh"]
 bson = ["dep:bson", "xsd/bson"]
 oxrdf = ["dep:oxrdf"]
@@ -39,7 +37,6 @@ instability.workspace = true
 xsd = { workspace = true, features = ["datetime", "decimal"] }
 
 # Integrations:
-blake3 = { version = "1.8", optional = true }
 borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
 oxrdf = { workspace = true, optional = true }

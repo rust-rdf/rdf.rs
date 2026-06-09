@@ -75,11 +75,6 @@ pub use statement_slot::*;
 mod term;
 pub use term::*;
 
-#[cfg(feature = "blake3")]
-mod term_hash;
-#[cfg(feature = "blake3")]
-pub use term_hash::*;
-
 mod term_kind;
 pub use term_kind::*;
 

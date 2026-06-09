@@ -123,12 +123,6 @@ impl HeapTerm {
             },
         }
     }
-
-    #[cfg(feature = "blake3")]
-    #[deprecated(since = "0.3.5", note = "Use `into::<rdf_hash::TermHash>()`")]
-    pub fn to_b3(&self) -> crate::TermHash {
-        blake3::hash(self.value_str().as_ref().as_bytes()) // TODO: N-Triples
-    }
 }
 
 impl Term for HeapTerm {

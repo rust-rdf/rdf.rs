@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["tokio"]
-alloc = ["hex/alloc", "itertools/use_alloc", "rdf-model/alloc"]
-std = ["alloc", "arrayvec/std", "rdf-model/std", "rdf-store/std"]
+alloc = ["heapless/alloc", "hex/alloc", "itertools/use_alloc", "rdf-model/alloc"]
+std = ["alloc", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 # Features:
@@ -28,15 +28,16 @@ tracing = ["fred/partial-tracing"]
 
 [dependencies]
 aquamarine.workspace = true
-arrayvec = { workspace = true, features = ["serde"] }
 async-stream.workspace = true
 async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 fred = { version = "10.1", default-features = false, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
 futures.workspace = true
+heapless.workspace = true
 hex.workspace = true
 itertools.workspace = true
-rdf-model = { workspace = true, features = ["hash", "serde"] }
+rdf-hash.workspace = true
+rdf-model = { workspace = true, features = ["serde"] }
 rdf-store.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

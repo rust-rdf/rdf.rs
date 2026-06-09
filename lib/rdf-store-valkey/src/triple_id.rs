@@ -4,9 +4,8 @@ use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
-use arrayvec::ArrayString;
 use core::{hash::Hash, str::FromStr};
-use rdf_model::{TERM_HASH_LEN, TermHash};
+use rdf_hash::{TERM_HASH_LEN, TermHash};
 use serde_json::Value;
 
 /// A triple ID used to identify a triple in Valkey.
@@ -97,12 +96,12 @@ impl From<&ValkeyTripleId> for Value {
 
 impl core::fmt::Display for ValkeyTripleId {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        let default = ArrayString::from("*").unwrap();
+        let star = heapless::String::from_str("*").unwrap();
         f.write_fmt(format_args!(
             "{:.8}:{:.8}:{:.8}",
-            self.0.map(|h| h.to_hex()).unwrap_or(default),
-            self.1.map(|h| h.to_hex()).unwrap_or(default),
-            self.2.map(|h| h.to_hex()).unwrap_or(default)
+            self.0.map(|h| h.to_hex()).unwrap_or_else(|| star.clone()),
+            self.1.map(|h| h.to_hex()).unwrap_or_else(|| star.clone()),
+            self.2.map(|h| h.to_hex()).unwrap_or_else(|| star.clone())
         ))
     }
 }

@@ -31,9 +31,9 @@ impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
         let (s, p, o, _) = input.into_inner();
         Self {
             glob: ValkeyTripleId(
-                s.as_ref().map(|s| s.to_b3()),
-                p.as_ref().map(|p| p.to_b3()),
-                o.as_ref().map(|o| o.to_b3()),
+                s.as_ref().and_then(|s| s.try_into().ok()),
+                p.as_ref().and_then(|p| p.try_into().ok()),
+                o.as_ref().and_then(|o| o.try_into().ok()),
             ),
             matcher: QuadPattern::new(
                 s.map(|s| s.into()),
@@ -50,9 +50,9 @@ impl From<QuadPattern<HeapTerm>> for ValkeyTriplePattern {
         let (s, p, o, _) = input.into_inner();
         Self {
             glob: ValkeyTripleId(
-                s.as_ref().map(|s| s.to_b3()),
-                p.as_ref().map(|p| p.to_b3()),
-                o.as_ref().map(|o| o.to_b3()),
+                s.as_ref().map(|s| s.into()),
+                p.as_ref().map(|p| p.into()),
+                o.as_ref().map(|o| o.into()),
             ),
             matcher: QuadPattern::new(
                 s.map(|s| s.into()),

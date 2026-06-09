@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["blake3"]
-alloc = ["rdf-model/alloc"]
+alloc = ["heapless/alloc", "rdf-model/alloc"]
 std = ["alloc", "blake3?/std", "rdf-model/std"]
 unstable = []
 

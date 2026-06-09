@@ -22,6 +22,10 @@ impl TermHash {
         Self(Hash::from_bytes(input))
     }
 
+    pub fn from_slice(input: &[u8]) -> Result<Self, core::array::TryFromSliceError> {
+        Ok(Self(Hash::from_slice(input)?))
+    }
+
     pub fn as_bytes(&self) -> &[u8; TERM_HASH_LEN] {
         self.0.as_bytes()
     }

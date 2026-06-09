@@ -1,18 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
 use alloc::{borrow::Cow, string::ToString};
-use rdf_model::{HeapTerm, Term, TermHash, TermKind};
+use rdf_hash::TermHash;
+use rdf_model::{HeapTerm, Term, TermKind};
 use serde_json::Value;
 
 /// A term that can be stored in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyTerm(pub(crate) Value);
-
-impl ValkeyTerm {
-    pub fn to_b3(&self) -> TermHash {
-        HeapTerm::try_from(self).unwrap().to_b3()
-    }
-}
 
 impl<T> From<&T> for ValkeyTerm
 where
@@ -42,6 +37,14 @@ impl TryFrom<&ValkeyTerm> for HeapTerm {
 
     fn try_from(input: &ValkeyTerm) -> Result<Self, Self::Error> {
         HeapTerm::try_from(&input.0)
+    }
+}
+
+impl TryFrom<&ValkeyTerm> for TermHash {
+    type Error = ();
+
+    fn try_from(input: &ValkeyTerm) -> Result<Self, Self::Error> {
+        HeapTerm::try_from(&input.0).map(TermHash::from)
     }
 }
 
