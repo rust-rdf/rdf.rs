@@ -129,6 +129,15 @@ impl Value {
     }
 }
 
+impl<T> From<&T> for Value
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<DecimalValue> for Value {
     fn from(input: DecimalValue) -> Self {
         Self::Decimal(input)
@@ -157,13 +166,6 @@ impl From<Cow<'_, str>> for Value {
 #[cfg(feature = "alloc")]
 impl From<String> for Value {
     fn from(input: String) -> Self {
-        Self::Primitive(input.into())
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl From<&String> for Value {
-    fn from(input: &String) -> Self {
         Self::Primitive(input.into())
     }
 }

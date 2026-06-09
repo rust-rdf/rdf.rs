@@ -95,6 +95,15 @@ impl core::fmt::Display for Decimal {
     }
 }
 
+impl<T> From<&T> for Decimal
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<i8> for Decimal {
     fn from(input: i8) -> Self {
         Self(input.into())
@@ -135,13 +144,6 @@ impl From<isize> for Decimal {
 impl From<rust_decimal::Decimal> for Decimal {
     fn from(input: rust_decimal::Decimal) -> Self {
         Self(input)
-    }
-}
-
-#[cfg(feature = "rust_decimal")]
-impl From<&rust_decimal::Decimal> for Decimal {
-    fn from(input: &rust_decimal::Decimal) -> Self {
-        Self(input.clone())
     }
 }
 

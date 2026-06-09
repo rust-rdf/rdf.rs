@@ -44,6 +44,15 @@ impl FromStr for ValkeyTripleId {
     }
 }
 
+impl<T> From<&T> for ValkeyTripleId
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<ValkeyTripleId> for String {
     fn from(input: ValkeyTripleId) -> Self {
         input.to_string()

@@ -68,6 +68,15 @@ impl core::fmt::Display for Boolean {
     }
 }
 
+impl<T> From<&T> for Boolean
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<bool> for Boolean {
     fn from(input: bool) -> Self {
         Self(input)

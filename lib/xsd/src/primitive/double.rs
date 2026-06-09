@@ -45,6 +45,15 @@ impl Double {
     }
 }
 
+impl<T> From<&T> for Double
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<f32> for Double {
     fn from(input: f32) -> Self {
         Self((input as f64).into())

@@ -43,6 +43,15 @@ impl Statement for ValkeyQuad {
     }
 }
 
+impl<T> From<&T> for ValkeyQuad
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<ValkeyTriple> for ValkeyQuad {
     fn from(input: ValkeyTriple) -> Self {
         Self(input, None)

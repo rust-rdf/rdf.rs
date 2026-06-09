@@ -235,6 +235,15 @@ impl PrimitiveValue {
     }
 }
 
+impl<T> From<&T> for PrimitiveValue
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<&'static str> for PrimitiveValue {
     fn from(input: &'static str) -> Self {
         Self::String(input.into())
@@ -252,13 +261,6 @@ impl From<Cow<'_, str>> for PrimitiveValue {
 impl From<String> for PrimitiveValue {
     fn from(input: String) -> Self {
         Self::String(input)
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl From<&String> for PrimitiveValue {
-    fn from(input: &String) -> Self {
-        Self::String(input.clone())
     }
 }
 
@@ -317,13 +319,6 @@ impl From<rust_decimal::Decimal> for PrimitiveValue {
     }
 }
 
-#[cfg(feature = "rust_decimal")]
-impl From<&rust_decimal::Decimal> for PrimitiveValue {
-    fn from(input: &rust_decimal::Decimal) -> Self {
-        Self::Decimal(input.clone().into())
-    }
-}
-
 impl From<f32> for PrimitiveValue {
     fn from(input: f32) -> Self {
         Self::Float(input.into())
@@ -356,23 +351,9 @@ impl From<jiff::SignedDuration> for PrimitiveValue {
 }
 
 #[cfg(feature = "jiff")]
-impl From<&jiff::SignedDuration> for PrimitiveValue {
-    fn from(input: &jiff::SignedDuration) -> Self {
-        Self::Duration(input.clone())
-    }
-}
-
-#[cfg(feature = "jiff")]
 impl From<jiff::civil::DateTime> for PrimitiveValue {
     fn from(input: jiff::civil::DateTime) -> Self {
         Self::DateTime(input)
-    }
-}
-
-#[cfg(feature = "jiff")]
-impl From<&jiff::civil::DateTime> for PrimitiveValue {
-    fn from(input: &jiff::civil::DateTime) -> Self {
-        Self::DateTime(input.clone())
     }
 }
 
@@ -384,23 +365,9 @@ impl From<jiff::civil::Time> for PrimitiveValue {
 }
 
 #[cfg(feature = "jiff")]
-impl From<&jiff::civil::Time> for PrimitiveValue {
-    fn from(input: &jiff::civil::Time) -> Self {
-        Self::Time(input.clone())
-    }
-}
-
-#[cfg(feature = "jiff")]
 impl From<jiff::civil::Date> for PrimitiveValue {
     fn from(input: jiff::civil::Date) -> Self {
         Self::Date(input)
-    }
-}
-
-#[cfg(feature = "jiff")]
-impl From<&jiff::civil::Date> for PrimitiveValue {
-    fn from(input: &jiff::civil::Date) -> Self {
-        Self::Date(input.clone())
     }
 }
 
@@ -408,13 +375,6 @@ impl From<&jiff::civil::Date> for PrimitiveValue {
 impl From<Vec<u8>> for PrimitiveValue {
     fn from(input: Vec<u8>) -> Self {
         Self::Base64Binary(input)
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl From<&Vec<u8>> for PrimitiveValue {
-    fn from(input: &Vec<u8>) -> Self {
-        Self::Base64Binary(input.clone())
     }
 }
 

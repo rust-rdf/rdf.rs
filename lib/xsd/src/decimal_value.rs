@@ -147,6 +147,15 @@ impl DecimalValue {
     }
 }
 
+impl<T> From<&T> for DecimalValue
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<i8> for DecimalValue {
     fn from(input: i8) -> Self {
         Self::Byte(input.into())
@@ -189,23 +198,10 @@ impl From<Decimal> for DecimalValue {
     }
 }
 
-impl From<&Decimal> for DecimalValue {
-    fn from(input: &Decimal) -> Self {
-        Self::Decimal(input.clone())
-    }
-}
-
 #[cfg(feature = "rust_decimal")]
 impl From<rust_decimal::Decimal> for DecimalValue {
     fn from(input: rust_decimal::Decimal) -> Self {
         Self::Decimal(input.into())
-    }
-}
-
-#[cfg(feature = "rust_decimal")]
-impl From<&rust_decimal::Decimal> for DecimalValue {
-    fn from(input: &rust_decimal::Decimal) -> Self {
-        Self::Decimal(input.clone().into())
     }
 }
 

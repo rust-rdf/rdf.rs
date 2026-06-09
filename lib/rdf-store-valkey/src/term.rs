@@ -14,15 +14,18 @@ impl ValkeyTerm {
     }
 }
 
-impl From<HeapTerm> for ValkeyTerm {
-    fn from(input: HeapTerm) -> Self {
-        ValkeyTerm(input.into_json())
+impl<T> From<&T> for ValkeyTerm
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
     }
 }
 
-impl From<&HeapTerm> for ValkeyTerm {
-    fn from(input: &HeapTerm) -> Self {
-        ValkeyTerm(input.clone().into_json())
+impl From<HeapTerm> for ValkeyTerm {
+    fn from(input: HeapTerm) -> Self {
+        ValkeyTerm(input.into_json())
     }
 }
 

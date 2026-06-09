@@ -17,6 +17,15 @@ impl ValkeyTriplePattern {
     }
 }
 
+impl<T> From<&T> for ValkeyTriplePattern
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<QuadPattern<ValkeyTerm>> for ValkeyTriplePattern {
     fn from(input: QuadPattern<ValkeyTerm>) -> Self {
         let (s, p, o, _) = input.into_inner();

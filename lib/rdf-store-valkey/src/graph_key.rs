@@ -18,6 +18,15 @@ impl Default for ValkeyGraphKey {
     }
 }
 
+impl<T> From<&T> for ValkeyGraphKey
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<&Option<ValkeyTerm>> for ValkeyGraphKey {
     fn from(input: &Option<ValkeyTerm>) -> Self {
         match input {
@@ -36,12 +45,6 @@ impl From<&Cow<'_, str>> for ValkeyGraphKey {
 impl From<String> for ValkeyGraphKey {
     fn from(input: String) -> Self {
         Self(input)
-    }
-}
-
-impl From<&String> for ValkeyGraphKey {
-    fn from(input: &String) -> Self {
-        Self(input.clone())
     }
 }
 

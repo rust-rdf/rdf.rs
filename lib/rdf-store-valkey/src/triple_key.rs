@@ -9,15 +9,18 @@ use serde_json::Value;
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ValkeyTripleKey(pub(crate) ValkeyTripleId);
 
-impl From<ValkeyTripleId> for ValkeyTripleKey {
-    fn from(input: ValkeyTripleId) -> Self {
-        Self(input)
+impl<T> From<&T> for ValkeyTripleKey
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
     }
 }
 
-impl From<&ValkeyTripleId> for ValkeyTripleKey {
-    fn from(input: &ValkeyTripleId) -> Self {
-        Self(input.clone())
+impl From<ValkeyTripleId> for ValkeyTripleKey {
+    fn from(input: ValkeyTripleId) -> Self {
+        Self(input)
     }
 }
 
