@@ -31,3 +31,7 @@ pub use store::*;
 
 mod transaction;
 pub use transaction::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn core::error::Error>> {
     let count = tx.count(None::<AnyStatement<HeapTerm>>).await.unwrap();
     eprintln!("{:?}", count);
 
-    tx.insert(&HeapQuad::from(&SAMPLE_QUAD)).await.unwrap();
+    tx.insert(HeapQuad::from(&SAMPLE_QUAD)).await.unwrap();
 
     let count = tx.count(None::<AnyStatement<HeapTerm>>).await.unwrap();
     eprintln!("{:?}", count);

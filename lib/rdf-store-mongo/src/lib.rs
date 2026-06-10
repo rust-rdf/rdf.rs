@@ -12,7 +12,7 @@
 //! use rdf_store::{Store, WriteTransaction};
 //! use rdf_store_mongo::{MongoStore, MongoTransaction};
 //!
-//! let mut store = MongoStore::open("mongodb://localhost:27017/test")?;
+//! let mut store = MongoStore::open("mongodb://localhost:27017/test").await?;
 //!
 //! let mut tx = store.write().await?;
 //!

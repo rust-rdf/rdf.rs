@@ -40,3 +40,7 @@ pub use read_transaction::*;
 
 mod write_transaction;
 pub use write_transaction::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

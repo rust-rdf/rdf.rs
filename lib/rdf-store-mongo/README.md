@@ -76,7 +76,7 @@ use rdf_store_mongo::{MongoStore, MongoTransaction};
 ### Connecting to the Store
 
 ```rust,compile_fail
-let mut store = MongoStore::open("mongodb://localhost:27017/test")?;
+let mut store = MongoStore::open("mongodb://localhost:27017/test").await?;
 ```
 
 ### Mutating the Store
