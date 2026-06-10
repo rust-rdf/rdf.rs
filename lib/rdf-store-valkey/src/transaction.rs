@@ -28,8 +28,7 @@ use serde_json::Value;
 /// tx.remove(old_quad.into()).await?;
 /// tx.insert(new_quad.into()).await?;
 ///
-/// tx.commit().await?; // ...or:
-/// //tx.rollback().await?;
+/// tx.commit().await?;
 /// ```
 ///
 /// Access the store in a read-only transaction:

@@ -86,8 +86,7 @@ let mut tx = store.write().await?;
 tx.remove(old_quad.into()).await?;
 tx.insert(new_quad.into()).await?;
 
-tx.commit().await?; // ...or:
-//tx.rollback().await?;
+tx.commit().await?;
 ```
 
 ### Accessing the Store

@@ -72,6 +72,23 @@ docker run -p 27017:27017 mongodb/mongodb-community-server
 use rdf_store_mongo::{MongoStore, MongoTransaction};
 ```
 
+### Connecting to the Store
+
+```rust,compile_fail
+let mut store = MongoStore::open("mongodb://localhost:27017/test")?;
+```
+
+### Mutating the Store
+
+```rust,compile_fail
+let mut tx = store.write().await?;
+
+tx.remove(old_quad.into()).await?;
+tx.insert(new_quad.into()).await?;
+
+tx.commit().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-mongo](https://docs.rs/rdf-store-mongo)
