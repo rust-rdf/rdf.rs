@@ -7,7 +7,7 @@ use crate::{
 use alloc::{borrow::Cow, boxed::Box, string::String, sync::Arc, vec::Vec};
 use async_stream::stream;
 use async_trait::async_trait;
-use core::time::Duration;
+use core::{borrow::Borrow, time::Duration};
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
@@ -152,11 +152,15 @@ impl WriteTransaction for ValkeyTransaction {
         Ok(())
     }
 
-    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         let Some(ref tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
 
+        let statement = statement.borrow();
         //self.removes.remove(statement);
         //self.inserts.insert(statement.clone());
 
@@ -182,11 +186,15 @@ impl WriteTransaction for ValkeyTransaction {
         Ok(())
     }
 
-    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         let Some(ref tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
 
+        let statement = statement.borrow();
         //self.inserts.remove(statement);
         //self.removes.insert(statement.clone());
 

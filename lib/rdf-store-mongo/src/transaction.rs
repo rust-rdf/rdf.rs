@@ -3,6 +3,7 @@
 use crate::{MongoError, MongoStore, MongoTriple, MongoTripleId};
 use alloc::boxed::Box;
 use async_trait::async_trait;
+use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
 use mongodb::{
@@ -118,11 +119,15 @@ impl WriteTransaction for MongoTransaction {
         Ok(())
     }
 
-    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(MongoError::ReadOnly);
         };
 
+        let statement = statement.borrow();
         if statement.has_context() {
             return Err(MongoError::Other); // TODO: named graphs not supported yet
         }
@@ -167,11 +172,15 @@ impl WriteTransaction for MongoTransaction {
         Ok(())
     }
 
-    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(MongoError::ReadOnly);
         };
 
+        let statement = statement.borrow();
         if statement.has_context() {
             return Err(MongoError::Other); // TODO: named graphs not supported yet
         }

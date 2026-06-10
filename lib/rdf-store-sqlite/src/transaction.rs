@@ -7,6 +7,7 @@ use alloc::{
 };
 use async_stream::stream;
 use async_trait::async_trait;
+use core::borrow::Borrow;
 use futures::{Stream, stream::select};
 use rdf_model::{
     Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, QuadPattern, Statement,
@@ -34,8 +35,12 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
         Ok(self.tx.commit().await?)
     }
 
-    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         use HeapTerm::*;
+        let statement = statement.borrow();
         let _g = match statement.context() {
             Some(g) => Some(self.intern_node(g).await?), // TODO
             None => None,
@@ -71,7 +76,10 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
         Ok(()) // TODO
     }
 
-    async fn remove(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(
+        &mut self,
+        _statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         Ok(()) // FIXME
     }
 }

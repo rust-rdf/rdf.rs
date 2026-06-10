@@ -3,6 +3,7 @@
 use crate::{QleverError, QleverStore};
 use alloc::boxed::Box;
 use async_trait::async_trait;
+use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
 use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
@@ -39,11 +40,17 @@ impl WriteTransaction for QleverTransaction {
         Ok(()) // TODO
     }
 
-    async fn insert(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(
+        &mut self,
+        _statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 
-    async fn remove(&mut self, _statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(
+        &mut self,
+        _statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 }

@@ -4,6 +4,7 @@ use crate::{HeapStore, ReadTransaction, WriteTransaction};
 use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
 use async_stream::stream;
 use async_trait::async_trait;
+use core::borrow::Borrow;
 use futures::Stream;
 use parking_lot::RwLock;
 use rdf_model::{HeapQuad, HeapTerm, Statement, StatementPattern};
@@ -53,21 +54,27 @@ impl WriteTransaction for Arc<HeapTransaction> {
         Ok(())
     }
 
-    async fn insert(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn insert(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
-        let quad = statement.to_quad();
+        let quad = statement.borrow().to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, true);
         Ok(())
     }
 
-    async fn remove(&mut self, statement: &Self::Statement) -> Result<(), Self::Error> {
+    async fn remove(
+        &mut self,
+        statement: impl Borrow<Self::Statement> + Send,
+    ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
-        let quad = statement.to_quad();
+        let quad = statement.borrow().to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, false);
         Ok(())
