@@ -76,6 +76,10 @@ use rdf_store_mongo::{MongoStore, MongoTransaction};
 
 [docs.rs/rdf-store-mongo](https://docs.rs/rdf-store-mongo)
 
+### Further Reading
+
+- [MongoDB Limits and Thresholds](https://www.mongodb.com/docs/manual/reference/limits/)
+
 ## 👨‍💻 Development
 
 ```bash

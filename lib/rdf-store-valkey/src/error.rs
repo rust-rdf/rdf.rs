@@ -16,7 +16,7 @@ pub enum ValkeyError {
     #[error("invalid triple: {0}")]
     InvalidTriple(ValkeyTripleId),
 
-    #[error("invalid term: {0}")]
+    #[error("invalid {1} term: {0}")]
     InvalidTripleTerm(ValkeyTripleId, TripleSlot),
 
     #[error("other error")]

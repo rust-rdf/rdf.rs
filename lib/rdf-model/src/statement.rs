@@ -11,6 +11,10 @@ pub trait Statement {
     // TODO: associated type defaults (https://github.com/rust-lang/rust/issues/29661)
     //type Term: Term = &dyn Term;
 
+    fn has_context(&self) -> bool {
+        self.context().is_some()
+    }
+
     fn subject(&self) -> &Self::Term;
 
     fn predicate(&self) -> &Self::Term;

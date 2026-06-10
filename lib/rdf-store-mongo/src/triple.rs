@@ -4,6 +4,7 @@ use crate::MongoTripleId;
 use mongodb::bson::{self, Bson, doc};
 use rdf_model::{CowQuad, HeapQuad};
 
+/// A triple statement (S, P, O) stored as a MongoDB document.
 #[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct MongoTriple {
     pub _id: MongoTripleId,
@@ -24,6 +25,12 @@ impl MongoTriple {
             "p": self.p.clone(),
             "o": self.o.clone(),
         }
+    }
+}
+
+impl core::fmt::Display for MongoTriple {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{}", self.to_bson())
     }
 }
 

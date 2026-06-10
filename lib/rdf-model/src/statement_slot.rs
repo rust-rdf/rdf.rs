@@ -21,6 +21,12 @@ pub enum StatementSlot {
     Context,
 }
 
+impl core::fmt::Display for StatementSlot {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
 impl StatementSlot {
     pub fn as_char(&self) -> char {
         match self {

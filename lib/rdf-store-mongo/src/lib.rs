@@ -5,13 +5,26 @@
 //!
 //! # Examples
 //!
-//! ```rust
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use rdf_model::SAMPLE_QUAD;
+//! use rdf_store::{Store, WriteTransaction};
 //! use rdf_store_mongo::{MongoStore, MongoTransaction};
+//!
+//! let mut store = MongoStore::open("mongodb://localhost:27017/test")?;
+//!
+//! let mut tx = store.write().await?;
+//!
+//! tx.insert(&(SAMPLE_QUAD.into())).await?;
+//!
+//! tx.commit().await?;
+//! # Ok(())
+//! # }
 //! ```
 
 #![no_std]
 #![deny(unsafe_code)]
-#![allow(unused_imports)]
 
 extern crate alloc;
 
@@ -34,3 +47,7 @@ pub use triple::*;
 
 mod triple_id;
 pub use triple_id::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

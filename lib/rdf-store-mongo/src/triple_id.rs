@@ -4,6 +4,7 @@ use mongodb::bson::{self, Binary, Bson, doc, spec::BinarySubtype};
 use rdf_hash::TripleHash;
 use rdf_model::{CowQuad, HeapQuad};
 
+/// A triple ID used to identify a triple in MongoDB.
 #[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct MongoTripleId(TripleHash);
 
@@ -13,6 +14,12 @@ impl MongoTripleId {
             subtype: BinarySubtype::Generic,
             bytes: self.0.to_vec(),
         })
+    }
+}
+
+impl core::fmt::Display for MongoTripleId {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
