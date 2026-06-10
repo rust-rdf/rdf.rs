@@ -82,6 +82,18 @@ The current implementation is based on a triple-centric schema where triples
 are uniquely identified and deduplicated by their subject-predicate-object
 (SPO) hash. Graphs, in turn, are represented as sets of triple IDs.
 
+```mermaid
+graph TD
+  SPO["rdf:spo — collection of triple documents"]
+  SPO --> T["_id: {triple_id} — BSON document with _id/s/p/o"]
+  T --> S["s: subject term (BSON)"]
+  T --> P["p: predicate term (BSON)"]
+  T --> O["o: object term (BSON)"]
+  G["rdf:g:default — collection of triple IDs"]
+  G --> E["_id: {triple_id} — BSON document with _id"]
+  E --> T
+```
+
 ### Further Reading
 
 - [MongoDB Limits and Thresholds](https://www.mongodb.com/docs/manual/reference/limits/)

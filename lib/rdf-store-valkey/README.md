@@ -115,11 +115,12 @@ are uniquely identified and deduplicated by their subject-predicate-object
 
 ```mermaid
 graph TD
-  RG["rdf:g — set of graph IDs"]:::accent2 --> G["rdf:g:{graph_id} — set of triple IDs"]:::accent3
-  G --> T["rdf:j:{triple_id} — JSON object with s/p/o"]:::accent4
-  T --> S["s: subject term JSON"]:::accent0
-  T --> P["p: predicate term JSON"]:::accent1
-  T --> O["o: object term JSON"]:::accent1
+  RG["rdf:g — set of graph IDs"]
+  RG --> G["rdf:g:{graph_id} — set of triple IDs"]
+  G --> T["rdf:j:{triple_id} — JSON object with s/p/o"]
+  T --> S["s: subject term (JSON-LD)"]
+  T --> P["p: predicate term (JSON-LD)"]
+  T --> O["o: object term (JSON-LD)"]
 ```
 
 ### Sequence Diagrams

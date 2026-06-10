@@ -30,12 +30,20 @@ pub const DEFAULT_URL: &str = "redis://localhost:6379";
 ///
 /// ```mermaid
 /// graph TD
-///   RG["rdf:g — set of graph IDs"]:::accent2 --> G["rdf:g:{graph_id} — set of triple IDs"]:::accent3
-///   G --> T["rdf:j:{triple_id} — JSON object with s/p/o"]:::accent4
-///   T --> S["s: subject term JSON"]:::accent0
-///   T --> P["p: predicate term JSON"]:::accent1
-///   T --> O["o: object term JSON"]:::accent1
+///   RG["rdf:g — set of graph IDs"]
+///   RG --> G["rdf:g:{graph_id} — set of triple IDs"]
+///   G --> T["rdf:j:{triple_id} — JSON object with s/p/o"]
+///   T --> S["s: subject term (JSON-LD)"]
+///   T --> P["p: predicate term (JSON-LD)"]
+///   T --> O["o: object term (JSON-LD)"]
 /// ```
+///
+/// # Limitations
+///
+/// - Currently, does not support reading from the store in the same
+///   transaction as writing.
+///
+/// See: <https://valkey.io/topics/>
 #[derive(Debug)]
 pub struct ValkeyStore {
     pub(crate) config: Config,

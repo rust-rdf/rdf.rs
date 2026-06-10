@@ -32,8 +32,21 @@ pub const DEFAULT_URL: &str = "mongodb://localhost:27017/test";
 ///
 /// # Schema
 ///
+/// ```mermaid
+/// graph TD
+///   SPO["rdf:spo — collection of triple documents"]
+///   SPO --> T["_id: {triple_id} — BSON document with _id/s/p/o"]
+///   T --> S["s: subject term (BSON)"]
+///   T --> P["p: predicate term (BSON)"]
+///   T --> O["o: object term (BSON)"]
+///   G["rdf:g:default — collection of triple IDs"]
+///   G --> E["_id: {triple_id} — BSON document with _id"]
+///   E --> T
+/// ```
+///
 /// # Limitations
 ///
+/// - Currently, only supports writing to the store, not yet matching.
 /// - Currently, only supports the default graph (acts as a triple store).
 ///
 /// See: <https://www.mongodb.com/docs/manual/>
