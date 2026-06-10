@@ -24,6 +24,7 @@ A [MongoDB] storage adapter for **[RDF.rs]** knowledge graphs.
 ## ✨ Features
 
 - Implements a scalable, high-performance RDF store backed by [MongoDB].
+- Supports [ACID transactions] on MongoDB deployments that enable them.
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -113,6 +114,7 @@ graph TD
 
 ### Further Reading
 
+- [MongoDB Transactions](https://www.mongodb.com/docs/manual/core/transactions/)
 - [MongoDB Limits and Thresholds](https://www.mongodb.com/docs/manual/reference/limits/)
 - [MongoDB Error Codes](https://www.mongodb.com/docs/manual/reference/error-codes/)
 - [MongoDB WiredTiger Storage Engine](https://www.mongodb.com/docs/manual/core/wiredtiger/)
@@ -131,6 +133,7 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-mongo)
 [![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-mongo)
 
+[ACID transactions]: https://www.mongodb.com/docs/manual/core/transactions/
 [feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf-store-mongo/Cargo.toml
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
