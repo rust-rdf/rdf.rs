@@ -109,6 +109,10 @@ tx.r#match(quad_pattern)
 
 ### Storage Schema
 
+The current implementation is based on a triple-centric schema where triples
+are uniquely identified and deduplicated by their subject-predicate-object
+(SPO) hash. Graphs, in turn, are represented as sets of triple IDs.
+
 ```mermaid
 graph TD
   RG["rdf:g — set of graph IDs"]:::accent2 --> G["rdf:g:{graph_id} — set of triple IDs"]:::accent3

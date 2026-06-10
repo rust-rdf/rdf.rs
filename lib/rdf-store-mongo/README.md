@@ -76,9 +76,17 @@ use rdf_store_mongo::{MongoStore, MongoTransaction};
 
 [docs.rs/rdf-store-mongo](https://docs.rs/rdf-store-mongo)
 
+### Storage Schema
+
+The current implementation is based on a triple-centric schema where triples
+are uniquely identified and deduplicated by their subject-predicate-object
+(SPO) hash. Graphs, in turn, are represented as sets of triple IDs.
+
 ### Further Reading
 
 - [MongoDB Limits and Thresholds](https://www.mongodb.com/docs/manual/reference/limits/)
+- [MongoDB Error Codes](https://www.mongodb.com/docs/manual/reference/error-codes/)
+- [MongoDB WiredTiger Storage Engine](https://www.mongodb.com/docs/manual/core/wiredtiger/)
 
 ## 👨‍💻 Development
 
