@@ -2,7 +2,7 @@
 
 use crate::{ValkeyTerm, ValkeyTripleId};
 use alloc::string::ToString;
-use rdf_model::{HeapTerm, QuadPattern};
+use rdf_model::{HeapTerm, QuadPattern, StatementPattern, Term};
 
 /// A triple statement pattern for matching triples in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
@@ -79,5 +79,19 @@ impl From<ValkeyTriplePattern> for fred::types::Value {
 impl From<&ValkeyTriplePattern> for fred::types::Value {
     fn from(input: &ValkeyTriplePattern) -> Self {
         input.glob.clone().into()
+    }
+}
+
+impl StatementPattern for ValkeyTriplePattern {
+    type Term = ValkeyTerm;
+
+    fn matches(
+        &self,
+        _subject: impl Term,
+        _predicate: impl Term,
+        _object: impl Term,
+        _context: Option<impl Term>,
+    ) -> bool {
+        true // TODO
     }
 }

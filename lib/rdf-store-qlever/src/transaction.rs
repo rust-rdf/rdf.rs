@@ -4,7 +4,7 @@ use crate::{QleverError, QleverStore};
 use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
-use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -27,7 +27,9 @@ impl QleverTransaction {
 
 impl WriteTransaction for QleverTransaction {
     type Error = QleverError;
-    type Statement = HeapQuad;
+    type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     async fn rollback(self) -> Result<(), Self::Error> {
         if !self.writable {
@@ -69,12 +71,23 @@ impl WriteTransaction for QleverTransaction {
         }
         Ok(()) // TODO
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
+        Ok(()) // TODO
+    }
 }
 
 impl ReadTransaction for QleverTransaction {
     type Error = QleverError;
-    type Statement = HeapQuad;
-    type Term = HeapTerm;
+    type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     fn r#match(
         &self,

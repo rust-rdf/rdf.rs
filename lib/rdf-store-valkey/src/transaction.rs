@@ -10,7 +10,7 @@ use core::{borrow::Borrow, time::Duration};
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
-use rdf_model::{HeapQuad, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
 
@@ -128,7 +128,9 @@ impl ValkeyTransaction {
 
 impl WriteTransaction for ValkeyTransaction {
     type Error = ValkeyError;
-    type Statement = HeapQuad;
+    type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     async fn rollback(self) -> Result<(), Self::Error> {
         let Some(tx) = self.tx else {
@@ -217,12 +219,20 @@ impl WriteTransaction for ValkeyTransaction {
 
         Ok(())
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
 }
 
 impl ReadTransaction for ValkeyTransaction {
     type Error = ValkeyError;
-    type Statement = ValkeyQuad;
     type Term = ValkeyTerm;
+    type Statement = ValkeyQuad;
+    type StatementPattern = ValkeyTriplePattern; // TODO
 
     fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>> {
         stream! {

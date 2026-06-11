@@ -5,7 +5,9 @@ use alloc::string::{String, ToString};
 use async_stream::stream;
 use core::borrow::Borrow;
 use futures::{Stream, stream::select};
-use rdf_model::{Datatype, HeapQuad, HeapTerm, QuadPattern, Statement, StatementPattern};
+use rdf_model::{
+    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, QuadPattern, Statement, StatementPattern,
+};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 type Language = String; // TODO
@@ -17,7 +19,9 @@ pub struct SqliteTransaction<'conn> {
 
 impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
-    type Statement = HeapQuad;
+    type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(self.tx.rollback().await?)
@@ -78,12 +82,20 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     ) -> Result<(), Self::Error> {
         Ok(()) // FIXME
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
 }
 
 impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
-    type Statement = HeapQuad;
-    type Term = HeapTerm;
+    type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     fn r#match(
         &self,

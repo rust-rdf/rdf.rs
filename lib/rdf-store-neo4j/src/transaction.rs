@@ -4,7 +4,7 @@ use crate::{Neo4jError, Neo4jStore};
 use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
-use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -27,7 +27,9 @@ impl Neo4jTransaction {
 
 impl WriteTransaction for Neo4jTransaction {
     type Error = Neo4jError;
+    type Term = HeapTerm;
     type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(()) // TODO
@@ -54,12 +56,20 @@ impl WriteTransaction for Neo4jTransaction {
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
 }
 
 impl ReadTransaction for Neo4jTransaction {
     type Error = Neo4jError;
-    type Statement = HeapQuad;
     type Term = HeapTerm;
+    type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     fn r#match(
         &self,

@@ -6,8 +6,9 @@ use rdf_model::{Statement, StatementPattern, Term};
 /// A read-only (R/O) transaction on a [`Store`].
 pub trait ReadTransaction {
     type Error;
-    type Statement: Statement;
     type Term: Term + Clone;
+    type Statement: Statement<Term = Self::Term>;
+    type StatementPattern: StatementPattern<Term = Self::Term>;
 
     /// Returns a stream of all context terms (graph names) in the store.
     fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>> {

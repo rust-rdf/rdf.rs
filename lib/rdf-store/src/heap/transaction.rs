@@ -6,7 +6,7 @@ use async_stream::stream;
 use core::borrow::Borrow;
 use futures::Stream;
 use parking_lot::RwLock;
-use rdf_model::{HeapQuad, HeapTerm, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
 
 #[derive(Debug, Default)]
 pub struct HeapTransaction {
@@ -27,7 +27,9 @@ impl HeapTransaction {
 
 impl WriteTransaction for Arc<HeapTransaction> {
     type Error = ();
+    type Term = HeapTerm;
     type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         if !self.writable {
@@ -84,12 +86,35 @@ impl WriteTransaction for Arc<HeapTransaction> {
         mutations.insert(quad, false);
         Ok(())
     }
+
+    async fn delete(
+        &mut self,
+        pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
+        let pattern = pattern.borrow().to_quad_pattern();
+        let mut mutations = self.mutations.write();
+        for quad in self.store.quads.read().iter() {
+            if pattern.matches(
+                quad.subject(),
+                quad.predicate(),
+                quad.object(),
+                quad.context(),
+            ) {
+                mutations.insert(quad.clone(), false);
+            }
+        }
+        Ok(())
+    }
 }
 
 impl ReadTransaction for Arc<HeapTransaction> {
     type Error = ();
     type Term = HeapTerm;
     type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     fn r#match(
         &self,

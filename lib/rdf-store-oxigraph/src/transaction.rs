@@ -5,7 +5,7 @@ use alloc::boxed::Box;
 use core::borrow::Borrow;
 use futures::{Stream, stream};
 use ouroboros::self_referencing;
-use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -41,7 +41,9 @@ impl OxigraphTransaction {
 
 impl WriteTransaction for OxigraphTransaction {
     type Error = OxigraphError;
+    type Term = HeapTerm; // TODO
     type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(()) // TODO
@@ -68,12 +70,20 @@ impl WriteTransaction for OxigraphTransaction {
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
 }
 
 impl ReadTransaction for OxigraphTransaction {
     type Error = OxigraphError;
-    type Statement = HeapQuad; // TODO
     type Term = HeapTerm; // TODO
+    type Statement = HeapQuad; // TODO
+    type StatementPattern = HeapQuadPattern; // TODO
 
     fn r#match(
         &self,

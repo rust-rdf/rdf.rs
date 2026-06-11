@@ -10,7 +10,7 @@ use mongodb::{
     error::{ErrorKind, WriteError, WriteFailure},
     options::SessionOptions,
 };
-use rdf_model::{HeapQuad, HeapTerm, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -90,7 +90,9 @@ impl MongoTransaction {
 
 impl WriteTransaction for MongoTransaction {
     type Error = MongoError;
+    type Term = HeapTerm;
     type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     async fn rollback(mut self) -> Result<(), Self::Error> {
         if !self.writable {
@@ -200,12 +202,24 @@ impl WriteTransaction for MongoTransaction {
 
         Ok(())
     }
+
+    async fn delete(
+        &mut self,
+        _pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(MongoError::ReadOnly);
+        }
+
+        Ok(()) // TODO
+    }
 }
 
 impl ReadTransaction for MongoTransaction {
     type Error = MongoError;
-    type Statement = HeapQuad;
     type Term = HeapTerm;
+    type Statement = HeapQuad;
+    type StatementPattern = HeapQuadPattern;
 
     fn r#match(
         &self,

@@ -1,12 +1,14 @@
 // This is free and unencumbered software released into the public domain.
 
 use core::borrow::Borrow;
-use rdf_model::Statement;
+use rdf_model::{Statement, StatementPattern, Term};
 
 /// A read-write (R/W) transaction on a [`Store`].
 pub trait WriteTransaction {
     type Error;
-    type Statement: Statement;
+    type Term: Term + Clone;
+    type Statement: Statement<Term = Self::Term>;
+    type StatementPattern: StatementPattern<Term = Self::Term>;
 
     /// Aborts the transaction, discarding any changes.
     fn rollback(self) -> impl Future<Output = Result<(), Self::Error>>;
@@ -29,5 +31,9 @@ pub trait WriteTransaction {
         statement: impl Borrow<Self::Statement> + Send,
     ) -> impl Future<Output = Result<(), Self::Error>>;
 
-    // TODO: delete(&mut self, pattern)
+    /// Deletes all statements matching the given statement pattern.
+    fn delete(
+        &mut self,
+        pattern: impl Borrow<Self::StatementPattern> + Send,
+    ) -> impl Future<Output = Result<(), Self::Error>>;
 }
