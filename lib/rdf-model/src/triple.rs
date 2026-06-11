@@ -1,6 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{CowTerm, HeapTerm, Quad, QuadPattern, Statement, Term, TriplePattern};
+use crate::{
+    CowTerm, HeapTerm, Quad, QuadPattern, Statement, StatementPattern, Term, TriplePattern,
+};
 
 pub type TripleSlot = crate::StatementSlot;
 
@@ -46,6 +48,18 @@ impl<T: Term> Triple<T> {
     pub fn into_inner(self) -> (T, T, T) {
         (self.s, self.p, self.o)
     }
+
+    pub fn subject(&self) -> &T {
+        &self.s
+    }
+
+    pub fn predicate(&self) -> &T {
+        &self.p
+    }
+
+    pub fn object(&self) -> &T {
+        &self.o
+    }
 }
 
 impl<T: Term + Clone> Statement for Triple<T> {
@@ -61,6 +75,22 @@ impl<T: Term + Clone> Statement for Triple<T> {
 
     fn object(&self) -> &Self::Term {
         &self.o
+    }
+}
+
+impl<T: Term + Clone> StatementPattern for Triple<T> {
+    type Term = T;
+
+    fn subject(&self) -> Option<&Self::Term> {
+        Some(&self.s)
+    }
+
+    fn predicate(&self) -> Option<&Self::Term> {
+        Some(&self.p)
+    }
+
+    fn object(&self) -> Option<&Self::Term> {
+        Some(&self.o)
     }
 }
 

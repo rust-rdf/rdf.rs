@@ -1,6 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{CowTerm, HeapTerm, QuadPattern, Statement, Term, Triple, TriplePattern};
+use crate::{
+    CowTerm, HeapTerm, QuadPattern, Statement, StatementPattern, Term, Triple, TriplePattern,
+};
 
 pub type QuadSlot = crate::StatementSlot;
 
@@ -50,6 +52,22 @@ impl<T: Term> Quad<T> {
     pub fn into_inner(self) -> (T, T, T, Option<T>) {
         (self.s, self.p, self.o, self.g)
     }
+
+    pub fn subject(&self) -> &T {
+        &self.s
+    }
+
+    pub fn predicate(&self) -> &T {
+        &self.p
+    }
+
+    pub fn object(&self) -> &T {
+        &self.o
+    }
+
+    pub fn context(&self) -> Option<&T> {
+        self.g.as_ref()
+    }
 }
 
 impl<T: Term + Clone> Statement for Quad<T> {
@@ -65,6 +83,26 @@ impl<T: Term + Clone> Statement for Quad<T> {
 
     fn object(&self) -> &Self::Term {
         &self.o
+    }
+
+    fn context(&self) -> Option<&Self::Term> {
+        self.g.as_ref()
+    }
+}
+
+impl<T: Term + Clone> StatementPattern for Quad<T> {
+    type Term = T;
+
+    fn subject(&self) -> Option<&Self::Term> {
+        Some(&self.s)
+    }
+
+    fn predicate(&self) -> Option<&Self::Term> {
+        Some(&self.p)
+    }
+
+    fn object(&self) -> Option<&Self::Term> {
+        Some(&self.o)
     }
 
     fn context(&self) -> Option<&Self::Term> {
