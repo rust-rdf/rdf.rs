@@ -9,7 +9,7 @@ use borsh::{
 use core::marker::PhantomData;
 use lz4_flex::frame::FrameEncoder;
 use num_integer::Integer;
-use rdf_model::{HeapQuad, Statement, Term};
+use rdf_model::{HeapQuad, Term};
 use rdf_writer::{Format, Writer};
 
 pub struct BorshWriter<T: Integer> {

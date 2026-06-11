@@ -12,12 +12,12 @@ async fn main() -> Result<(), Box<dyn core::error::Error>> {
     let mut tx = store.write().await?;
     eprintln!("{:?}", tx);
 
-    // let count = tx.count(None::<AnyStatement<HeapTerm>>).await.unwrap();
+    // let count = tx.count(AnyStatement).await.unwrap();
     // eprintln!("{:?}", count);
 
     tx.insert(&HeapQuad::from(&SAMPLE_QUAD)).await?;
 
-    // let count = tx.count(None::<AnyStatement<HeapTerm>>).await.unwrap();
+    // let count = tx.count(AnyStatement).await.unwrap();
     // eprintln!("{:?}", count);
 
     tx.commit().await?;

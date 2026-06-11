@@ -1,25 +1,23 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{AnyTerm, StatementPattern, Term};
-use core::marker::PhantomData;
+use crate::{
+    AnyTerm, CowTerm, EMPTY_COW_QUAD_PATTERN, EMPTY_HEAP_QUAD_PATTERN, HeapTerm, QuadPattern,
+    Statement, StatementPattern, Term,
+};
+use core::{borrow::Borrow, marker::PhantomData};
 
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct AnyStatement<T: Term + Clone = AnyTerm>(PhantomData<T>);
+pub type AnyQuad = AnyStatement;
+pub type AnyTriple = AnyStatement;
 
-impl<T: Term + Clone> AnyStatement<T> {
-    pub const fn new() -> Self {
-        Self(PhantomData)
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct AnyStatement;
+
+impl StatementPattern for AnyStatement {
+    type Term = AnyTerm;
+
+    fn matches(&self, _: impl Term, _: impl Term, _: impl Term, _: Option<impl Term>) -> bool {
+        true
     }
-}
-
-impl<T: Term + Clone> Default for AnyStatement<T> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl<T: Term + Clone> StatementPattern for AnyStatement<T> {
-    type Term = T;
 }
 
 #[cfg(feature = "alloc")]
@@ -51,7 +49,7 @@ impl From<AnyStatement> for crate::HeapQuadPattern {
 }
 
 #[cfg(feature = "alloc")]
-impl<T: Term + Clone> TryFrom<crate::CowTriplePattern<'_>> for AnyStatement<T> {
+impl TryFrom<crate::CowTriplePattern<'_>> for AnyStatement {
     type Error = ();
 
     fn try_from(input: crate::CowTriplePattern<'_>) -> Result<Self, Self::Error> {
@@ -99,5 +97,17 @@ impl TryFrom<crate::HeapQuadPattern> for AnyStatement {
         } else {
             Err(())
         }
+    }
+}
+
+impl Borrow<QuadPattern<CowTerm<'static>>> for AnyStatement {
+    fn borrow(&self) -> &QuadPattern<CowTerm<'static>> {
+        &EMPTY_COW_QUAD_PATTERN
+    }
+}
+
+impl Borrow<QuadPattern<HeapTerm>> for AnyStatement {
+    fn borrow(&self) -> &QuadPattern<HeapTerm> {
+        &EMPTY_HEAP_QUAD_PATTERN
     }
 }

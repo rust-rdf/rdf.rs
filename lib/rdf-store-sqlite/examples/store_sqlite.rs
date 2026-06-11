@@ -1,7 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
-use rdf_model::{AnyStatement, HeapQuad, HeapTerm, SAMPLE_QUAD};
-use rdf_store::{ReadTransaction, Store, WriteTransaction};
+use rdf_model::{HeapQuad, SAMPLE_QUAD};
+use rdf_store::{Store, WriteTransaction};
 use rdf_store_sqlite::SqliteStore;
 
 #[tokio::main]

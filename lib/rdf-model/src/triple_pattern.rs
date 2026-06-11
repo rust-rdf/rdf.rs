@@ -1,6 +1,9 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{QuadPattern, StatementPattern, Term};
+use crate::{CowTerm, HeapTerm, QuadPattern, StatementPattern, Term};
+
+pub static EMPTY_COW_TRIPLE_PATTERN: TriplePattern<CowTerm> = TriplePattern::EMPTY;
+pub static EMPTY_HEAP_TRIPLE_PATTERN: TriplePattern<HeapTerm> = TriplePattern::EMPTY;
 
 /// A triple statement pattern.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
