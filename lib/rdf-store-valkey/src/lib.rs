@@ -16,7 +16,7 @@
 //!
 //! let mut tx = store.write().await?;
 //!
-//! tx.insert(&(SAMPLE_QUAD.into())).await?;
+//! tx.insert(SAMPLE_QUAD).await?;
 //!
 //! tx.commit().await?;
 //! # Ok(())

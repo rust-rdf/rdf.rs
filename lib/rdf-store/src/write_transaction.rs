@@ -22,18 +22,18 @@ pub trait WriteTransaction {
     /// Inserts a statement into the store.
     fn insert(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> impl Future<Output = Result<(), Self::Error>>;
 
     /// Removes a statement from the store.
     fn remove(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> impl Future<Output = Result<(), Self::Error>>;
 
     /// Deletes all statements matching the given statement pattern.
     fn delete(
         &mut self,
-        pattern: impl Borrow<Self::StatementPattern> + Send,
+        pattern: impl Into<Self::StatementPattern> + Send,
     ) -> impl Future<Output = Result<(), Self::Error>>;
 }

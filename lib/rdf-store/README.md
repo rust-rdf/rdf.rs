@@ -77,8 +77,8 @@ let mut store = HeapStore::new();
 ```rust,compile_fail
 let mut tx = store.write().await?;
 
-tx.remove(old_quad.into()).await?;
-tx.insert(new_quad.into()).await?;
+tx.remove(old_quad).await?;
+tx.insert(new_quad).await?;
 
 tx.commit().await?;
 ```

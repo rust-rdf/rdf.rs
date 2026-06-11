@@ -35,10 +35,10 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
 
     async fn insert(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         use HeapTerm::*;
-        let statement = statement.borrow();
+        let statement = statement.into();
         let _g = match statement.context() {
             Some(g) => Some(self.intern_node(g).await?), // TODO
             None => None,
@@ -76,14 +76,14 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
 
     async fn remove(
         &mut self,
-        _statement: impl Borrow<Self::Statement> + Send,
+        _statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // FIXME
     }
 
     async fn delete(
         &mut self,
-        _pattern: impl Borrow<Self::StatementPattern> + Send,
+        _pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }

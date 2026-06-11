@@ -45,21 +45,21 @@ impl WriteTransaction for PostgresTransaction {
 
     async fn insert(
         &mut self,
-        _statement: impl Borrow<Self::Statement> + Send,
+        _statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 
     async fn remove(
         &mut self,
-        _statement: impl Borrow<Self::Statement> + Send,
+        _statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 
     async fn delete(
         &mut self,
-        _pattern: impl Borrow<Self::StatementPattern> + Send,
+        _pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }

@@ -52,6 +52,15 @@ impl From<&MongoTriple> for bson::Document {
     }
 }
 
+impl<T> From<&T> for MongoTriple
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
+    }
+}
+
 impl From<CowQuad<'_>> for MongoTriple {
     fn from(input: CowQuad<'_>) -> Self {
         let id = MongoTripleId::from(&input);
@@ -65,12 +74,6 @@ impl From<CowQuad<'_>> for MongoTriple {
     }
 }
 
-impl From<&CowQuad<'_>> for MongoTriple {
-    fn from(input: &CowQuad<'_>) -> Self {
-        input.clone().into()
-    }
-}
-
 impl From<HeapQuad> for MongoTriple {
     fn from(input: HeapQuad) -> Self {
         let id = MongoTripleId::from(&input);
@@ -81,11 +84,5 @@ impl From<HeapQuad> for MongoTriple {
             p: p.into(),
             o: o.into(),
         }
-    }
-}
-
-impl From<&HeapQuad> for MongoTriple {
-    fn from(input: &HeapQuad) -> Self {
-        input.clone().into()
     }
 }

@@ -29,14 +29,23 @@ impl From<MongoTripleId> for bson::Document {
     }
 }
 
-impl From<&CowQuad<'_>> for MongoTripleId {
-    fn from(input: &CowQuad<'_>) -> Self {
-        Self(input.into())
+impl<T> From<&T> for MongoTripleId
+where
+    T: Clone + Into<Self>,
+{
+    fn from(t: &T) -> Self {
+        t.clone().into()
     }
 }
 
-impl From<&HeapQuad> for MongoTripleId {
-    fn from(input: &HeapQuad) -> Self {
-        Self(input.into())
+impl From<CowQuad<'_>> for MongoTripleId {
+    fn from(input: CowQuad<'_>) -> Self {
+        Self((&input).into())
+    }
+}
+
+impl From<HeapQuad> for MongoTripleId {
+    fn from(input: HeapQuad) -> Self {
+        Self((&input).into())
     }
 }

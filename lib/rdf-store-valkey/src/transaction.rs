@@ -24,8 +24,8 @@ use serde_json::Value;
 /// ```rust,compile_fail
 /// let mut tx = store.write().await?;
 ///
-/// tx.remove(old_quad.into()).await?;
-/// tx.insert(new_quad.into()).await?;
+/// tx.remove(old_quad).await?;
+/// tx.insert(new_quad).await?;
 ///
 /// tx.commit().await?;
 /// ```
@@ -162,13 +162,13 @@ impl WriteTransaction for ValkeyTransaction {
 
     async fn insert(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         let Some(ref tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
 
-        let statement = statement.borrow();
+        let statement = statement.into();
         //self.removes.remove(statement);
         //self.inserts.insert(statement.clone());
 
@@ -196,13 +196,13 @@ impl WriteTransaction for ValkeyTransaction {
 
     async fn remove(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         let Some(ref tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
 
-        let statement = statement.borrow();
+        let statement = statement.into();
         //self.inserts.remove(statement);
         //self.removes.insert(statement.clone());
 
@@ -222,7 +222,7 @@ impl WriteTransaction for ValkeyTransaction {
 
     async fn delete(
         &mut self,
-        _pattern: impl Borrow<Self::StatementPattern> + Send,
+        _pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }

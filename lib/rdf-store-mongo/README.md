@@ -84,8 +84,8 @@ let mut store = MongoStore::open("mongodb://localhost:27017/test").await?;
 ```rust,compile_fail
 let mut tx = store.write().await?;
 
-tx.remove(old_quad.into()).await?;
-tx.insert(new_quad.into()).await?;
+tx.remove(old_quad).await?;
+tx.insert(new_quad).await?;
 
 tx.commit().await?;
 ```

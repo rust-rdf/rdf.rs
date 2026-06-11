@@ -63,12 +63,12 @@ impl WriteTransaction for Arc<HeapTransaction> {
 
     async fn insert(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
-        let quad = statement.borrow().to_quad();
+        let quad = statement.into().to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, true);
         Ok(())
@@ -76,12 +76,12 @@ impl WriteTransaction for Arc<HeapTransaction> {
 
     async fn remove(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
-        let quad = statement.borrow().to_quad();
+        let quad = statement.into().to_quad();
         let mut mutations = self.mutations.write();
         mutations.insert(quad, false);
         Ok(())
@@ -89,12 +89,12 @@ impl WriteTransaction for Arc<HeapTransaction> {
 
     async fn delete(
         &mut self,
-        pattern: impl Borrow<Self::StatementPattern> + Send,
+        pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(());
         }
-        let pattern = pattern.borrow().to_quad_pattern();
+        let pattern = pattern.into().to_quad_pattern();
         let mut mutations = self.mutations.write();
         for quad in self.store.quads.read().iter() {
             if pattern.matches(

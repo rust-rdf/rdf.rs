@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use rdf_model::{AnyStatement, HeapQuad, SAMPLE_QUAD};
+use rdf_model::{AnyStatement, SAMPLE_QUAD};
 use rdf_store::{HeapStore, ReadTransaction, Store, WriteTransaction};
 
 #[tokio::main]
@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn core::error::Error>> {
     let count = tx.count(AnyStatement).await.unwrap();
     eprintln!("{:?}", count);
 
-    tx.insert(HeapQuad::from(&SAMPLE_QUAD)).await.unwrap();
+    tx.insert(SAMPLE_QUAD).await.unwrap();
 
     let count = tx.count(AnyStatement).await.unwrap();
     eprintln!("{:?}", count);

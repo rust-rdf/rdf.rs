@@ -23,8 +23,8 @@ use rdf_store::{ReadTransaction, WriteTransaction};
 /// ```rust,compile_fail
 /// let mut tx = store.write().await?;
 ///
-/// tx.remove(old_quad.into()).await?;
-/// tx.insert(new_quad.into()).await?;
+/// tx.remove(old_quad).await?;
+/// tx.insert(new_quad).await?;
 ///
 /// tx.commit().await?;
 /// ```
@@ -128,18 +128,18 @@ impl WriteTransaction for MongoTransaction {
 
     async fn insert(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(MongoError::ReadOnly);
         };
 
-        let statement = statement.borrow();
+        let statement = statement.into();
         if statement.has_context() {
             return Err(MongoError::Other); // TODO: named graphs not supported yet
         }
 
-        let triple_doc: Document = MongoTriple::from(statement).into();
+        let triple_doc: Document = MongoTriple::from(&statement).into();
 
         let result = self
             .spo
@@ -158,7 +158,7 @@ impl WriteTransaction for MongoTransaction {
             },
         };
 
-        let triple_doc: Document = MongoTripleId::from(statement).into();
+        let triple_doc: Document = MongoTripleId::from(&statement).into();
         let result = self
             .graph
             .insert_one(triple_doc)
@@ -181,13 +181,13 @@ impl WriteTransaction for MongoTransaction {
 
     async fn remove(
         &mut self,
-        statement: impl Borrow<Self::Statement> + Send,
+        statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(MongoError::ReadOnly);
         };
 
-        let statement = statement.borrow();
+        let statement = statement.into();
         if statement.has_context() {
             return Err(MongoError::Other); // TODO: named graphs not supported yet
         }
@@ -205,7 +205,7 @@ impl WriteTransaction for MongoTransaction {
 
     async fn delete(
         &mut self,
-        _pattern: impl Borrow<Self::StatementPattern> + Send,
+        _pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
             return Err(MongoError::ReadOnly);

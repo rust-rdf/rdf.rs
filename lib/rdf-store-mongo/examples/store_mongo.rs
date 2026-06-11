@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use rdf_model::{HeapQuad, SAMPLE_QUAD};
+use rdf_model::SAMPLE_QUAD;
 use rdf_store::{Store, WriteTransaction};
 use rdf_store_mongo::MongoStore;
 
@@ -12,8 +12,8 @@ async fn main() -> Result<(), Box<dyn core::error::Error>> {
     let mut tx = store.write().await?;
     dbg!(&tx);
 
-    tx.remove(&HeapQuad::from(&SAMPLE_QUAD)).await?;
-    tx.insert(&HeapQuad::from(&SAMPLE_QUAD)).await?;
+    tx.remove(SAMPLE_QUAD).await?;
+    tx.insert(SAMPLE_QUAD).await?;
 
     tx.commit().await?;
 
