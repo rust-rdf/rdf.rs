@@ -1,0 +1,38 @@
+[package]
+name = "rdf-store-idb"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "An IndexedDB storage adapter for RDF.rs knowledge graphs."
+#documentation.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = []
+alloc = ["rdf-model/alloc"]
+std = ["alloc", "rdf-model/std", "rdf-store/std"]
+unstable = []
+
+# Features:
+tracing = []
+
+[dependencies]
+aquamarine.workspace = true
+async-stream.workspace = true
+derive_more = { workspace = true, features = ["debug"] }
+futures.workspace = true
+idb = { version = "0.6", default-features = false, features = ["futures"] }
+rdf-model.workspace = true
+rdf-store.workspace = true
+xsd.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
