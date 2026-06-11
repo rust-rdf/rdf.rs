@@ -48,12 +48,6 @@ pub use feature::*;
 mod graph;
 pub use graph::*;
 
-mod literal;
-pub use literal::*;
-
-mod node;
-pub use node::*;
-
 mod quad;
 pub use quad::*;
 
