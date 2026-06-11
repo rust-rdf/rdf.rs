@@ -116,6 +116,14 @@ impl WriteTransaction for MongoTransaction {
         Ok(())
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(MongoError::ReadOnly);
+        };
+
+        Ok(()) // TODO
+    }
+
     async fn insert(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,

@@ -30,10 +30,23 @@ impl WriteTransaction for QleverTransaction {
     type Statement = HeapQuad;
 
     async fn rollback(self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         Ok(()) // TODO
     }
 
     async fn commit(self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
+        Ok(()) // TODO
+    }
+
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         Ok(()) // TODO
     }
 
@@ -41,6 +54,9 @@ impl WriteTransaction for QleverTransaction {
         &mut self,
         _statement: impl Borrow<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         Ok(()) // TODO
     }
 
@@ -48,6 +64,9 @@ impl WriteTransaction for QleverTransaction {
         &mut self,
         _statement: impl Borrow<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
         Ok(()) // TODO
     }
 }

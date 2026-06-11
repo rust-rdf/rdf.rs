@@ -27,6 +27,10 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
         Ok(self.tx.commit().await?)
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
+
     async fn insert(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,

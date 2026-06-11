@@ -37,6 +37,10 @@ impl WriteTransaction for Neo4jTransaction {
         Ok(()) // TODO
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
+
     async fn insert(
         &mut self,
         _statement: impl Borrow<Self::Statement> + Send,

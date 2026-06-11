@@ -52,6 +52,13 @@ impl WriteTransaction for Arc<HeapTransaction> {
         Ok(())
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        if !self.writable {
+            return Err(());
+        }
+        todo!() // TODO
+    }
+
     async fn insert(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,

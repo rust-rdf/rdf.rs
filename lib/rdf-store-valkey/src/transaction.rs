@@ -150,6 +150,14 @@ impl WriteTransaction for ValkeyTransaction {
         Ok(())
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        let Some(ref _tx) = self.tx else {
+            return Err(ValkeyError::ReadOnly);
+        };
+
+        Ok(()) // TODO
+    }
+
     async fn insert(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,

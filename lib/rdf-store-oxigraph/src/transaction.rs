@@ -51,6 +51,10 @@ impl WriteTransaction for OxigraphTransaction {
         Ok(()) // TODO
     }
 
+    async fn clear(&mut self) -> Result<(), Self::Error> {
+        Ok(()) // TODO
+    }
+
     async fn insert(
         &mut self,
         _statement: impl Borrow<Self::Statement> + Send,
