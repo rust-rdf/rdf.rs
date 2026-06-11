@@ -1,34 +1,47 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{OxigraphError, OxigraphStore};
-use alloc::{boxed::Box, sync::Arc};
+use alloc::boxed::Box;
 use core::borrow::Borrow;
-use derive_more::Debug;
 use futures::{Stream, stream};
+use ouroboros::self_referencing;
 use rdf_model::{HeapQuad, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A transaction for reading and writing statements in Oxigraph.
-#[derive(Debug)]
+#[self_referencing]
 pub struct OxigraphTransaction {
-    pub writable: bool,
+    writable: bool,
+
+    store: OxigraphStore,
+
+    #[borrows(store)]
+    #[covariant]
+    inner: oxigraph::store::Transaction<'this>,
 }
 
 impl OxigraphTransaction {
-    pub async fn begin(_store: &OxigraphStore, writable: bool) -> Result<Self, OxigraphError> {
-        // TODO
-        Ok(Self { writable })
+    pub async fn begin(store: &OxigraphStore, writable: bool) -> Result<Self, OxigraphError> {
+        let store = store.clone();
+        let transaction = OxigraphTransactionAsyncSendTryBuilder {
+            writable,
+            store,
+            inner_builder: |store| Box::pin(async move { store.inner.start_transaction() }),
+        }
+        .try_build()
+        .await?;
+        Ok(transaction)
     }
 
     pub fn is_writable(&self) -> bool {
-        self.writable
+        *self.borrow_writable()
     }
 }
 
 impl WriteTransaction for OxigraphTransaction {
     type Error = OxigraphError;
-    type Statement = HeapQuad;
+    type Statement = HeapQuad; // TODO
 
     async fn rollback(self) -> Result<(), Self::Error> {
         Ok(()) // TODO
@@ -55,8 +68,8 @@ impl WriteTransaction for OxigraphTransaction {
 
 impl ReadTransaction for OxigraphTransaction {
     type Error = OxigraphError;
-    type Statement = HeapQuad;
-    type Term = HeapTerm;
+    type Statement = HeapQuad; // TODO
+    type Term = HeapTerm; // TODO
 
     fn r#match(
         &self,

@@ -11,7 +11,6 @@
 
 #![no_std]
 #![deny(unsafe_code)]
-#![allow(unused_imports)]
 
 extern crate alloc;
 

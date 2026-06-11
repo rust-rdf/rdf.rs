@@ -81,6 +81,7 @@ hex = { version = "0.4", default-features = false }
 itertools = { version = "0.14", default-features = false }
 num-traits = { version = "0.2", default-features = false }
 num-integer = { version = "0.1", default-features = false }
+ouroboros = { version = "0.18", default-features = false }
 parking_lot = { version = "0.12", default-features = false }
 serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 tempfile = { version = "3.15", default-features = false }
@@ -117,3 +118,6 @@ rdf-stream = { path = "lib/rdf-stream" }
 rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
 xsd = { path = "lib/xsd" }
+
+# See: https://github.com/oxigraph/oxigraph/issues/1759
+oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }

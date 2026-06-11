@@ -18,18 +18,19 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["rocksdb"]
 alloc = ["rdf-model/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "ouroboros/std", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
 # Features:
-rocksdb = []
+rocksdb = ["oxigraph/rocksdb"]
 
 [dependencies]
 aquamarine.workspace = true
 async-stream.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-#oxigraph = { version = "0.5", default-features = false }
+ouroboros.workspace = true
+oxigraph = { version = "0.5", default-features = false, features = ["rdf-12"] }
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
