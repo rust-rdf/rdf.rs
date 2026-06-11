@@ -99,6 +99,97 @@ tx.r#match(quad_pattern)
 
 [docs.rs/rdf-store](https://docs.rs/rdf-store)
 
+### Core Traits
+
+#### [`Store`](https://docs.rs/rdf-store/latest/rdf_store/trait.Store.html)
+
+```rust,compile_fail
+/// A store of statements that supports R/O and R/W transactions.
+pub trait Store {
+    type Error;
+    type Read: ReadTransaction<Error = Self::Error> + Send;
+    type Write: WriteTransaction<Error = Self::Error> + Send;
+
+    /// Begins a read-only (R/O) transaction.
+    async fn read(&mut self) -> Result<Self::Read, Self::Error>;
+
+    /// Begins a read-write (R/W) transaction.
+    async fn write(&mut self) -> Result<Self::Write, Self::Error>;
+}
+```
+
+#### [`ReadTransaction`](https://docs.rs/rdf-store/latest/rdf_store/trait.ReadTransaction.html)
+
+```rust,compile_fail
+/// A read-only (R/O) transaction on a [`Store`].
+pub trait ReadTransaction {
+    type Error;
+    type Term: Term + Clone;
+    type Statement: Statement<Term = Self::Term>;
+    type StatementPattern: StatementPattern<Term = Self::Term>;
+
+    /// Returns a stream of all context terms (graph names) in the store.
+    fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>>;
+
+    /// Returns `true` if the store contains the given statement (pattern).
+    async fn contains(
+        &self,
+        pattern: impl Into<Self::StatementPattern>,
+    ) -> Result<bool, Self::Error>;
+
+    /// Returns the number of statements matching the given statement pattern.
+    async fn count(
+        &self,
+        pattern: impl Into<Self::StatementPattern>,
+    ) -> Result<u64, Self::Error>;
+
+    /// Returns a stream of all statements matching the given statement pattern.
+    fn r#match(
+        &self,
+        pattern: impl Into<Self::StatementPattern>,
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>>;
+}
+```
+
+#### [`WriteTransaction`](https://docs.rs/rdf-store/latest/rdf_store/trait.WriteTransaction.html)
+
+```rust,compile_fail
+/// A read-write (R/W) transaction on a [`Store`].
+pub trait WriteTransaction {
+    type Error;
+    type Term: Term + Clone;
+    type Statement: Statement<Term = Self::Term>;
+    type StatementPattern: StatementPattern<Term = Self::Term>;
+
+    /// Aborts the transaction, discarding any changes.
+    async fn rollback(self) -> Result<(), Self::Error>;
+
+    /// Commits the transaction, applying all changes.
+    async fn commit(self) -> Result<(), Self::Error>;
+
+    /// Clears all data from the store.
+    async fn clear(&mut self) -> Result<(), Self::Error>;
+
+    /// Inserts a statement into the store.
+    async fn insert(
+        &mut self,
+        statement: impl Into<Self::Statement> + Send,
+    ) -> Result<(), Self::Error>;
+
+    /// Removes a statement from the store.
+    async fn remove(
+        &mut self,
+        statement: impl Into<Self::Statement> + Send,
+    ) -> Result<(), Self::Error>;
+
+    /// Deletes all statements matching the given statement pattern.
+    async fn delete(
+        &mut self,
+        pattern: impl Into<Self::StatementPattern> + Send,
+    ) -> Result<(), Self::Error>;
+}
+```
+
 ### Storage Adapters
 
 | Package | Crate | Docs |
