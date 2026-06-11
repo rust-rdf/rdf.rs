@@ -48,14 +48,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-oxigraph = { version = "0.3" }
+rdf-store-oxigraph = { version = "0.4" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-oxigraph = { version = "0.3", default-features = false, features = ["rocksdb"] }
+rdf-store-oxigraph = { version = "0.4", default-features = false, features = ["rocksdb"] }
 ```
 
 ## 👉 Examples

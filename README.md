@@ -47,14 +47,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf = { package = "rdf_rs", version = "0.3" }
+rdf = { package = "rdf_rs", version = "0.4" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf = { package = "rdf_rs", version = "0.3", default-features = false, features = ["serde"] }
+rdf = { package = "rdf_rs", version = "0.4", default-features = false, features = ["serde"] }
 ```
 
 ## 👉 Examples

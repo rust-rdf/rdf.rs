@@ -48,14 +48,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-turso = { version = "0.3" }
+rdf-store-turso = { version = "0.4" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-turso = { version = "0.3", default-features = false, features = ["tls"] }
+rdf-store-turso = { version = "0.4", default-features = false, features = ["tls"] }
 ```
 
 ## 👉 Examples

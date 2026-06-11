@@ -48,14 +48,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-sqlite = { version = "0.3" }
+rdf-store-sqlite = { version = "0.4" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-sqlite = { version = "0.3", default-features = false, features = ["alloc"] }
+rdf-store-sqlite = { version = "0.4", default-features = false, features = ["alloc"] }
 ```
 
 ## 👉 Examples

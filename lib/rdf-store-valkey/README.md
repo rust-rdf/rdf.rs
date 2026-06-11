@@ -49,14 +49,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-valkey = { version = "0.3" }
+rdf-store-valkey = { version = "0.4" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-valkey = { version = "0.3", default-features = false, features = ["tls"] }
+rdf-store-valkey = { version = "0.4", default-features = false, features = ["tls"] }
 ```
 
 ## 👉 Examples
