@@ -3,7 +3,6 @@
 use crate::{HeapStore, ReadTransaction, WriteTransaction};
 use alloc::{collections::BTreeMap, sync::Arc};
 use async_stream::stream;
-use core::borrow::Borrow;
 use futures::Stream;
 use parking_lot::RwLock;
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
@@ -118,14 +117,14 @@ impl ReadTransaction for Arc<HeapTransaction> {
 
     fn r#match(
         &self,
-        pattern: impl Borrow<Self::StatementPattern>,
+        pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern_ = pattern.borrow().clone();
+        let pattern = pattern.into();
         let mutations = self.mutations.read();
         let quads = self.store.quads.read();
         stream! {
             for quad in quads.iter() {
-                if pattern_.matches(
+                if pattern.matches(
                     quad.subject(),
                     quad.predicate(),
                     quad.object(),
@@ -141,7 +140,7 @@ impl ReadTransaction for Arc<HeapTransaction> {
                 if !flag {
                     continue; // skip quads removed in this transaction
                 }
-                if pattern_.matches(
+                if pattern.matches(
                     quad.subject(),
                     quad.predicate(),
                     quad.object(),

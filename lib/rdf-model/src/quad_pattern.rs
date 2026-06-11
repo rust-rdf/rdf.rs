@@ -91,6 +91,18 @@ impl<T: Term + Clone> StatementPattern for QuadPattern<T> {
     }
 }
 
+impl<T: Term> From<()> for QuadPattern<T> {
+    fn from(_: ()) -> Self {
+        Self::default()
+    }
+}
+
+impl<T: Term> From<Option<()>> for QuadPattern<T> {
+    fn from(_: Option<()>) -> Self {
+        Self::default()
+    }
+}
+
 impl<T: Term> From<(T, T, T)> for QuadPattern<T> {
     fn from((s, p, o): (T, T, T)) -> Self {
         Self::from((Some(s), Some(p), Some(o)))

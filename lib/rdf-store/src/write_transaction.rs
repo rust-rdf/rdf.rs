@@ -1,6 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-use core::borrow::Borrow;
 use rdf_model::{Statement, StatementPattern, Term};
 
 /// A read-write (R/W) transaction on a [`Store`].

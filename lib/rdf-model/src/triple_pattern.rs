@@ -86,6 +86,18 @@ impl<T: Term + Clone> StatementPattern for TriplePattern<T> {
     }
 }
 
+impl<T: Term> From<()> for TriplePattern<T> {
+    fn from(_: ()) -> Self {
+        Self::default()
+    }
+}
+
+impl<T: Term> From<Option<()>> for TriplePattern<T> {
+    fn from(_: Option<()>) -> Self {
+        Self::default()
+    }
+}
+
 impl<T: Term> From<(T, T, T)> for TriplePattern<T> {
     fn from((s, p, o): (T, T, T)) -> Self {
         Self::from((Some(s), Some(p), Some(o)))

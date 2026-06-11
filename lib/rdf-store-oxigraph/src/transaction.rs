@@ -2,7 +2,6 @@
 
 use crate::{OxigraphError, OxigraphStore};
 use alloc::boxed::Box;
-use core::borrow::Borrow;
 use futures::{Stream, stream};
 use ouroboros::self_referencing;
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm};
@@ -87,7 +86,7 @@ impl ReadTransaction for OxigraphTransaction {
 
     fn r#match(
         &self,
-        _pattern: impl Borrow<Self::StatementPattern>,
+        _pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

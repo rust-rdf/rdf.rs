@@ -6,7 +6,7 @@ use crate::{
 };
 use alloc::{borrow::Cow, string::String, sync::Arc, vec::Vec};
 use async_stream::stream;
-use core::{borrow::Borrow, time::Duration};
+use core::time::Duration;
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
@@ -249,11 +249,11 @@ impl ReadTransaction for ValkeyTransaction {
 
     fn r#match(
         &self,
-        pattern: impl Borrow<Self::StatementPattern>,
+        pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern_ = pattern.borrow().clone();
-        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern_.context().cloned());
-        let pattern: ValkeyTriplePattern = pattern_.into();
+        let pattern = pattern.into();
+        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern.context().cloned());
+        let pattern: ValkeyTriplePattern = pattern.into();
         let graph_key: ValkeyGraphKey = (&*context).into();
 
         if pattern.is_constant() {

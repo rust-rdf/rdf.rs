@@ -1,6 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-use core::borrow::Borrow;
 use futures::stream::{self, Stream};
 use rdf_model::{Statement, StatementPattern, Term};
 
@@ -19,7 +18,7 @@ pub trait ReadTransaction {
     /// Returns `true` if the store contains the given statement (pattern).
     fn contains(
         &self,
-        pattern: impl Borrow<Self::StatementPattern>,
+        pattern: impl Into<Self::StatementPattern>,
     ) -> impl Future<Output = Result<bool, Self::Error>> {
         use futures::future::TryFutureExt;
         self.count(pattern).map_ok(|count| count > 0)
@@ -28,7 +27,7 @@ pub trait ReadTransaction {
     /// Returns the number of statements matching the given statement pattern.
     fn count(
         &self,
-        pattern: impl Borrow<Self::StatementPattern>,
+        pattern: impl Into<Self::StatementPattern>,
     ) -> impl Future<Output = Result<u64, Self::Error>> {
         use futures::StreamExt;
         async move { Ok(self.r#match(pattern).count().await as _) }
@@ -37,7 +36,7 @@ pub trait ReadTransaction {
     /// Returns a stream of all statements matching the given statement pattern.
     fn r#match(
         &self,
-        _pattern: impl Borrow<Self::StatementPattern>,
+        _pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty()
     }

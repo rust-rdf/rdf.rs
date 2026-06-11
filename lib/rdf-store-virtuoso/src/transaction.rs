@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{VirtuosoError, VirtuosoStore};
-use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm};
@@ -73,7 +72,7 @@ impl ReadTransaction for VirtuosoTransaction {
 
     fn r#match(
         &self,
-        _pattern: impl Borrow<Self::StatementPattern>,
+        _pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

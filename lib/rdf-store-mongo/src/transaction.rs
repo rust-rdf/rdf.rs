@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{MongoError, MongoStore, MongoTriple, MongoTripleId};
-use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
 use mongodb::{
@@ -223,7 +222,7 @@ impl ReadTransaction for MongoTransaction {
 
     fn r#match(
         &self,
-        _pattern: impl Borrow<Self::StatementPattern>,
+        _pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

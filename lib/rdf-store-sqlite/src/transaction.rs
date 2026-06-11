@@ -3,7 +3,6 @@
 use super::{NodeId, SqliteError};
 use alloc::string::{String, ToString};
 use async_stream::stream;
-use core::borrow::Borrow;
 use futures::{Stream, stream::select};
 use rdf_model::{Datatype, HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
@@ -97,12 +96,12 @@ impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
 
     fn r#match(
         &self,
-        pattern: impl Borrow<Self::StatementPattern>,
+        pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern_ = pattern.borrow();
-        let stream1 = self.match_triples(pattern_.clone());
-        let stream2 = self.match_triples_str(pattern_.clone());
-        let stream3 = self.match_triples_num(pattern_.clone());
+        let pattern = pattern.into();
+        let stream1 = self.match_triples(pattern.clone());
+        let stream2 = self.match_triples_str(pattern.clone());
+        let stream3 = self.match_triples_num(pattern.clone());
         select(stream1, select(stream2, stream3))
     }
 }

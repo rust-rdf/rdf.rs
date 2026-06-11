@@ -5,7 +5,7 @@ use alloc::string::ToString;
 use rdf_model::{HeapTerm, QuadPattern, StatementPattern, Term};
 
 /// A triple statement pattern for matching triples in Valkey.
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ValkeyTriplePattern {
     pub(crate) glob: ValkeyTripleId,
     pub(crate) matcher: QuadPattern<ValkeyTerm>,
@@ -23,6 +23,18 @@ where
 {
     fn from(t: &T) -> Self {
         t.clone().into()
+    }
+}
+
+impl From<()> for ValkeyTriplePattern {
+    fn from(_: ()) -> Self {
+        Self::default()
+    }
+}
+
+impl From<Option<()>> for ValkeyTriplePattern {
+    fn from(_: Option<()>) -> Self {
+        Self::default()
     }
 }
 
