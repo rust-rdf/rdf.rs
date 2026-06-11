@@ -118,14 +118,14 @@ impl ReadTransaction for Arc<HeapTransaction> {
 
     fn r#match(
         &self,
-        pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern.map(|s| s.to_quad_pattern()).unwrap_or_default();
+        let pattern_ = pattern.borrow().clone();
         let mutations = self.mutations.read();
         let quads = self.store.quads.read();
         stream! {
             for quad in quads.iter() {
-                if pattern.matches(
+                if pattern_.matches(
                     quad.subject(),
                     quad.predicate(),
                     quad.object(),
@@ -141,7 +141,7 @@ impl ReadTransaction for Arc<HeapTransaction> {
                 if !flag {
                     continue; // skip quads removed in this transaction
                 }
-                if pattern.matches(
+                if pattern_.matches(
                     quad.subject(),
                     quad.predicate(),
                     quad.object(),

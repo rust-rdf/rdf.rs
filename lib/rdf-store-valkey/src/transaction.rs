@@ -10,7 +10,7 @@ use core::{borrow::Borrow, time::Duration};
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
-use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
 
@@ -247,21 +247,13 @@ impl ReadTransaction for ValkeyTransaction {
         }
     }
 
-    fn count(
-        &self,
-        pattern: Option<impl StatementPattern<Term = Self::Term>>,
-    ) -> impl Future<Output = Result<u64, Self::Error>> {
-        use futures::StreamExt;
-        async move { Ok(self.r#match(pattern).count().await as _) } // TODO: optimize
-    }
-
     fn r#match(
         &self,
-        pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern.map(|p| p.to_quad_pattern()).unwrap_or_default();
-        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern.context().cloned());
-        let pattern: ValkeyTriplePattern = pattern.into();
+        let pattern_ = pattern.borrow().clone();
+        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern_.context().cloned());
+        let pattern: ValkeyTriplePattern = pattern_.into();
         let graph_key: ValkeyGraphKey = (&*context).into();
 
         if pattern.is_constant() {

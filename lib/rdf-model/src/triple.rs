@@ -49,6 +49,26 @@ impl<T: Term> Triple<T> {
         (self.s, self.p, self.o)
     }
 
+    /// Whether the statement has a constant subject.
+    pub fn has_subject(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant predicate.
+    pub fn has_predicate(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant object.
+    pub fn has_object(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant context (graph).
+    pub fn has_context(&self) -> bool {
+        false
+    }
+
     pub fn subject(&self) -> &T {
         &self.s
     }
@@ -59,6 +79,10 @@ impl<T: Term> Triple<T> {
 
     pub fn object(&self) -> &T {
         &self.o
+    }
+
+    pub fn context(&self) -> Option<&T> {
+        None
     }
 }
 

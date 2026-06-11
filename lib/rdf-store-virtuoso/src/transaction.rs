@@ -4,7 +4,7 @@ use crate::{VirtuosoError, VirtuosoStore};
 use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
-use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -73,7 +73,7 @@ impl ReadTransaction for VirtuosoTransaction {
 
     fn r#match(
         &self,
-        _pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        _pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

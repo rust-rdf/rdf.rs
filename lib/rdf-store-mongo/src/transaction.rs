@@ -10,7 +10,7 @@ use mongodb::{
     error::{ErrorKind, WriteError, WriteFailure},
     options::SessionOptions,
 };
-use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
+use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -223,7 +223,7 @@ impl ReadTransaction for MongoTransaction {
 
     fn r#match(
         &self,
-        _pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        _pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

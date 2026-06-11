@@ -5,9 +5,7 @@ use alloc::string::{String, ToString};
 use async_stream::stream;
 use core::borrow::Borrow;
 use futures::{Stream, stream::select};
-use rdf_model::{
-    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, QuadPattern, Statement, StatementPattern,
-};
+use rdf_model::{Datatype, HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 type Language = String; // TODO
@@ -99,14 +97,12 @@ impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
 
     fn r#match(
         &self,
-        pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
-        let pattern = pattern
-            .map(|s| s.to_quad_pattern())
-            .unwrap_or(QuadPattern::EMPTY);
-        let stream1 = self.match_triples(pattern.clone());
-        let stream2 = self.match_triples_str(pattern.clone());
-        let stream3 = self.match_triples_num(pattern.clone());
+        let pattern_ = pattern.borrow();
+        let stream1 = self.match_triples(pattern_.clone());
+        let stream2 = self.match_triples_str(pattern_.clone());
+        let stream3 = self.match_triples_num(pattern_.clone());
         select(stream1, select(stream2, stream3))
     }
 }

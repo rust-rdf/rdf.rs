@@ -73,7 +73,7 @@ impl ReadTransaction for PostgresTransaction {
 
     fn r#match(
         &self,
-        _pattern: Option<impl StatementPattern<Term = Self::Term>>,
+        _pattern: impl Borrow<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         stream::empty() // TODO
     }

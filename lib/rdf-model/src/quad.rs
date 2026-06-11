@@ -53,6 +53,26 @@ impl<T: Term> Quad<T> {
         (self.s, self.p, self.o, self.g)
     }
 
+    /// Whether the statement has a constant subject.
+    pub fn has_subject(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant predicate.
+    pub fn has_predicate(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant object.
+    pub fn has_object(&self) -> bool {
+        true
+    }
+
+    /// Whether the statement has a constant context (graph).
+    pub fn has_context(&self) -> bool {
+        self.context().is_some()
+    }
+
     pub fn subject(&self) -> &T {
         &self.s
     }
