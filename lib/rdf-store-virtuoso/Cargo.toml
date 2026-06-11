@@ -27,7 +27,6 @@ tracing = []
 [dependencies]
 aquamarine.workspace = true
 async-stream.workspace = true
-async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 odbc-api = { version = "28.1", default-features = true }

@@ -1,28 +1,27 @@
 // This is free and unencumbered software released into the public domain.
 
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use core::borrow::Borrow;
 use rdf_model::Statement;
 
-#[async_trait]
 pub trait WriteTransaction {
     type Error;
     type Statement: Statement;
 
-    async fn rollback(self) -> Result<(), Self::Error>;
+    fn rollback(self) -> impl Future<Output = Result<(), Self::Error>>;
 
-    async fn commit(self) -> Result<(), Self::Error>;
+    fn commit(self) -> impl Future<Output = Result<(), Self::Error>>;
 
-    async fn insert(
+    // TODO: async fn clear(&mut self) -> Result<(), Self::Error>;
+
+    fn insert(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,
-    ) -> Result<(), Self::Error>;
+    ) -> impl Future<Output = Result<(), Self::Error>>;
 
-    async fn remove(
+    fn remove(
         &mut self,
         statement: impl Borrow<Self::Statement> + Send,
-    ) -> Result<(), Self::Error>;
+    ) -> impl Future<Output = Result<(), Self::Error>>;
 
     // TODO: delete(&mut self, pattern)
 }

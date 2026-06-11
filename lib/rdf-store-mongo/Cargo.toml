@@ -28,7 +28,6 @@ tracing = ["mongodb/tracing-unstable"]
 [dependencies]
 aquamarine.workspace = true
 async-stream.workspace = true
-async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 mongodb = { version = "3.7", default-features = false, features = ["bson-3", "compat-3-0-0", "dns-resolver"] }

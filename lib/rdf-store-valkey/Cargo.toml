@@ -29,7 +29,6 @@ tracing = ["fred/partial-tracing"]
 [dependencies]
 aquamarine.workspace = true
 async-stream.workspace = true
-async-trait.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 fred = { version = "10.1", default-features = false, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
 futures.workspace = true

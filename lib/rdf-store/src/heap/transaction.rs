@@ -1,9 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{HeapStore, ReadTransaction, WriteTransaction};
-use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
+use alloc::{collections::BTreeMap, sync::Arc};
 use async_stream::stream;
-use async_trait::async_trait;
 use core::borrow::Borrow;
 use futures::Stream;
 use parking_lot::RwLock;
@@ -26,7 +25,6 @@ impl HeapTransaction {
     }
 }
 
-#[async_trait]
 impl WriteTransaction for Arc<HeapTransaction> {
     type Error = ();
     type Statement = HeapQuad;
@@ -81,7 +79,6 @@ impl WriteTransaction for Arc<HeapTransaction> {
     }
 }
 
-#[async_trait]
 impl ReadTransaction for Arc<HeapTransaction> {
     type Error = ();
     type Term = HeapTerm;

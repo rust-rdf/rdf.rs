@@ -1,8 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{Neo4jError, Neo4jTransaction};
-use alloc::{boxed::Box, string::String};
-use async_trait::async_trait;
+use alloc::string::String;
 use derive_more::Debug;
 use futures::executor::block_on;
 use neo4rs::Graph;
@@ -61,7 +60,6 @@ impl Default for Neo4jStore {
     }
 }
 
-#[async_trait]
 impl Store for Neo4jStore {
     type Error = Neo4jError;
     type Read = Neo4jTransaction;

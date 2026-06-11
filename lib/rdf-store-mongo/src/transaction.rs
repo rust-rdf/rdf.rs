@@ -1,8 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{MongoError, MongoStore, MongoTriple, MongoTripleId};
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
@@ -90,7 +88,6 @@ impl MongoTransaction {
     }
 }
 
-#[async_trait]
 impl WriteTransaction for MongoTransaction {
     type Error = MongoError;
     type Statement = HeapQuad;
@@ -197,7 +194,6 @@ impl WriteTransaction for MongoTransaction {
     }
 }
 
-#[async_trait]
 impl ReadTransaction for MongoTransaction {
     type Error = MongoError;
     type Statement = HeapQuad;

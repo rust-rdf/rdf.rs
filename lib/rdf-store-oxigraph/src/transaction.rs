@@ -1,8 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{OxigraphError, OxigraphStore};
-use alloc::boxed::Box;
-use async_trait::async_trait;
+use alloc::{boxed::Box, sync::Arc};
 use core::borrow::Borrow;
 use derive_more::Debug;
 use futures::{Stream, stream};
@@ -27,16 +26,15 @@ impl OxigraphTransaction {
     }
 }
 
-#[async_trait]
 impl WriteTransaction for OxigraphTransaction {
     type Error = OxigraphError;
     type Statement = HeapQuad;
 
-    async fn rollback(mut self) -> Result<(), Self::Error> {
+    async fn rollback(self) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 
-    async fn commit(mut self) -> Result<(), Self::Error> {
+    async fn commit(self) -> Result<(), Self::Error> {
         Ok(()) // TODO
     }
 
@@ -55,7 +53,6 @@ impl WriteTransaction for OxigraphTransaction {
     }
 }
 
-#[async_trait]
 impl ReadTransaction for OxigraphTransaction {
     type Error = OxigraphError;
     type Statement = HeapQuad;

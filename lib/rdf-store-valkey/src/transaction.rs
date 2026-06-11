@@ -4,9 +4,8 @@ use crate::{
     ValkeyError, ValkeyGraphKey, ValkeyQuad, ValkeyStore, ValkeyTerm, ValkeyTriple, ValkeyTripleId,
     ValkeyTripleKey, ValkeyTriplePattern,
 };
-use alloc::{borrow::Cow, boxed::Box, string::String, sync::Arc, vec::Vec};
+use alloc::{borrow::Cow, string::String, sync::Arc, vec::Vec};
 use async_stream::stream;
-use async_trait::async_trait;
 use core::{borrow::Borrow, time::Duration};
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
@@ -127,12 +126,11 @@ impl ValkeyTransaction {
     }
 }
 
-#[async_trait]
 impl WriteTransaction for ValkeyTransaction {
     type Error = ValkeyError;
     type Statement = HeapQuad;
 
-    async fn rollback(mut self) -> Result<(), Self::Error> {
+    async fn rollback(self) -> Result<(), Self::Error> {
         let Some(tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
@@ -142,7 +140,7 @@ impl WriteTransaction for ValkeyTransaction {
         Ok(())
     }
 
-    async fn commit(mut self) -> Result<(), Self::Error> {
+    async fn commit(self) -> Result<(), Self::Error> {
         let Some(tx) = self.tx else {
             return Err(ValkeyError::ReadOnly);
         };
@@ -213,7 +211,6 @@ impl WriteTransaction for ValkeyTransaction {
     }
 }
 
-#[async_trait]
 impl ReadTransaction for ValkeyTransaction {
     type Error = ValkeyError;
     type Statement = ValkeyQuad;

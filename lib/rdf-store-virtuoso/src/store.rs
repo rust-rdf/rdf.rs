@@ -2,7 +2,6 @@
 
 use crate::{VirtuosoError, VirtuosoTransaction};
 use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use odbc_api::{Connection, ConnectionOptions, Environment};
 use rdf_store::Store;
@@ -51,7 +50,6 @@ impl Default for VirtuosoStore {
     }
 }
 
-#[async_trait]
 impl Store for VirtuosoStore {
     type Error = VirtuosoError;
     type Read = VirtuosoTransaction;

@@ -1,8 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{MongoError, MongoTransaction};
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use futures::executor::block_on;
 use mongodb::{
@@ -82,7 +80,6 @@ impl Default for MongoStore {
     }
 }
 
-#[async_trait]
 impl Store for MongoStore {
     type Error = MongoError;
     type Read = MongoTransaction;

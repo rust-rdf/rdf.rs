@@ -1,18 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
 use super::{NodeId, SqliteError};
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-};
+use alloc::string::{String, ToString};
 use async_stream::stream;
-use async_trait::async_trait;
 use core::borrow::Borrow;
 use futures::{Stream, stream::select};
-use rdf_model::{
-    Datatype, HeapQuad, HeapQuadPattern, HeapTerm, HeapTriple, QuadPattern, Statement,
-    StatementPattern, Term, TermKind,
-};
+use rdf_model::{Datatype, HeapQuad, HeapTerm, QuadPattern, Statement, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 
 type Language = String; // TODO
@@ -22,7 +15,6 @@ pub struct SqliteTransaction<'conn> {
     pub(crate) tx: turso::transaction::Transaction<'conn>,
 }
 
-#[async_trait]
 impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
     type Statement = HeapQuad;
@@ -84,7 +76,6 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     }
 }
 
-#[async_trait]
 impl<'conn> ReadTransaction for SqliteTransaction<'conn> {
     type Error = SqliteError;
     type Statement = HeapQuad;

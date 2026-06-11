@@ -24,7 +24,6 @@ unstable = []
 [dependencies]
 aquamarine.workspace = true
 async-stream.workspace = true
-async-trait.workspace = true
 futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true

@@ -2,7 +2,6 @@
 
 use super::{SCHEMA_SQL, SCHEMA_VERSION, SchemaVersion, SqliteError, SqliteTransaction};
 use alloc::{boxed::Box, string::ToString};
-use async_trait::async_trait;
 use rdf_store::Store;
 use turso::{Builder, Connection, Database, transaction::TransactionBehavior};
 
@@ -39,7 +38,7 @@ impl SqliteStore {
                 } else {
                     return Err(err);
                 }
-            }
+            },
             Ok(mut rows) => {
                 if let Some(row) = rows.next().await? {
                     row.get::<SchemaVersion>(0)?
@@ -47,13 +46,12 @@ impl SqliteStore {
                     // TODO: migrate the schema to the latest version
                     SCHEMA_VERSION
                 }
-            }
+            },
         };
         Ok(Self { version, db, conn })
     }
 }
 
-#[async_trait]
 impl Store for SqliteStore {
     type Error = SqliteError;
     type Read = SqliteTransaction<'static>;

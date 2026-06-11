@@ -1,8 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{PostgresError, PostgresTransaction};
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use futures::executor::block_on;
 use rdf_store::Store;
@@ -49,7 +47,6 @@ impl Default for PostgresStore {
     }
 }
 
-#[async_trait]
 impl Store for PostgresStore {
     type Error = PostgresError;
     type Read = PostgresTransaction;

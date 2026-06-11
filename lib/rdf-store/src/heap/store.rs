@@ -1,8 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{HeapTransaction, Store};
-use alloc::{boxed::Box, sync::Arc};
-use async_trait::async_trait;
+use alloc::sync::Arc;
 use parking_lot::RwLock;
 use rdf_model::HeapQuadSet;
 
@@ -17,7 +16,6 @@ impl HeapStore {
     }
 }
 
-#[async_trait]
 impl Store for Arc<HeapStore> {
     type Error = ();
     type Read = Arc<HeapTransaction>;

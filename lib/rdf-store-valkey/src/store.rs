@@ -1,8 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{ValkeyError, ValkeyTransaction};
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use fred::prelude::*;
 use rdf_store::Store;
@@ -63,7 +61,6 @@ impl Default for ValkeyStore {
     }
 }
 
-#[async_trait]
 impl Store for ValkeyStore {
     type Error = ValkeyError;
     type Read = ValkeyTransaction;

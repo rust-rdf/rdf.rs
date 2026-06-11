@@ -2,7 +2,6 @@
 
 use crate::{QleverError, QleverTransaction};
 use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use rdf_store::Store;
 
@@ -13,7 +12,6 @@ pub struct QleverStore {}
 
 impl QleverStore {}
 
-#[async_trait]
 impl Store for QleverStore {
     type Error = QleverError;
     type Read = QleverTransaction;

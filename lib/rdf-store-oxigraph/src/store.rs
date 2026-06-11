@@ -1,8 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{OxigraphError, OxigraphTransaction};
-use alloc::boxed::Box;
-use async_trait::async_trait;
 use derive_more::Debug;
 use rdf_store::Store;
 
@@ -11,7 +9,6 @@ use rdf_store::Store;
 #[derive(Debug, Default)]
 pub struct OxigraphStore {}
 
-#[async_trait]
 impl Store for OxigraphStore {
     type Error = OxigraphError;
     type Read = OxigraphTransaction;
