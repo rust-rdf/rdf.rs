@@ -23,7 +23,7 @@ An [IndexedDB] storage adapter for **[RDF.rs]** knowledge graphs.
 
 ## ✨ Features
 
-- Implements a scalable, high-performance RDF store backed by [IndexedDB].
+- Implements a high-performance RDF store backed by [IndexedDB].
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].

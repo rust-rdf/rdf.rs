@@ -84,6 +84,7 @@ num-traits = { version = "0.2", default-features = false }
 num-integer = { version = "0.1", default-features = false }
 ouroboros = { version = "0.18", default-features = false }
 parking_lot = { version = "0.12", default-features = false }
+send_wrapper = { version = "0.6", default-features = false, features = ["futures"] }
 serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 tempfile = { version = "3.15", default-features = false }
 thiserror = { version = "2", default-features = false }

@@ -32,7 +32,10 @@ futures.workspace = true
 idb = { version = "0.6", default-features = false, features = ["futures"] }
 rdf-model.workspace = true
 rdf-store.workspace = true
+send_wrapper.workspace = true
+thiserror.workspace = true
+wasm-bindgen = { version = "0.2", default-features = false }
 xsd.workspace = true
 
 [dev-dependencies]
-tokio.workspace = true
+wasm-bindgen-test = "0.3"
