@@ -3,7 +3,8 @@
 use alloc::{borrow::Cow, vec, vec::Vec};
 use dogma::traits::{Labeled, Named};
 
-pub const FORMATS: [(&'static str, Format); 13] = [
+pub const FORMATS: [(&'static str, Format); 14] = [
+    ("cottas", Format::Cottas),
     ("csvw", Format::Csvw),
     ("hdt", Format::Hdt),
     ("jelly", Format::Jelly),
@@ -23,6 +24,7 @@ pub const FORMATS: [(&'static str, Format); 13] = [
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum Format {
+    Cottas,
     Csvw,
     Hdt,
     Jelly,
@@ -42,6 +44,7 @@ impl Named for Format {
     fn name(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
+            Cottas => "cottas",
             Csvw => "csvw",
             Hdt => "hdt",
             Jelly => "jelly",
@@ -63,6 +66,7 @@ impl Labeled for Format {
     fn label(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
+            Cottas => "Cottas",
             Csvw => "CSVW",
             Hdt => "HDT",
             Jelly => "Jelly",
@@ -93,6 +97,7 @@ impl Format {
     pub fn extension(&self) -> &str {
         use Format::*;
         match self {
+            Cottas => "cottas",
             Csvw => "csv",
             Hdt => "hdt",
             Jelly => "jelly",
@@ -119,7 +124,7 @@ impl Format {
 
     pub fn is_binary(&self) -> bool {
         use Format::*;
-        matches!(self, Hdt | Jelly)
+        matches!(self, Cottas | Hdt | Jelly)
     }
 
     pub fn is_text(&self) -> bool {
