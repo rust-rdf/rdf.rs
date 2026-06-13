@@ -16,7 +16,7 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["datetime", "decimal", "bson"]
+all = ["datetime", "decimal"]
 alloc = ["heapless/alloc"]
 std = ["alloc"]
 unstable = []
@@ -27,9 +27,14 @@ decimal = ["rust_decimal"]
 
 # Integrations:
 bson = ["dep:bson"]
+datafusion = []
 jiff = ["dep:jiff"]
+json-ld = []
+oxrdf = ["dep:oxsdatatypes"]
+rudof = ["dep:oxsdatatypes"]
 rust_decimal = ["dep:rust_decimal"]
 serde = ["dep:serde", "dep:serde_json"]
+sophia = []
 
 [dependencies]
 decorum = { workspace = true, features = ["serde"] }
@@ -42,6 +47,7 @@ strum_macros = "0.28"
 borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
+oxsdatatypes = { workspace = true, optional = true }
 rust_decimal = { version = "1.42", default-features = false, features = ["borsh", "serde-with-str"], optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }

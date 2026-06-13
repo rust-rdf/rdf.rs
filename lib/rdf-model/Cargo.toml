@@ -27,9 +27,12 @@ rdf-star = ["oxrdf?/rdf-12"]
 # Integrations:
 borsh = ["dep:borsh", "xsd/borsh"]
 bson = ["dep:bson", "xsd/bson"]
-oxrdf = ["dep:oxrdf"]
+datafusion = ["dep:rdf-fusion", "xsd/datafusion"]
+json-ld = ["dep:json-ld", "xsd/json-ld"]
+oxrdf = ["dep:oxrdf", "xsd/oxrdf"]
+rudof = ["dep:rudof", "xsd/rudof"]
 serde = ["dep:serde", "dep:serde_json", "xsd/serde"]
-sophia = ["dep:sophia"]
+sophia = ["dep:sophia", "xsd/sophia"]
 
 [dependencies]
 dogma.workspace = true
@@ -38,7 +41,10 @@ xsd = { workspace = true, features = ["datetime", "decimal"] }
 # Integrations:
 borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
+json-ld = { workspace = true, optional = true }
 oxrdf = { workspace = true, optional = true }
+rdf-fusion = { workspace = true, optional = true }
+rudof = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 sophia = { workspace = true, optional = true }

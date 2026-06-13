@@ -8,7 +8,7 @@ use oxrdfio::{RdfParser, ReaderQuadParser};
 use rdf_format::Format;
 use rdf_model::{
     Countable, Enumerable, MaybeDurable, MaybeIndexed, MaybeMutable, Source, Statement, Term,
-    providers::{OxrdfStatement, OxrdfTerm},
+    interop::{OxrdfStatement, OxrdfTerm},
 };
 use std::{boxed::Box, io::Read};
 

@@ -102,11 +102,27 @@ mod traits {
 }
 pub use traits::*;
 
-pub mod providers {
+pub mod interop {
+    #[cfg(feature = "datafusion")]
+    mod datafusion;
+    #[cfg(feature = "datafusion")]
+    pub use datafusion::*;
+
+    #[cfg(feature = "json-ld")]
+    mod json_ld;
+    #[cfg(feature = "json-ld")]
+    pub use json_ld::*;
+
     #[cfg(feature = "oxrdf")]
     mod oxrdf;
     #[cfg(feature = "oxrdf")]
     pub use oxrdf::*;
+
+    #[cfg(feature = "rudof")]
+    mod rudof;
+    #[cfg(feature = "rudof")]
+    pub use rudof::*;
+
     #[cfg(feature = "sophia")]
     mod sophia;
     #[cfg(feature = "sophia")]
