@@ -3,8 +3,10 @@
 use alloc::{borrow::Cow, vec, vec::Vec};
 use dogma::traits::{Labeled, Named};
 
-pub const FORMATS: [(&'static str, Format); 11] = [
+pub const FORMATS: [(&'static str, Format); 13] = [
+    ("csvw", Format::Csvw),
     ("hdt", Format::Hdt),
+    ("jelly", Format::Jelly),
     ("jsonld", Format::JsonLd),
     ("n3", Format::Notation3),
     ("nq", Format::NQuads),
@@ -19,8 +21,11 @@ pub const FORMATS: [(&'static str, Format); 11] = [
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[non_exhaustive]
 pub enum Format {
+    Csvw,
     Hdt,
+    Jelly,
     JsonLd,
     Notation3,
     NQuads,
@@ -37,7 +42,9 @@ impl Named for Format {
     fn name(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
+            Csvw => "csvw",
             Hdt => "hdt",
+            Jelly => "jelly",
             JsonLd => "json-ld",
             Notation3 => "n3",
             NQuads => "n-quads",
@@ -56,7 +63,9 @@ impl Labeled for Format {
     fn label(&self) -> Cow<'_, str> {
         use Format::*;
         Cow::Borrowed(match self {
+            Csvw => "CSVW",
             Hdt => "HDT",
+            Jelly => "Jelly",
             JsonLd => "JSON-LD",
             Notation3 => "Notation3",
             NQuads => "N-Quads",
@@ -84,7 +93,9 @@ impl Format {
     pub fn extension(&self) -> &str {
         use Format::*;
         match self {
+            Csvw => "csv",
             Hdt => "hdt",
+            Jelly => "jelly",
             JsonLd => "jsonld",
             Notation3 => "n3",
             NQuads => "nq",
@@ -108,7 +119,7 @@ impl Format {
 
     pub fn is_binary(&self) -> bool {
         use Format::*;
-        matches!(self, Hdt)
+        matches!(self, Hdt | Jelly)
     }
 
     pub fn is_text(&self) -> bool {
@@ -135,6 +146,7 @@ impl TryFrom<&oxrdfio::RdfFormat> for Format {
             RdfFormat::RdfXml => Format::RdfXml,
             RdfFormat::TriG => Format::TriG,
             RdfFormat::Turtle => Format::Turtle,
+            RdfFormat::JsonLd { .. } => Format::JsonLd,
             _ => return Err(()),
         })
     }
