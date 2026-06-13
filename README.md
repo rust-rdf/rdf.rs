@@ -91,6 +91,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
+| [rdf-reader-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-cottas)](https://crates.io/crates/rdf-reader-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-cottas?label=docs.rs)](https://docs.rs/rdf-reader-cottas) |
 | [rdf-reader-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-hdt)](https://crates.io/crates/rdf-reader-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-hdt?label=docs.rs)](https://docs.rs/rdf-reader-hdt) |
 | [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
 | [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
@@ -101,6 +102,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
+| [rdf-writer-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-cottas)](https://crates.io/crates/rdf-writer-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-cottas?label=docs.rs)](https://docs.rs/rdf-writer-cottas) |
 | [rdf-writer-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-hdt?label=docs.rs)](https://docs.rs/rdf-writer-hdt) |
 | [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
 | [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
