@@ -30,7 +30,7 @@ async-stream.workspace = true
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 ouroboros.workspace = true
-oxigraph = { version = "0.5", default-features = false, features = ["rdf-12"] }
+oxigraph.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true

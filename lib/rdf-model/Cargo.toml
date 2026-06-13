@@ -16,13 +16,13 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["rdf-star", "serde", "oxrdf"]
+all = ["serde", "oxrdf"]
 alloc = ["serde_json?/alloc", "xsd/alloc"]
 std = ["alloc", "dogma/std", "serde?/std", "serde_json?/std", "xsd/std"]
 unstable = []
 
 # Features:
-rdf-star = ["oxrdf?/rdf-12"]
+rdf-star = [] # @deprecated
 
 # Integrations:
 borsh = ["dep:borsh", "xsd/borsh"]

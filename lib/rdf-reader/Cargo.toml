@@ -16,13 +16,13 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["rdf-star", "serde"]
+all = ["serde"]
 alloc = ["rdf-format/alloc", "rdf-model/alloc"]
 std = ["alloc", "rdf-format/std", "rdf-model/std"]
 unstable = []
 
 # Features:
-rdf-star = ["oxrdfio?/rdf-12", "rdf-format/rdf-star", "rdf-model/rdf-star"]
+rdf-star = [] # @deprecated
 
 # Integrations:
 oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]

@@ -102,6 +102,7 @@ mod traits {
 }
 pub use traits::*;
 
+/// Interoperability with other Rust libraries.
 pub mod interop {
     #[cfg(feature = "datafusion")]
     mod datafusion;

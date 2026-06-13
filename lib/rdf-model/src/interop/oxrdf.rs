@@ -71,7 +71,6 @@ impl Term for OxrdfTerm {
             Term::NamedNode(_) => TermKind::Iri,
             Term::BlankNode(_) => TermKind::BNode,
             Term::Literal(_) => TermKind::Literal,
-            #[cfg(feature = "rdf-star")]
             Term::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
         }
     }
@@ -82,7 +81,6 @@ impl Term for OxrdfTerm {
             Term::NamedNode(node) => Cow::Borrowed(node.as_str()),
             Term::BlankNode(node) => Cow::Borrowed(node.as_str()),
             Term::Literal(lit) => Cow::Borrowed(lit.value()), // TODO
-            #[cfg(feature = "rdf-star")]
             Term::Triple(_) => todo!("RDF-star support not implemented yet"), // TODO
         }
     }

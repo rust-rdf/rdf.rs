@@ -27,7 +27,7 @@ decimal = ["rust_decimal"]
 
 # Integrations:
 bson = ["dep:bson"]
-datafusion = []
+datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
 oxrdf = ["dep:oxsdatatypes"]
@@ -38,6 +38,7 @@ sophia = []
 
 [dependencies]
 decorum = { workspace = true, features = ["serde"] }
+dogma.workspace = true
 heapless.workspace = true
 phf = { version = "0.13", default-features = false, features = ["macros"] }
 strum = "0.28"
@@ -48,6 +49,7 @@ borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
 oxsdatatypes = { workspace = true, optional = true }
+rdf-fusion = { workspace = true, optional = true }
 rust_decimal = { version = "1.42", default-features = false, features = ["borsh", "serde-with-str"], optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
