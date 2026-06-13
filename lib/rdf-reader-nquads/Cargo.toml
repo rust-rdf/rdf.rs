@@ -1,0 +1,32 @@
+[package]
+name = "rdf-reader-nquads"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "An N-Quads file reader for RDF.rs knowledge graphs."
+#documentation.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+
+[features]
+default = ["all", "std"]
+all = []
+alloc = ["rdf-format/alloc", "rdf-model/alloc"]
+std = ["alloc", "rdf-format/std", "rdf-model/std"]
+unstable = []
+
+[dependencies]
+async-stream.workspace = true
+futures.workspace = true
+rdf-format.workspace = true
+rdf-model.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

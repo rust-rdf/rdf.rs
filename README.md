@@ -87,6 +87,26 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | [rdf-writer](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer)](https://crates.io/crates/rdf-writer) | [![Documentation](https://img.shields.io/docsrs/rdf-writer?label=docs.rs)](https://docs.rs/rdf-writer) |
 | [xsd](https://github.com/rust-rdf/rdf.rs/tree/master/lib/xsd#readme) | [![Package](https://img.shields.io/crates/v/xsd)](https://crates.io/crates/xsd) | [![Documentation](https://img.shields.io/docsrs/xsd?label=docs.rs)](https://docs.rs/xsd) |
 
+### File Readers
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+| [rdf-reader-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-hdt)](https://crates.io/crates/rdf-reader-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-hdt?label=docs.rs)](https://docs.rs/rdf-reader-hdt) |
+| [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
+| [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
+| [rdf-reader-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-ntriples)](https://crates.io/crates/rdf-reader-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-ntriples?label=docs.rs)](https://docs.rs/rdf-reader-ntriples) |
+| [rdf-reader-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-turtle)](https://crates.io/crates/rdf-reader-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-turtle?label=docs.rs)](https://docs.rs/rdf-reader-turtle) |
+
+### File Writers
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+| [rdf-writer-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-hdt?label=docs.rs)](https://docs.rs/rdf-writer-hdt) |
+| [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
+| [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
+| [rdf-writer-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-ntriples)](https://crates.io/crates/rdf-writer-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-ntriples?label=docs.rs)](https://docs.rs/rdf-writer-ntriples) |
+| [rdf-writer-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-turtle)](https://crates.io/crates/rdf-writer-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-turtle?label=docs.rs)](https://docs.rs/rdf-writer-turtle) |
+
 ### Storage Adapters
 
 | Package | Crate | Docs |
