@@ -22,11 +22,16 @@ std = ["alloc", "rdf-format/std", "rdf-model/std"]
 unstable = []
 
 [dependencies]
+arrow-array.workspace = true
+arrow-schema.workspace = true
 async-stream.workspace = true
 futures.workspace = true
+futures-util.workspace = true
+parquet = { workspace = true, features = ["arrow", "zstd"] }
 rdf-format.workspace = true
 rdf-model.workspace = true
 thiserror.workspace = true
+tokio = { workspace = true, features = ["fs"] }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["fs"] }

@@ -1,5 +1,18 @@
 // This is free and unencumbered software released into the public domain.
 
+pub const TRIPLE_SLOTS: &[StatementSlot] = &[
+    StatementSlot::Subject,
+    StatementSlot::Predicate,
+    StatementSlot::Object,
+];
+
+pub const QUAD_SLOTS: &[StatementSlot] = &[
+    StatementSlot::Subject,
+    StatementSlot::Predicate,
+    StatementSlot::Object,
+    StatementSlot::Context,
+];
+
 /// A slot in a statement (subject, predicate, object, or context).
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -28,6 +41,19 @@ impl core::fmt::Display for StatementSlot {
 }
 
 impl StatementSlot {
+    pub fn index(&self) -> usize {
+        self.as_usize()
+    }
+
+    pub fn as_usize(&self) -> usize {
+        match self {
+            Self::Subject => 0,
+            Self::Predicate => 1,
+            Self::Object => 2,
+            Self::Context => 3,
+        }
+    }
+
     pub fn as_char(&self) -> char {
         match self {
             Self::Subject => 's',

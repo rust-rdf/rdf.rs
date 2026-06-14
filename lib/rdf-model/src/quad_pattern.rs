@@ -160,3 +160,15 @@ impl<T: Term + Clone> From<(Option<&T>, Option<&T>, Option<&T>, Option<&T>)> for
         }
     }
 }
+
+impl<T: Term> FromIterator<T> for QuadPattern<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut iter = iter.into_iter();
+        Self::new(
+            Some(iter.next().unwrap()),
+            Some(iter.next().unwrap()),
+            Some(iter.next().unwrap()),
+            Some(iter.next().unwrap()),
+        )
+    }
+}

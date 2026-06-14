@@ -299,3 +299,15 @@ impl<T: Term> TryFrom<QuadPattern<T>> for Quad<T> {
         ))
     }
 }
+
+impl<T: Term> FromIterator<T> for Quad<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut iter = iter.into_iter();
+        Self::new(
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            Some(iter.next().unwrap()),
+        )
+    }
+}
