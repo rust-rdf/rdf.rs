@@ -4,6 +4,7 @@
 
 use crate::{Statement, Term, TermKind};
 use alloc::{borrow::Cow, string::String};
+use core::fmt::Debug;
 use oxrdf::Quad;
 
 #[derive(Clone)]
@@ -12,6 +13,17 @@ pub struct OxrdfStatement {
     predicate: OxrdfTerm,
     object: OxrdfTerm,
     context: Option<OxrdfTerm>,
+}
+
+impl core::fmt::Debug for OxrdfStatement {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("OxrdfStatement")
+            .field(&self.subject.value_str())
+            .field(&self.predicate.value_str())
+            .field(&self.object.value_str())
+            .field(&self.context.as_ref().map(|c| c.value_str()))
+            .finish()
+    }
 }
 
 impl From<oxrdf::Quad> for OxrdfStatement {
