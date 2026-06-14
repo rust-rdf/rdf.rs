@@ -6,7 +6,20 @@
 //! # Examples
 //!
 //! ```rust
-//! use rdf_reader_nquads::*;
+//! use rdf_reader_nquads::NquadsReader;
+//! ```
 
 #![no_std]
 #![deny(unsafe_code)]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+mod error;
+pub use error::*;
+
+mod quad;
+pub use quad::*;
+
+mod reader;
+pub use reader::*;
