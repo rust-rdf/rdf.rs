@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["tokio"]
-alloc = ["rdf-model/alloc"]
+alloc = ["rdf-model/alloc", "rdf-store/alloc"]
 std = ["alloc", "rdf-model/std", "rdf-store/std"]
 unstable = []
 
