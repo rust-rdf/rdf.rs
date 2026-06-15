@@ -2,6 +2,8 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! # Examples
+//!
 //! ```rust
 //! use rdf_reader::*;
 //! ```
@@ -10,21 +12,11 @@
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 
-#[cfg(feature = "std")]
-extern crate std;
-
-#[cfg(not(feature = "std"))]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
-// #[cfg(feature = "std")]
-// mod open_path;
-// #[cfg(feature = "std")]
-// pub use open_path::*;
-
-// #[cfg(feature = "std")]
-// mod open_url;
-// #[cfg(feature = "std")]
-// pub use open_url::*;
+#[cfg(feature = "std")]
+extern crate std;
 
 mod reader;
 pub use reader::*;
@@ -32,11 +24,16 @@ pub use reader::*;
 mod reader_options;
 pub use reader_options::*;
 
-mod providers {
+mod stream_iter;
+pub use stream_iter::*;
+
+/// Interoperability with other Rust libraries.
+pub mod interop {
     #[cfg(feature = "oxrdf")]
     mod oxrdf;
     #[cfg(feature = "oxrdf")]
     pub use oxrdf::*;
+
     #[cfg(feature = "sophia")]
     mod sophia;
     #[cfg(feature = "sophia")]

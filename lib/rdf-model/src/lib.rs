@@ -2,6 +2,8 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! # Examples
+//!
 //! ```rust
 //! use rdf_model::*;
 //! ```
@@ -10,15 +12,17 @@
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
-/// TBD
+#[cfg(feature = "std")]
+extern crate std;
+
 #[cfg(feature = "alloc")]
 mod cow;
 #[cfg(feature = "alloc")]
 pub use cow::*;
 
-/// TBD
 #[cfg(feature = "alloc")]
 mod heap;
 #[cfg(feature = "alloc")]

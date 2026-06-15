@@ -38,7 +38,7 @@ pub fn for_reader<R: Read + 'static>(reader: R, options: ReaderOptions) -> Resul
         | Format::NTriples
         | Format::RdfXml
         | Format::TriG
-        | Format::Turtle => Box::new(crate::providers::OxrdfReader::new(reader, options)),
+        | Format::Turtle => Box::new(crate::interop::OxrdfReader::new(reader, options)),
 
         _ => unimplemented!(),
     };
