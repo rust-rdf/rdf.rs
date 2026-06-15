@@ -5,8 +5,24 @@
 //!
 //! # Examples
 //!
-//! ```rust
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use tokio::fs::File;
+//! let file = File::open("example.nq").await?;
+//!
 //! use rdf_reader_nquads::NquadsReader;
+//! let reader = NquadsReader::open(file).await?;
+//!
+//! use futures::StreamExt;
+//! reader
+//!     .into_stream()
+//!     .for_each(|quad| async move {
+//!         eprintln!("{:?}", quad);
+//!     })
+//!     .await;
+//! # Ok(())
+//! # }
 //! ```
 
 #![no_std]

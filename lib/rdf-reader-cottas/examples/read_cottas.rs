@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use futures_util::stream::TryStreamExt;
+use futures::StreamExt;
 use rdf_reader_cottas::CottasReader;
 use tokio::fs::File;
 
@@ -9,8 +9,12 @@ async fn main() -> Result<(), Box<dyn core::error::Error>> {
     let file = File::open("example.cottas").await?;
 
     let reader = CottasReader::open(file).await?;
-    let results = reader.try_collect::<Vec<_>>().await;
-    println!("{:?}", results);
+    reader
+        .into_stream()
+        .for_each(|triple| async move {
+            eprintln!("{:?}", triple);
+        })
+        .await;
 
-    Ok(()) // TODO
+    Ok(())
 }

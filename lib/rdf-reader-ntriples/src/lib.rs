@@ -5,8 +5,24 @@
 //!
 //! # Examples
 //!
-//! ```rust
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use tokio::fs::File;
+//! let file = File::open("example.nt").await?;
+//!
 //! use rdf_reader_ntriples::NtriplesReader;
+//! let reader = NtriplesReader::open(file).await?;
+//!
+//! use futures::StreamExt;
+//! reader
+//!     .into_stream()
+//!     .for_each(|triple| async move {
+//!         eprintln!("{:?}", triple);
+//!     })
+//!     .await;
+//! # Ok(())
+//! # }
 //! ```
 
 #![no_std]

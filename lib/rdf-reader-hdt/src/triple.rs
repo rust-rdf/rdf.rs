@@ -2,6 +2,7 @@
 
 use hdt::hdt_graph::HdtTerm;
 
+/// A triple statement (S, P, O) originating from an HDT file.
 pub type HdtTriple = [HdtTerm; 3];
 
-//pub type HdtTriple = rdf_model::interop::OxrdfStatement;
+//pub type HdtTriple = rdf_model::interop::SophiaStatement;

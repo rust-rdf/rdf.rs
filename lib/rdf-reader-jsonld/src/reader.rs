@@ -5,6 +5,7 @@ use futures::Stream;
 use oxjsonld::{JsonLdParser, TokioAsyncReaderJsonLdParser};
 use tokio::io::AsyncRead;
 
+/// A reader for the JSON-LD text format.
 pub struct JsonldReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderJsonLdParser<T>,
 }

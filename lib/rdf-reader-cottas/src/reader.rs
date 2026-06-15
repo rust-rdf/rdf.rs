@@ -1,5 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
+use crate::CottasReaderResult;
 use arrow_array::StringArray;
 use arrow_schema::DataType;
 use core::{pin::Pin, task::Poll};
@@ -14,24 +15,29 @@ use parquet::{
 use rdf_model::{HeapTerm, HeapTriple, TRIPLE_SLOTS};
 use tokio::fs::File;
 
+/// A reader for the COTTAS (Parquet) binary format.
 pub struct CottasReader<T: AsyncFileReader + Send + 'static = File> {
     pub stream: ParquetRecordBatchStream<T>,
-    pub batch: Option<arrow_array::RecordBatch>,
     pub batch_row_index: usize,
+    pub batch: Option<arrow_array::RecordBatch>,
 }
 
-impl<T: AsyncFileReader + Send + 'static> CottasReader<T> {
+impl<T: AsyncFileReader + Unpin + Send + 'static> CottasReader<T> {
     pub async fn open(input: T) -> Result<Self> {
         let builder = ParquetRecordBatchStreamBuilder::new(input).await?;
         let stream = builder.build()?;
         Ok(Self {
             stream,
-            batch: None,
             batch_row_index: 0,
+            batch: None,
         })
     }
 
-    fn next_in_batch(&mut self) -> Option<Result<HeapTriple, ()>> {
+    pub fn into_stream(self) -> impl Stream<Item = CottasReaderResult<HeapTriple>> {
+        self
+    }
+
+    fn next_in_batch(&mut self) -> Option<CottasReaderResult<HeapTriple>> {
         let Some(batch) = self.batch.as_ref() else {
             return None; // no current batch
         };
@@ -66,7 +72,7 @@ impl<T: AsyncFileReader + Send + 'static> CottasReader<T> {
 }
 
 impl<T: AsyncFileReader + Unpin + Send + 'static> Stream for CottasReader<T> {
-    type Item = Result<HeapTriple, ()>;
+    type Item = CottasReaderResult<HeapTriple>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         if let Some(result) = self.next_in_batch() {

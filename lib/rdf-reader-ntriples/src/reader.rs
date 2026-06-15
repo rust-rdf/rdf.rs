@@ -5,6 +5,7 @@ use futures::Stream;
 use oxttl::ntriples::{NTriplesParser, TokioAsyncReaderNTriplesParser};
 use tokio::io::AsyncRead;
 
+/// A reader for the N-Triples text format.
 pub struct NtriplesReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderNTriplesParser<T>,
 }

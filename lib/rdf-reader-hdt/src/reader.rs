@@ -8,6 +8,7 @@ use std::io::BufReader;
 use tokio::io::AsyncRead;
 use tokio_util::io::SyncIoBridge;
 
+/// A reader for the HDT binary format.
 pub struct HdtReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: Hdt,
     pub(crate) phantom: PhantomData<T>,

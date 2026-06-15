@@ -5,6 +5,7 @@ use futures::Stream;
 use oxttl::trig::{TokioAsyncReaderTriGParser, TriGParser};
 use tokio::io::AsyncRead;
 
+/// A reader for the TriG text format.
 pub struct TrigReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderTriGParser<T>,
 }

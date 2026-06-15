@@ -5,11 +5,40 @@
 //!
 //! # Examples
 //!
-//! ```rust
-//! use rdf_reader_cottas::*;
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use tokio::fs::File;
+//! let file = File::open("example.cottas").await?;
+//!
+//! use rdf_reader_cottas::CottasReader;
+//! let reader = CottasReader::open(file).await?;
+//!
+//! use futures::StreamExt;
+//! reader
+//!     .into_stream()
+//!     .for_each(|triple| async move {
+//!         eprintln!("{:?}", triple);
+//!     })
+//!     .await;
+//! # Ok(())
+//! # }
+//! ```
 
 #![no_std]
 #![deny(unsafe_code)]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+#[cfg(feature = "std")]
+extern crate std;
+
+mod error;
+pub use error::*;
+
 mod reader;
 pub use reader::*;
+
+mod term;
+pub use term::*;

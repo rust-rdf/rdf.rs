@@ -5,6 +5,7 @@ use futures::Stream;
 use oxttl::turtle::{TokioAsyncReaderTurtleParser, TurtleParser};
 use tokio::io::AsyncRead;
 
+/// A reader for the Turtle text format.
 pub struct TurtleReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderTurtleParser<T>,
 }
