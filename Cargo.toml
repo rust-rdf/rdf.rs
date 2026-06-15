@@ -50,6 +50,7 @@ rdf-reader-hdt = { version = "=0.4.0", default-features = true }
 rdf-reader-jsonld = { version = "=0.4.0", default-features = true }
 rdf-reader-nquads = { version = "=0.4.0", default-features = true }
 rdf-reader-ntriples = { version = "=0.4.0", default-features = true }
+rdf-reader-rdfxml = { version = "=0.4.0", default-features = true }
 rdf-reader-trig = { version = "=0.4.0", default-features = true }
 rdf-reader-turtle = { version = "=0.4.0", default-features = true }
 rdf-store = { version = "=0.4.0", default-features = true }
@@ -71,6 +72,7 @@ rdf-writer-hdt = { version = "=0.4.0", default-features = true }
 rdf-writer-jsonld = { version = "=0.4.0", default-features = true }
 rdf-writer-nquads = { version = "=0.4.0", default-features = true }
 rdf-writer-ntriples = { version = "=0.4.0", default-features = true }
+rdf-writer-rdfxml = { version = "=0.4.0", default-features = true }
 rdf-writer-trig = { version = "=0.4.0", default-features = true }
 rdf-writer-turtle = { version = "=0.4.0", default-features = true }
 xsd = { version = "=0.4.0", default-features = true }
@@ -140,6 +142,7 @@ rdf-reader-hdt = { path = "lib/rdf-reader-hdt" }
 rdf-reader-jsonld = { path = "lib/rdf-reader-jsonld" }
 rdf-reader-nquads = { path = "lib/rdf-reader-nquads" }
 rdf-reader-ntriples = { path = "lib/rdf-reader-ntriples" }
+rdf-reader-rdfxml = { path = "lib/rdf-reader-rdfxml" }
 rdf-reader-trig = { path = "lib/rdf-reader-trig" }
 rdf-reader-turtle = { path = "lib/rdf-reader-turtle" }
 rdf-store = { path = "lib/rdf-store" }
@@ -161,6 +164,7 @@ rdf-writer-hdt = { path = "lib/rdf-writer-hdt" }
 rdf-writer-jsonld = { path = "lib/rdf-writer-jsonld" }
 rdf-writer-nquads = { path = "lib/rdf-writer-nquads" }
 rdf-writer-ntriples = { path = "lib/rdf-writer-ntriples" }
+rdf-writer-rdfxml = { path = "lib/rdf-writer-rdfxml" }
 rdf-writer-trig = { path = "lib/rdf-writer-trig" }
 rdf-writer-turtle = { path = "lib/rdf-writer-turtle" }
 xsd = { path = "lib/xsd" }
