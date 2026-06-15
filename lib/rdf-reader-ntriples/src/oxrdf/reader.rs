@@ -1,8 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 
 use super::{NtriplesReaderResult, NtriplesTriple};
+use alloc::boxed::Box;
 use futures::Stream;
 use oxttl::ntriples::{NTriplesParser, TokioAsyncReaderNTriplesParser};
+use rdf_reader::StreamIter;
 use tokio::{io::AsyncRead, runtime::Handle};
 
 /// A reader for the N-Triples text format.
@@ -32,5 +34,11 @@ impl<T: AsyncRead + Unpin + Send + 'static> NtriplesReader<T> {
                 }
             }
         }
+    }
+
+    pub fn into_iter(self) -> impl Iterator<Item = NtriplesReaderResult<NtriplesTriple>> {
+        let handle = self.handle.clone();
+        let stream = Box::pin(self.into_stream());
+        StreamIter::new(stream, handle)
     }
 }
