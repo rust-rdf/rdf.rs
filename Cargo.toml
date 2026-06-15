@@ -182,6 +182,3 @@ xsd = { path = "lib/xsd" }
 
 # See: https://github.com/oxigraph/oxigraph/issues/1759
 oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }
-
-# See: https://github.com/KonradHoeffner/hdt/issues/121
-hdt = { git = "https://github.com/KonradHoeffner/hdt.git", rev = "82effbc" }
