@@ -45,6 +45,13 @@ rdf-id = { version = "=0.4.0", default-features = true }
 rdf-model = { version = "=0.4.0", default-features = true }
 rdf-query = { version = "=0.4.0", default-features = true }
 rdf-reader = { version = "=0.4.0", default-features = true }
+rdf-reader-cottas = { version = "=0.4.0", default-features = true }
+rdf-reader-hdt = { version = "=0.4.0", default-features = true }
+rdf-reader-jsonld = { version = "=0.4.0", default-features = true }
+rdf-reader-nquads = { version = "=0.4.0", default-features = true }
+rdf-reader-ntriples = { version = "=0.4.0", default-features = true }
+rdf-reader-trig = { version = "=0.4.0", default-features = true }
+rdf-reader-turtle = { version = "=0.4.0", default-features = true }
 rdf-store = { version = "=0.4.0", default-features = true }
 rdf-store-idb = { version = "=0.4.0", default-features = true }
 rdf-store-mongo = { version = "=0.4.0", default-features = true }
@@ -59,6 +66,13 @@ rdf-store-virtuoso = { version = "=0.4.0", default-features = true }
 rdf-stream = { version = "=0.4.0", default-features = true }
 rdf-vocab = { version = "=0.4.0", default-features = true }
 rdf-writer = { version = "=0.4.0", default-features = true }
+rdf-writer-cottas = { version = "=0.4.0", default-features = true }
+rdf-writer-hdt = { version = "=0.4.0", default-features = true }
+rdf-writer-jsonld = { version = "=0.4.0", default-features = true }
+rdf-writer-nquads = { version = "=0.4.0", default-features = true }
+rdf-writer-ntriples = { version = "=0.4.0", default-features = true }
+rdf-writer-trig = { version = "=0.4.0", default-features = true }
+rdf-writer-turtle = { version = "=0.4.0", default-features = true }
 xsd = { version = "=0.4.0", default-features = true }
 
 # Interoperability:
@@ -121,6 +135,13 @@ rdf-id = { path = "lib/rdf-id" }
 rdf-model = { path = "lib/rdf-model" }
 rdf-query = { path = "lib/rdf-query" }
 rdf-reader = { path = "lib/rdf-reader" }
+rdf-reader-cottas = { path = "lib/rdf-reader-cottas" }
+rdf-reader-hdt = { path = "lib/rdf-reader-hdt" }
+rdf-reader-jsonld = { path = "lib/rdf-reader-jsonld" }
+rdf-reader-nquads = { path = "lib/rdf-reader-nquads" }
+rdf-reader-ntriples = { path = "lib/rdf-reader-ntriples" }
+rdf-reader-trig = { path = "lib/rdf-reader-trig" }
+rdf-reader-turtle = { path = "lib/rdf-reader-turtle" }
 rdf-store = { path = "lib/rdf-store" }
 rdf-store-idb = { path = "lib/rdf-store-idb" }
 rdf-store-mongo = { path = "lib/rdf-store-mongo" }
@@ -135,6 +156,13 @@ rdf-store-virtuoso = { path = "lib/rdf-store-virtuoso" }
 rdf-stream = { path = "lib/rdf-stream" }
 rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
+rdf-writer-cottas = { path = "lib/rdf-writer-cottas" }
+rdf-writer-hdt = { path = "lib/rdf-writer-hdt" }
+rdf-writer-jsonld = { path = "lib/rdf-writer-jsonld" }
+rdf-writer-nquads = { path = "lib/rdf-writer-nquads" }
+rdf-writer-ntriples = { path = "lib/rdf-writer-ntriples" }
+rdf-writer-trig = { path = "lib/rdf-writer-trig" }
+rdf-writer-turtle = { path = "lib/rdf-writer-turtle" }
 xsd = { path = "lib/xsd" }
 
 # See: https://github.com/oxigraph/oxigraph/issues/1759

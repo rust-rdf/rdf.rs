@@ -23,6 +23,9 @@
 
 ## ✨ Features
 
+- Providers readers for Turtle, TriG, N-Triples, N-Quads, and COTTAS.
+- Implements stores on top of SQLite, Valkey, MongoDB, and IndexedDB.
+- Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports `no_std` environments from the get-go.
 - Supports opting out of any feature using comprehensive [feature flags].
@@ -96,6 +99,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
 | [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
 | [rdf-reader-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-ntriples)](https://crates.io/crates/rdf-reader-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-ntriples?label=docs.rs)](https://docs.rs/rdf-reader-ntriples) |
+| [rdf-reader-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-trig)](https://crates.io/crates/rdf-reader-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-trig?label=docs.rs)](https://docs.rs/rdf-reader-trig) |
 | [rdf-reader-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-turtle)](https://crates.io/crates/rdf-reader-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-turtle?label=docs.rs)](https://docs.rs/rdf-reader-turtle) |
 
 ### File Writers
@@ -107,6 +111,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
 | [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
 | [rdf-writer-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-ntriples)](https://crates.io/crates/rdf-writer-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-ntriples?label=docs.rs)](https://docs.rs/rdf-writer-ntriples) |
+| [rdf-writer-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-trig)](https://crates.io/crates/rdf-writer-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-trig?label=docs.rs)](https://docs.rs/rdf-writer-trig) |
 | [rdf-writer-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-turtle)](https://crates.io/crates/rdf-writer-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-turtle?label=docs.rs)](https://docs.rs/rdf-writer-turtle) |
 
 ### Storage Adapters
