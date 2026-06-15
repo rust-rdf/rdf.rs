@@ -6,7 +6,23 @@
 //! # Examples
 //!
 //! ```rust
-//! use rdf_reader_hdt::*;
+//! use rdf_reader_hdt::HdtReader;
+//! ```
 
 #![no_std]
 #![deny(unsafe_code)]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+#[cfg(feature = "std")]
+extern crate std;
+
+mod error;
+pub use error::*;
+
+mod reader;
+pub use reader::*;
+
+mod triple;
+pub use triple::*;

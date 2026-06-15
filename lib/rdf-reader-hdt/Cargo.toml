@@ -24,9 +24,12 @@ unstable = []
 [dependencies]
 async-stream.workspace = true
 futures.workspace = true
+hdt = { version = "0.6", features = ["sophia"] }
 rdf-format.workspace = true
-rdf-model.workspace = true
+rdf-model = { workspace = true, features = ["sophia"] }
 thiserror.workspace = true
+tokio = { workspace = true, features = ["io-util"] }
+tokio-util = { workspace = true, features = ["io-util"] }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["fs"] }

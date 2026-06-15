@@ -23,8 +23,8 @@
 
 ## ✨ Features
 
-- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, and COTTAS.
-- Implements stores on top of SQLite, Valkey, MongoDB, and IndexedDB.
+- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, COTTAS, and more.
+- Implements stores on top of SQLite, Valkey, MongoDB, IndexedDB, etc.
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports `no_std` environments from the get-go.

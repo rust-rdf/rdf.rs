@@ -104,6 +104,7 @@ arrayvec = { version = "0.7", default-features = false }
 arrow-array = { version = "59.0", default-features = false }
 arrow-schema = { version = "59.0", default-features = false }
 async-stream = "0.3"
+bytes = { version = "1.11", default-features = false }
 decorum = { version = "0.4", default-features = false }
 derive_more = { version = "2", default-features = false }
 float-ord = { version = "0.3", default-features = false }
@@ -127,6 +128,8 @@ zeroize = { version = "1.8", default-features = false }
 aquamarine = { version = "0.6", default-features = false }
 instability = "0.3"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio-stream = { version = "0.1", default-features = false }
+tokio-util = { version = "0.7", default-features = false }
 
 [patch.crates-io]
 rdf-cli = { path = "bin/rdf" }
@@ -173,3 +176,6 @@ xsd = { path = "lib/xsd" }
 
 # See: https://github.com/oxigraph/oxigraph/issues/1759
 oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }
+
+# See: https://github.com/KonradHoeffner/hdt/issues/121
+hdt = { git = "https://github.com/KonradHoeffner/hdt.git", rev = "82effbc" }
