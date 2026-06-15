@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{JsonldReaderResult, JsonldTriple};
-use alloc::boxed::Box;
 use futures::Stream;
 use oxjsonld::{JsonLdParser, TokioAsyncReaderJsonLdParser};
 use rdf_reader::StreamIter;
@@ -35,10 +34,14 @@ impl<T: AsyncRead + Unpin + Send + 'static> JsonldReader<T> {
             }
         }
     }
+}
 
-    pub fn into_iter(self) -> impl Iterator<Item = JsonldReaderResult<JsonldTriple>> {
+impl<T: AsyncRead + Unpin + Send + 'static> IntoIterator for JsonldReader<T> {
+    type Item = JsonldReaderResult<JsonldTriple>;
+    type IntoIter = StreamIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
         let handle = self.handle.clone();
-        let stream = Box::pin(self.into_stream());
-        StreamIter::new(stream, handle)
+        StreamIter::new(self.into_stream(), handle)
     }
 }

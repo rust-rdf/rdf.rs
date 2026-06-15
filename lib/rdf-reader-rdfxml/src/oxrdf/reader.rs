@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{RdfxmlReaderResult, RdfxmlTriple};
-use alloc::boxed::Box;
 use futures::Stream;
 use oxrdfxml::{RdfXmlParser, TokioAsyncReaderRdfXmlParser};
 use rdf_reader::StreamIter;
@@ -35,10 +34,14 @@ impl<T: AsyncRead + Unpin + Send + 'static> RdfxmlReader<T> {
             }
         }
     }
+}
 
-    pub fn into_iter(self) -> impl Iterator<Item = RdfxmlReaderResult<RdfxmlTriple>> {
+impl<T: AsyncRead + Unpin + Send + 'static> IntoIterator for RdfxmlReader<T> {
+    type Item = RdfxmlReaderResult<RdfxmlTriple>;
+    type IntoIter = StreamIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
         let handle = self.handle.clone();
-        let stream = Box::pin(self.into_stream());
-        StreamIter::new(stream, handle)
+        StreamIter::new(self.into_stream(), handle)
     }
 }

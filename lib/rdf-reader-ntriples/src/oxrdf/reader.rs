@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use super::{NtriplesReaderResult, NtriplesTriple};
-use alloc::boxed::Box;
 use futures::Stream;
 use oxttl::ntriples::{NTriplesParser, TokioAsyncReaderNTriplesParser};
 use rdf_reader::StreamIter;
@@ -35,10 +34,14 @@ impl<T: AsyncRead + Unpin + Send + 'static> NtriplesReader<T> {
             }
         }
     }
+}
 
-    pub fn into_iter(self) -> impl Iterator<Item = NtriplesReaderResult<NtriplesTriple>> {
+impl<T: AsyncRead + Unpin + Send + 'static> IntoIterator for NtriplesReader<T> {
+    type Item = NtriplesReaderResult<NtriplesTriple>;
+    type IntoIter = StreamIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
         let handle = self.handle.clone();
-        let stream = Box::pin(self.into_stream());
-        StreamIter::new(stream, handle)
+        StreamIter::new(self.into_stream(), handle)
     }
 }
