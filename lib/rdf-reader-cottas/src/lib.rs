@@ -12,7 +12,7 @@
 //! let file = File::open("example.cottas").await?;
 //!
 //! use rdf_reader_cottas::CottasReader;
-//! let reader = CottasReader::open(file).await?;
+//! let reader = CottasReader::try_from(file).await?;
 //!
 //! use futures::StreamExt;
 //! reader

@@ -12,7 +12,7 @@
 //! let file = File::open("example.nq").await?;
 //!
 //! use rdf_reader_nquads::NquadsReader;
-//! let reader = NquadsReader::open(file).await?;
+//! let reader = NquadsReader::from(file);
 //!
 //! use futures::StreamExt;
 //! reader

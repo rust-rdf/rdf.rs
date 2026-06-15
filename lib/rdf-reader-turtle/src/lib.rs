@@ -12,7 +12,7 @@
 //! let file = File::open("example.ttl").await?;
 //!
 //! use rdf_reader_turtle::TurtleReader;
-//! let reader = TurtleReader::open(file).await?;
+//! let reader = TurtleReader::from(file);
 //!
 //! use futures::StreamExt;
 //! reader

@@ -15,7 +15,8 @@ pub struct HdtReader<T: AsyncRead + Unpin + Send + 'static> {
 }
 
 impl<T: AsyncRead + Unpin + Send + 'static> HdtReader<T> {
-    pub async fn open(input: T) -> HdtReaderResult<Self> {
+    /// Creates an HDT reader for an `AsyncRead` source.
+    pub async fn try_from(input: T) -> HdtReaderResult<Self> {
         let input = BufReader::new(SyncIoBridge::new(input));
         let parser = tokio::task::spawn_blocking(move || Hdt::read(input))
             .await

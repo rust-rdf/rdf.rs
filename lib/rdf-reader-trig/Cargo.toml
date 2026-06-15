@@ -30,6 +30,7 @@ async-stream.workspace = true
 futures.workspace = true
 rdf-format.workspace = true
 rdf-model.workspace = true
+rdf-reader.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["io-util"] }
 

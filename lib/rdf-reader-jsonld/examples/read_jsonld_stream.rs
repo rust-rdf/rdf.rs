@@ -1,14 +1,15 @@
 // This is free and unencumbered software released into the public domain.
 
 use futures::StreamExt;
-use rdf_reader_hdt::HdtReader;
+use rdf_reader_jsonld::JsonldReader;
 use tokio::fs::File;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn core::error::Error>> {
-    let file = File::open("example.hdt").await?;
+    let file = File::open("example.jsonld").await?;
 
-    let reader = HdtReader::open(file).await?;
+    let reader = JsonldReader::from(file);
+
     reader
         .into_stream()
         .for_each(|triple| async move {

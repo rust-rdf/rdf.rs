@@ -12,7 +12,7 @@
 //! let file = File::open("example.jsonld").await?;
 //!
 //! use rdf_reader_jsonld::JsonldReader;
-//! let reader = JsonldReader::open(file).await?;
+//! let reader = JsonldReader::from(file);
 //!
 //! use futures::StreamExt;
 //! reader

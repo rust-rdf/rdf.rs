@@ -3,19 +3,26 @@
 use super::{NtriplesReaderResult, NtriplesTriple};
 use futures::Stream;
 use oxttl::ntriples::{NTriplesParser, TokioAsyncReaderNTriplesParser};
-use tokio::io::AsyncRead;
+use tokio::{io::AsyncRead, runtime::Handle};
 
 /// A reader for the N-Triples text format.
 pub struct NtriplesReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderNTriplesParser<T>,
+    #[allow(dead_code)]
+    pub(crate) handle: Handle,
+}
+
+impl<T: AsyncRead + Unpin + Send + 'static> From<T> for NtriplesReader<T> {
+    /// Creates an N-Triples reader for an `AsyncRead` source.
+    fn from(input: T) -> Self {
+        Self {
+            parser: NTriplesParser::new().for_tokio_async_reader(input),
+            handle: Handle::current(),
+        }
+    }
 }
 
 impl<T: AsyncRead + Unpin + Send + 'static> NtriplesReader<T> {
-    pub async fn open(input: T) -> NtriplesReaderResult<Self> {
-        let parser = NTriplesParser::new().for_tokio_async_reader(input);
-        Ok(Self { parser })
-    }
-
     pub fn into_stream(mut self) -> impl Stream<Item = NtriplesReaderResult<NtriplesTriple>> {
         async_stream::stream! {
             while let Some(input) = self.parser.next().await {

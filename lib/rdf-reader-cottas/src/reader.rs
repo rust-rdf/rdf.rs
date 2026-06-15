@@ -23,7 +23,8 @@ pub struct CottasReader<T: AsyncFileReader + Send + 'static = File> {
 }
 
 impl<T: AsyncFileReader + Unpin + Send + 'static> CottasReader<T> {
-    pub async fn open(input: T) -> Result<Self> {
+    /// Creates a COTTAS reader for an `AsyncRead + AsyncSeek` source.
+    pub async fn try_from(input: T) -> Result<Self> {
         let builder = ParquetRecordBatchStreamBuilder::new(input).await?;
         let stream = builder.build()?;
         Ok(Self {

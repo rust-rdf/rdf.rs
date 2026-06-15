@@ -12,7 +12,7 @@
 //! let file = File::open("example.hdt").await?;
 //!
 //! use rdf_reader_hdt::HdtReader;
-//! let reader = HdtReader::open(file).await?;
+//! let reader = HdtReader::try_from(file).await?;
 //!
 //! use futures::StreamExt;
 //! reader

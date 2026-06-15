@@ -3,19 +3,26 @@
 use crate::{JsonldReaderResult, JsonldTriple};
 use futures::Stream;
 use oxjsonld::{JsonLdParser, TokioAsyncReaderJsonLdParser};
-use tokio::io::AsyncRead;
+use tokio::{io::AsyncRead, runtime::Handle};
 
 /// A reader for the JSON-LD text format.
 pub struct JsonldReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderJsonLdParser<T>,
+    #[allow(dead_code)]
+    pub(crate) handle: Handle,
+}
+
+impl<T: AsyncRead + Unpin + Send + 'static> From<T> for JsonldReader<T> {
+    /// Creates a JSON-LD reader for an `AsyncRead` source.
+    fn from(input: T) -> Self {
+        Self {
+            parser: JsonLdParser::new().for_tokio_async_reader(input),
+            handle: Handle::current(),
+        }
+    }
 }
 
 impl<T: AsyncRead + Unpin + Send + 'static> JsonldReader<T> {
-    pub async fn open(input: T) -> JsonldReaderResult<Self> {
-        let parser = JsonLdParser::new().for_tokio_async_reader(input);
-        Ok(Self { parser })
-    }
-
     pub fn into_stream(mut self) -> impl Stream<Item = JsonldReaderResult<JsonldTriple>> {
         async_stream::stream! {
             while let Some(input) = self.parser.next().await {

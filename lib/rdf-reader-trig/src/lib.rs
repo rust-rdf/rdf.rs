@@ -12,7 +12,7 @@
 //! let file = File::open("example.trig").await?;
 //!
 //! use rdf_reader_trig::TrigReader;
-//! let reader = TrigReader::open(file).await?;
+//! let reader = TrigReader::from(file);
 //!
 //! use futures::StreamExt;
 //! reader

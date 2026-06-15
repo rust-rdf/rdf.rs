@@ -12,7 +12,7 @@
 //! let file = File::open("example.nt").await?;
 //!
 //! use rdf_reader_ntriples::NtriplesReader;
-//! let reader = NtriplesReader::open(file).await?;
+//! let reader = NtriplesReader::from(file);
 //!
 //! use futures::StreamExt;
 //! reader

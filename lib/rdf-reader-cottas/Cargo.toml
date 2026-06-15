@@ -30,6 +30,7 @@ futures-util.workspace = true
 parquet = { workspace = true, features = ["arrow", "zstd"] }
 rdf-format.workspace = true
 rdf-model.workspace = true
+rdf-reader.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["fs"] }
 
