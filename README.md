@@ -23,7 +23,7 @@
 
 ## ✨ Features
 
-- Providers readers for Turtle, TriG, N-Triples, N-Quads, and COTTAS.
+- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, and COTTAS.
 - Implements stores on top of SQLite, Valkey, MongoDB, and IndexedDB.
 - Built on async Rust using lazily-evaluated streams throughout.
 - 100% pure and safe Rust with minimal dependencies and no bloat.

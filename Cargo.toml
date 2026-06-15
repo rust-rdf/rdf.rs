@@ -83,6 +83,7 @@ bson = { version = "3.1", default-features = false, features = ["compat-3-0-0"] 
 dogma = { version = "0.1", default-features = false, features = ["traits"] }
 json-ld = { version = "0.21", default-features = false }
 oxigraph = { version = "0.5", default-features = false, features = ["rdf-12"] }
+oxjsonld = { version = "0.2", default-features = false, features = ["async-tokio", "rdf-12"] }
 oxrdf = { version = "0.3", default-features = false, features = ["rdf-12"] }
 oxrdfio = { version = "0.2", default-features = false, features = ["rdf-12"] }
 oxsdatatypes = { version = "0.2", default-features = false }

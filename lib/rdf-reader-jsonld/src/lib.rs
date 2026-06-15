@@ -7,6 +7,19 @@
 //!
 //! ```rust
 //! use rdf_reader_jsonld::*;
+//! ```
 
 #![no_std]
 #![deny(unsafe_code)]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+mod error;
+pub use error::*;
+
+mod reader;
+pub use reader::*;
+
+mod triple;
+pub use triple::*;
