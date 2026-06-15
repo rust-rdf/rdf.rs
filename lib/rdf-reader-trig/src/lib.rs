@@ -6,7 +6,7 @@
 //! # Examples
 //!
 //! ```rust
-//! use rdf_reader_trig::*;
+//! use rdf_reader_trig::TrigReader;
 //! ```
 
 #![no_std]
@@ -14,3 +14,12 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+mod error;
+pub use error::*;
+
+mod reader;
+pub use reader::*;
+
+mod triple;
+pub use triple::*;
