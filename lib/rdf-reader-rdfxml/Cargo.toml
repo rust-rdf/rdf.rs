@@ -16,19 +16,24 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
+all = ["oxrdf"]
 alloc = ["rdf-format/alloc", "rdf-model/alloc"]
 std = ["alloc", "rdf-format/std", "rdf-model/std"]
 unstable = []
 
+# Implementations:
+oxrdf = ["dep:oxrdfxml", "rdf-model/oxrdf"]
+
 [dependencies]
 async-stream.workspace = true
 futures.workspace = true
-oxrdfxml.workspace = true
 rdf-format.workspace = true
-rdf-model = { workspace = true, features = ["oxrdf"] }
+rdf-model.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["io-util"] }
+
+# Implementations:
+oxrdfxml = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["fs"] }

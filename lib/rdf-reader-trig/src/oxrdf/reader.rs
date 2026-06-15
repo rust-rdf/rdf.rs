@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{TrigReaderResult, TrigTriple};
+use super::{TrigReaderResult, TrigTriple};
 use futures::Stream;
 use oxttl::trig::{TokioAsyncReaderTriGParser, TriGParser};
 use tokio::io::AsyncRead;

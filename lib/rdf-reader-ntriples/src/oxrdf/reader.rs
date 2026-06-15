@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{NtriplesReaderResult, NtriplesTriple};
+use super::{NtriplesReaderResult, NtriplesTriple};
 use futures::Stream;
 use oxttl::ntriples::{NTriplesParser, TokioAsyncReaderNTriplesParser};
 use tokio::io::AsyncRead;

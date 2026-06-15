@@ -31,11 +31,16 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-mod error;
-pub use error::*;
+#[cfg(feature = "oxrdf")]
+mod oxrdf {
+    mod error;
+    pub use error::*;
 
-mod quad;
-pub use quad::*;
+    mod quad;
+    pub use quad::*;
 
-mod reader;
-pub use reader::*;
+    mod reader;
+    pub use reader::*;
+}
+#[cfg(feature = "oxrdf")]
+pub use oxrdf::*;

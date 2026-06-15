@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{TurtleReaderResult, TurtleTriple};
+use super::{TurtleReaderResult, TurtleTriple};
 use futures::Stream;
 use oxttl::turtle::{TokioAsyncReaderTurtleParser, TurtleParser};
 use tokio::io::AsyncRead;

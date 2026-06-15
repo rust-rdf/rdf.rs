@@ -82,6 +82,12 @@ borsh = { version = "1.6", default-features = false, features = ["derive"] }
 bson = { version = "3.1", default-features = false, features = ["compat-3-0-0"] }
 dogma = { version = "0.1", default-features = false, features = ["traits"] }
 json-ld = { version = "0.21", default-features = false }
+rdf-fusion = { version = "0.1", default-features = false }
+rudof = { version = "0.1", default-features = false }
+serde = { version = "1", default-features = false, features = ["derive"] }
+serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
+
+# Interoperability with Oxigraph:
 oxigraph = { version = "0.5", default-features = false, features = ["rdf-12"] }
 oxjsonld = { version = "0.2", default-features = false, features = ["async-tokio", "rdf-12"] }
 oxrdf = { version = "0.3", default-features = false, features = ["rdf-12"] }
@@ -89,15 +95,15 @@ oxrdfio = { version = "0.2", default-features = false, features = ["rdf-12"] }
 oxrdfxml = { version = "0.2", default-features = false, features = ["async-tokio", "rdf-12"] }
 oxsdatatypes = { version = "0.2", default-features = false }
 oxttl = { version = "0.2", default-features = false, features = ["async-tokio", "rdf-12"] }
-rdf-fusion = { version = "0.1", default-features = false }
-rudof = { version = "0.1", default-features = false }
-serde = { version = "1", default-features = false, features = ["derive"] }
-serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
-sophia = { version = "0.10", default-features = false }
 sparesults = { version = "0.3", default-features = false, features = ["sparql-12"] }
 spareval = { version = "0.2", default-features = false, features = ["sparql-12"] }
 spargebra = { version = "0.4", default-features = false, features = ["sparql-12"] }
 sparopt = { version = "0.3", default-features = false, features = ["sparql-12"] }
+
+# Interoperability with Sophia:
+sophia = { version = "0.10", default-features = false }
+sophia_jsonld = { version = "0.10", default-features = false }
+sophia_turtle = { version = "0.10", default-features = false }
 
 # Implementation:
 arrayvec = { version = "0.7", default-features = false }
