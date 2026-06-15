@@ -40,7 +40,7 @@ num-integer.workspace = true
 rdf-model = { workspace = true, features = ["borsh"] }
 rdf-reader.workspace = true
 rdf-writer.workspace = true
-winnow = { version = "0.7", default-features = false, features = ["simd"] }
+winnow = { version = "1.0", default-features = false, features = ["simd"] }
 
 [dev-dependencies]
 tempfile.workspace = true
