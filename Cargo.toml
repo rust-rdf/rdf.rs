@@ -181,4 +181,4 @@ rdf-writer-turtle = { path = "lib/rdf-writer-turtle" }
 xsd = { path = "lib/xsd" }
 
 # See: https://github.com/oxigraph/oxigraph/issues/1759
-oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }
+#oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }

@@ -33,6 +33,7 @@ ouroboros.workspace = true
 oxigraph.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
+send_wrapper.workspace = true
 thiserror.workspace = true
 xsd.workspace = true
 

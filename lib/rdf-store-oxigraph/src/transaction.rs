@@ -6,6 +6,7 @@ use futures::{Stream, stream};
 use ouroboros::self_referencing;
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm};
 use rdf_store::{ReadTransaction, WriteTransaction};
+use send_wrapper::SendWrapper;
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A transaction for reading and writing statements in Oxigraph.
@@ -17,7 +18,7 @@ pub struct OxigraphTransaction {
 
     #[borrows(store)]
     #[covariant]
-    inner: oxigraph::store::Transaction<'this>,
+    inner: SendWrapper<oxigraph::store::Transaction<'this>>,
 }
 
 impl OxigraphTransaction {
@@ -26,7 +27,9 @@ impl OxigraphTransaction {
         let transaction = OxigraphTransactionAsyncSendTryBuilder {
             writable,
             store,
-            inner_builder: |store| Box::pin(async move { store.inner.start_transaction() }),
+            inner_builder: |store| {
+                Box::pin(async move { store.inner.start_transaction().map(SendWrapper::new) })
+            },
         }
         .try_build()
         .await?;
