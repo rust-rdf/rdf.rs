@@ -13,13 +13,15 @@ use parquet::{
     errors::Result,
 };
 use rdf_model::{HeapTerm, HeapTriple, TRIPLE_SLOTS};
-use tokio::fs::File;
+use rdf_reader::StreamIter;
+use tokio::{fs::File, runtime::Handle};
 
 /// A reader for the COTTAS (Parquet) binary format.
 pub struct CottasReader<T: AsyncFileReader + Send + 'static = File> {
-    pub stream: ParquetRecordBatchStream<T>,
-    pub batch_row_index: usize,
-    pub batch: Option<arrow_array::RecordBatch>,
+    pub(crate) stream: ParquetRecordBatchStream<T>,
+    pub(crate) batch_row_index: usize,
+    pub(crate) batch: Option<arrow_array::RecordBatch>,
+    pub(crate) handle: Handle,
 }
 
 impl<T: AsyncFileReader + Unpin + Send + 'static> CottasReader<T> {
@@ -31,6 +33,7 @@ impl<T: AsyncFileReader + Unpin + Send + 'static> CottasReader<T> {
             stream,
             batch_row_index: 0,
             batch: None,
+            handle: Handle::current(),
         })
     }
 
@@ -81,12 +84,22 @@ impl<T: AsyncFileReader + Unpin + Send + 'static> Stream for CottasReader<T> {
         }
         match self.stream.poll_next_unpin(cx) {
             Poll::Pending => Poll::Pending,
-            Poll::Ready(None) => Poll::Ready(None), // EOS
-            Poll::Ready(Some(Err(_err))) => Poll::Ready(Some(Err(()))), // TODO
+            Poll::Ready(None) => Poll::Ready(None), // end of stream
+            Poll::Ready(Some(Err(_err))) => Poll::Ready(Some(Err(()))), // TODO: error conversion
             Poll::Ready(Some(Ok(batch))) => {
                 self.batch = Some(batch);
                 Poll::Ready(self.next_in_batch())
             },
         }
+    }
+}
+
+impl<T: AsyncFileReader + Unpin + Send + 'static> IntoIterator for CottasReader<T> {
+    type Item = CottasReaderResult<HeapTriple>;
+    type IntoIter = StreamIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        let handle = self.handle.clone();
+        StreamIter::new(self.into_stream(), handle)
     }
 }

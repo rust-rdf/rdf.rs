@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the Turtle text format.
 pub struct TurtleReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderTurtleParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 

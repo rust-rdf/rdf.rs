@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the TriG text format.
 pub struct TrigReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderTriGParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 
