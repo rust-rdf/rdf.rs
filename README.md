@@ -26,6 +26,7 @@
 - Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, COTTAS, and more.
 - Implements stores on top of SQLite, Valkey, MongoDB, IndexedDB, etc.
 - Built on async Rust using lazily-evaluated streams throughout.
+- Plays nice with others: interoperates with Oxigraph, Rudof, and Sophia.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports `no_std` environments from the get-go.
 - Supports opting out of any feature using comprehensive [feature flags].
