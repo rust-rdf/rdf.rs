@@ -133,6 +133,20 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | [rdf-store-valkey](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-valkey#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-valkey)](https://crates.io/crates/rdf-store-valkey) | [![Documentation](https://img.shields.io/docsrs/rdf-store-valkey?label=docs.rs)](https://docs.rs/rdf-store-valkey) |
 | [rdf-store-virtuoso](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-virtuoso#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-virtuoso)](https://crates.io/crates/rdf-store-virtuoso) | [![Documentation](https://img.shields.io/docsrs/rdf-store-virtuoso?label=docs.rs)](https://docs.rs/rdf-store-virtuoso) |
 
+### Feature Flags
+
+#### Interoperability
+
+| Feature      | Version | Summary |
+| :----------- | :------ | :------ |
+| `borsh`      | 1.6     | Derives `borsh::{BorshSerialize, BorshDeserialize}`
+| `bson`       | 3.1     | Implements `From<T> for bson::Bson`
+| `datafusion` | 50.0    | Planned interop with Apache DataFusion and `rdf-fusion`
+| `oxrdf`      | 0.3     | Implements `From<T> for oxrdf::T`, `From<oxrdf::T> for T`
+| `rudof`      | 0.1     | Planned interop with `rudof`
+| `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
+| `sophia`     | 0.10    | Implements `From<T> for sophia::T`, `From<sophia::T> for T`
+
 ## 👨‍💻 Development
 
 ```bash

@@ -58,18 +58,32 @@ unstable = [
     "rdf-writer/unstable",
 ]
 
-# Integrations:
+# Interoperability:
 borsh = [
     "rdf-model/borsh",
+]
+bson = [
+    "rdf-model/bson",
+]
+datafusion = [
+    "rdf-model/datafusion",
+]
+json-ld = [
+    "rdf-model/json-ld",
 ]
 oxrdf = [
     "rdf-format/oxrdf",
     "rdf-model/oxrdf",
     "rdf-reader/oxrdf",
+    "rdf-store/oxrdf",
     "rdf-writer/oxrdf",
+]
+rudof = [
+    "rdf-model/rudof",
 ]
 serde = [
     "rdf-format/serde",
+    "rdf-hash/serde",
     "rdf-model/serde",
     "rdf-reader/serde",
     "rdf-writer/serde",
