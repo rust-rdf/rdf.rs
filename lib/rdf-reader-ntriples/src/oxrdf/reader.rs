@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the N-Triples text format.
 pub struct NtriplesReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderNTriplesParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 

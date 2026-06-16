@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the RDF/XML text format.
 pub struct RdfxmlReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderRdfXmlParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 

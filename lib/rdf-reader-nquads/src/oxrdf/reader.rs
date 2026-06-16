@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the N-Quads text format.
 pub struct NquadsReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderNQuadsParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 
