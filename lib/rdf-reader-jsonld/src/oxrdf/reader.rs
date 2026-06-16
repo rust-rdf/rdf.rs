@@ -9,7 +9,6 @@ use tokio::{io::AsyncRead, runtime::Handle};
 /// A reader for the JSON-LD text format.
 pub struct JsonldReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: TokioAsyncReaderJsonLdParser<T>,
-    #[allow(dead_code)]
     pub(crate) handle: Handle,
 }
 

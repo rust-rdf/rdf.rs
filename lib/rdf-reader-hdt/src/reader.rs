@@ -4,13 +4,15 @@ use crate::{HdtReaderResult, HdtTriple};
 use core::marker::PhantomData;
 use futures::Stream;
 use hdt::{Hdt, sophia::api::graph::Graph};
+use rdf_reader::StreamIter;
 use std::io::BufReader;
-use tokio::io::AsyncRead;
+use tokio::{io::AsyncRead, runtime::Handle};
 use tokio_util::io::SyncIoBridge;
 
 /// A reader for the HDT binary format.
 pub struct HdtReader<T: AsyncRead + Unpin + Send + 'static> {
     pub(crate) parser: Hdt,
+    pub(crate) handle: Handle,
     pub(crate) phantom: PhantomData<T>,
 }
 
@@ -23,6 +25,7 @@ impl<T: AsyncRead + Unpin + Send + 'static> HdtReader<T> {
             .unwrap()?; // TODO
         Ok(Self {
             parser,
+            handle: Handle::current(),
             phantom: PhantomData,
         })
     }
@@ -35,5 +38,15 @@ impl<T: AsyncRead + Unpin + Send + 'static> HdtReader<T> {
                 yield Ok(triple.into());
             }
         }
+    }
+}
+
+impl<T: AsyncRead + Unpin + Send + 'static> IntoIterator for HdtReader<T> {
+    type Item = HdtReaderResult<HdtTriple>;
+    type IntoIter = StreamIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        let handle = self.handle.clone();
+        StreamIter::new(self.into_stream(), handle)
     }
 }
