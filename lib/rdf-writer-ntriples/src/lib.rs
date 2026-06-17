@@ -5,8 +5,18 @@
 //!
 //! # Examples
 //!
-//! ```rust
-//! use rdf_writer_ntriples::*;
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use tokio::fs::File;
+//! let file = File::create("output.nt").await?;
+//!
+//! use rdf_writer_ntriples::NtriplesWriter;
+//! let writer = NtriplesWriter::from(file);
+//!
+//! writer.finish().await?;
+//! # Ok(())
+//! # }
 //! ```
 
 #![no_std]
@@ -17,3 +27,14 @@ extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
+
+#[cfg(feature = "oxrdf")]
+mod oxrdf {
+    mod error;
+    pub use error::*;
+
+    mod writer;
+    pub use writer::*;
+}
+#[cfg(feature = "oxrdf")]
+pub use oxrdf::*;
