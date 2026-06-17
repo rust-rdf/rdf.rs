@@ -22,8 +22,8 @@ std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
 unstable = []
 
 # Implementations:
-oxrdf = ["dep:oxttl", "rdf-model/oxrdf"]
-sophia = ["dep:sophia_turtle", "rdf-model/sophia"]
+oxrdf = ["dep:oxttl", "rdf-format/oxrdf", "rdf-model/oxrdf", "rdf-reader/oxrdf"]
+sophia = ["dep:sophia_turtle", "rdf-format/sophia", "rdf-model/sophia", "rdf-reader/sophia"]
 
 [dependencies]
 async-stream.workspace = true
