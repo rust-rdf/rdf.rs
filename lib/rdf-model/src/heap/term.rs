@@ -133,26 +133,26 @@ impl HeapTerm {
     pub fn into_bson(self) -> bson::Bson {
         use bson::{Bson, Document};
         match self {
-            HeapTerm::Iri(str) => Bson::String(str),
-            HeapTerm::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
-            HeapTerm::String(val) => {
+            Self::Iri(str) => Bson::String(str),
+            Self::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
+            Self::String(val) => {
                 let mut doc = Document::new();
                 doc.insert("@value", val);
                 Bson::Document(doc)
             },
-            HeapTerm::TaggedString(val, lang, _) => {
+            Self::TaggedString(val, lang, _) => {
                 let mut doc = Document::new();
                 doc.insert("@value", val);
                 doc.insert("@language", lang);
                 Bson::Document(doc)
             },
-            HeapTerm::TypedLiteral(lit, r#type) => {
+            Self::TypedLiteral(lit, r#type) => {
                 let mut doc = Document::new();
                 doc.insert("@value", lit);
                 doc.insert("@type", r#type.to_string());
                 Bson::Document(doc)
             },
-            HeapTerm::TypedValue(val) => {
+            Self::TypedValue(val) => {
                 let r#type = val.r#type();
                 let mut doc = Document::new();
                 doc.insert("@value", val.into_bson());
@@ -205,14 +205,14 @@ impl From<&dyn Term> for HeapTerm {
 impl From<CowTerm<'_>> for HeapTerm {
     fn from(input: CowTerm<'_>) -> Self {
         match input {
-            CowTerm::Iri(s) => HeapTerm::Iri(s.to_string()),
-            CowTerm::BNode(s) => HeapTerm::BNode(s.to_string()),
-            CowTerm::String(s) => HeapTerm::String(s.to_string()),
+            CowTerm::Iri(s) => Self::Iri(s.to_string()),
+            CowTerm::BNode(s) => Self::BNode(s.to_string()),
+            CowTerm::String(s) => Self::String(s.to_string()),
             CowTerm::TaggedString(s, lang, dir) => {
-                HeapTerm::TaggedString(s.to_string(), lang.clone(), dir.clone())
+                Self::TaggedString(s.to_string(), lang.clone(), dir.clone())
             },
-            CowTerm::TypedValue(v) => HeapTerm::TypedValue(v.clone()),
-            CowTerm::TypedLiteral(s, dt) => HeapTerm::TypedLiteral(s.to_string(), dt.clone()),
+            CowTerm::TypedValue(v) => Self::TypedValue(v.clone()),
+            CowTerm::TypedLiteral(s, dt) => Self::TypedLiteral(s.to_string(), dt.clone()),
         }
     }
 }
@@ -280,10 +280,10 @@ impl TryFrom<serde_json::Value> for HeapTerm {
         use serde_json::Value;
         Ok(match input {
             Value::Null => return Err(()), // not supported
-            Value::Bool(b) => HeapTerm::TypedValue(b.into()),
-            Value::Number(n) => HeapTerm::TypedValue(n.as_f64().unwrap().into()), // FIXME
-            Value::String(s) if s.starts_with("_:") => HeapTerm::BNode(s.clone()),
-            Value::String(s) => HeapTerm::Iri(s.clone()),
+            Value::Bool(b) => Self::TypedValue(b.into()),
+            Value::Number(n) => Self::TypedValue(n.as_f64().unwrap().into()), // FIXME
+            Value::String(s) if s.starts_with("_:") => Self::BNode(s.clone()),
+            Value::String(s) => Self::Iri(s.clone()),
             Value::Array(_) => return Err(()), // not supported
             Value::Object(mut input) => {
                 let value = input.remove("@value").ok_or(())?;
@@ -295,11 +295,9 @@ impl TryFrom<serde_json::Value> for HeapTerm {
                     .remove("@language")
                     .and_then(|s| s.as_str().map(|s| s.to_string()));
                 match (r#type, language) {
-                    (None, None) => HeapTerm::String(value.to_string()),
-                    (None, Some(lang)) => {
-                        HeapTerm::TaggedString(value.to_string(), lang.into(), None)
-                    },
-                    (Some(r#type), None) => HeapTerm::TypedLiteral(value.to_string(), r#type),
+                    (None, None) => Self::String(value.to_string()),
+                    (None, Some(lang)) => Self::TaggedString(value.to_string(), lang.into(), None),
+                    (Some(r#type), None) => Self::TypedLiteral(value.to_string(), r#type),
                     (Some(_), Some(_)) => return Err(()), // invalid literal
                 }
             },

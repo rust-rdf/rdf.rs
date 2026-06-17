@@ -1,12 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
+use core::hash::Hash;
 use futures::stream::{self, Stream};
 use rdf_model::{Statement, StatementPattern, Term};
 
 /// A read-only (R/O) transaction on a [`Store`].
 pub trait ReadTransaction {
     type Error;
-    type Term: Term + Clone;
+    type Term: Term + Clone + PartialEq + Eq + Hash;
     type Statement: Statement<Term = Self::Term>;
     type StatementPattern: StatementPattern<Term = Self::Term>;
 
