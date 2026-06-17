@@ -5,9 +5,21 @@
 //!
 //! # Examples
 //!
-//! ```rust
-//! use rdf_writer_cottas::*;
+//! ```rust,no_run
+//! # #[tokio::main]
+//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use tokio::fs::File;
+//! let file = File::create("output.cottas").await?;
+//!
+//! use rdf_writer_cottas::CottasWriter;
+//! let writer = CottasWriter::from(file);
+//!
+//! writer.finish().await?;
+//! # Ok(())
+//! # }
 //! ```
+//!
+//! See: <https://github.com/cottas-rdf>
 
 #![no_std]
 #![deny(unsafe_code)]
@@ -17,3 +29,9 @@ extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
+
+mod error;
+pub use error::*;
+
+mod writer;
+pub use writer::*;

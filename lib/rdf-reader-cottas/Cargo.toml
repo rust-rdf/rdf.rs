@@ -32,7 +32,7 @@ rdf-format.workspace = true
 rdf-model.workspace = true
 rdf-reader.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["fs"] }
+tokio = { workspace = true, features = ["io-util"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["fs"] }

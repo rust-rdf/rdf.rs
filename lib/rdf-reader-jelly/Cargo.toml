@@ -24,10 +24,16 @@ unstable = []
 [dependencies]
 async-stream.workspace = true
 futures.workspace = true
+prost = { version = "0.14", default-features = false }
+prost-types = { version = "0.14", default-features = false }
 rdf-format.workspace = true
 rdf-model.workspace = true
 rdf-reader.workspace = true
 thiserror.workspace = true
+tokio = { workspace = true, features = ["io-util"] }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["fs"] }
+
+[build-dependencies]
+prost-build = "0.14"
