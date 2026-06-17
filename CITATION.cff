@@ -1,0 +1,22 @@
+# See: https://github.com/citation-file-format/citation-file-format/blob/1.2.0/schema-guide.md
+---
+cff-version: 1.2.0
+title: RDF.rs
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+type: software
+authors:
+  - given-names: Arto
+    family-names: Bendiken
+    alias: artob
+    website: https://ar.to
+    orcid:  https://orcid.org/0009-0002-0725-4874
+repository-code: https://github.com/rust-rdf/rdf.rs
+url: https://github.com/rust-rdf
+abstract: >-
+  RDF.rs is a Rust framework for working with RDF knowledge graphs.
+keywords:
+  - rdf
+  - rust
+  - async
+license: Unlicense
