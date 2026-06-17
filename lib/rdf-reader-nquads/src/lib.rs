@@ -24,6 +24,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! See: <https://www.w3.org/TR/rdf12-n-quads/>
 
 #![no_std]
 #![deny(unsafe_code)]

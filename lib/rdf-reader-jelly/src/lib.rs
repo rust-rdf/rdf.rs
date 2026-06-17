@@ -8,6 +8,8 @@
 //! ```rust
 //! use rdf_reader_jelly::*;
 //! ```
+//!
+//! See: <https://jelly-rdf.github.io>
 
 #![no_std]
 #![deny(unsafe_code)]

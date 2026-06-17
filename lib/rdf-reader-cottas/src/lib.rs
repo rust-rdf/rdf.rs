@@ -24,6 +24,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! See: <https://github.com/cottas-rdf>
 
 #![no_std]
 #![deny(unsafe_code)]

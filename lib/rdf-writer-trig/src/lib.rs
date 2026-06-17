@@ -18,6 +18,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! See: <https://www.w3.org/TR/rdf12-trig/>
 
 #![no_std]
 #![deny(unsafe_code)]

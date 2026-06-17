@@ -18,6 +18,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! See: <https://json-ld.org>
 
 #![no_std]
 #![deny(unsafe_code)]

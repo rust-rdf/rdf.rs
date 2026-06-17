@@ -24,6 +24,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! See: <https://rdfhdt.org>
 
 #![no_std]
 #![deny(unsafe_code)]
