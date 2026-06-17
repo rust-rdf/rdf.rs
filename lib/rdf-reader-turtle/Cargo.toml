@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["oxrdf"]
-alloc = ["rdf-format/alloc", "rdf-model/alloc"]
-std = ["alloc", "rdf-format/std", "rdf-model/std"]
+alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-reader/alloc"]
+std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
 unstable = []
 
 # Implementations:

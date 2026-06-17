@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = []
-alloc = ["rdf-format/alloc", "rdf-model/alloc"]
-std = ["alloc", "rdf-format/std", "rdf-model/std"]
+alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-reader/alloc"]
+std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
 unstable = []
 
 [dependencies]
@@ -26,6 +26,7 @@ async-stream.workspace = true
 futures.workspace = true
 rdf-format.workspace = true
 rdf-model.workspace = true
+rdf-reader.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
