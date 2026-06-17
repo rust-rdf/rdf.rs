@@ -16,10 +16,14 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = []
+all = ["oxrdf"]
 alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-writer/alloc"]
 std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-writer/std"]
 unstable = []
+
+# Implementations:
+oxrdf = ["dep:oxttl", "rdf-format/oxrdf", "rdf-model/oxrdf", "rdf-writer/oxrdf"]
+sophia = ["dep:sophia_turtle", "rdf-format/sophia", "rdf-model/sophia", "rdf-writer/sophia"]
 
 [dependencies]
 #async-stream.workspace = true
@@ -29,6 +33,10 @@ rdf-model.workspace = true
 rdf-writer.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["io-util"] }
+
+# Implementations:
+oxttl = { workspace = true, optional = true }
+sophia_turtle = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["fs"] }
