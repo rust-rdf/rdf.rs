@@ -4,7 +4,6 @@
 members = ["bin/*", "lib/*"]
 default-members = [
     "lib/rdf_rs",
-    "lib/rdf-borsh",
     "lib/rdf-derive",
     "lib/rdf-format",
     "lib/rdf-hash",
