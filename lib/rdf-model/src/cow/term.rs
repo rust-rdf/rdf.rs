@@ -64,6 +64,14 @@ impl<'a> CowTerm<'a> {
         Self::TaggedString(value.into(), tag.into(), None)
     }
 
+    pub fn tagged_string_with_dir(
+        value: impl Into<Cow<'a, str>>,
+        tag: impl Into<Language>,
+        dir: impl Into<BaseDirection>,
+    ) -> Self {
+        Self::TaggedString(value.into(), tag.into(), Some(dir.into()))
+    }
+
     pub fn typed_value(value: impl Into<Value>) -> Self {
         Self::TypedValue(value.into())
     }

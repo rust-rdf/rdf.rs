@@ -87,8 +87,8 @@ impl From<&str> for Datatype {
             Datatype::RdfLangString
         } else if input == RDF_DIR_LANG_STRING {
             Datatype::RdfDirLangString
-        } else if input.starts_with(xsd::BASE_URI) {
-            Datatype::Xsd(xsd::Type::from(&input[xsd::BASE_URI.len()..]))
+        } else if let Some(input_name) = input.strip_prefix(xsd::BASE_URI) {
+            Datatype::Xsd(xsd::Type::from(input_name))
         } else {
             Datatype::Other(Cow::Owned(input.into()))
         }
@@ -122,5 +122,12 @@ impl From<xsd::Type> for Datatype {
 impl From<&xsd::Type> for Datatype {
     fn from(input: &xsd::Type) -> Self {
         Self::Xsd(input.clone())
+    }
+}
+
+#[cfg(feature = "oxrdf")]
+impl From<oxrdf::NamedNode> for Datatype {
+    fn from(input: oxrdf::NamedNode) -> Self {
+        Self::from(input.as_str())
     }
 }

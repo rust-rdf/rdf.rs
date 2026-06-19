@@ -56,6 +56,14 @@ impl HeapTerm {
         Self::TaggedString(value.into(), tag.into(), None)
     }
 
+    pub fn tagged_string_with_dir(
+        value: impl Into<String>,
+        tag: impl Into<Language>,
+        dir: impl Into<BaseDirection>,
+    ) -> Self {
+        Self::TaggedString(value.into(), tag.into(), Some(dir.into()))
+    }
+
     pub fn typed_value(value: impl Into<Value>) -> Self {
         Self::TypedValue(value.into())
     }

@@ -92,6 +92,17 @@ impl From<&Type> for Type {
     }
 }
 
+#[cfg(all(feature = "oxrdf", feature = "alloc"))]
+impl From<oxrdf::NamedNode> for Type {
+    fn from(input: oxrdf::NamedNode) -> Self {
+        let input_iri = input.as_str();
+        if let Some(input_name) = input_iri.strip_prefix(crate::BASE_URI) {
+            return Type::from(input_name);
+        }
+        Type::Other(input_iri.into()) // TODO
+    }
+}
+
 #[cfg(feature = "alloc")]
 impl From<&str> for Type {
     fn from(input: &str) -> Self {

@@ -26,3 +26,25 @@ impl BaseDirection {
         }
     }
 }
+
+#[cfg(feature = "oxrdf")]
+impl From<oxrdf::BaseDirection> for BaseDirection {
+    fn from(input: oxrdf::BaseDirection) -> Self {
+        use oxrdf::BaseDirection::*;
+        match input {
+            Ltr => Self::Ltr,
+            Rtl => Self::Rtl,
+        }
+    }
+}
+
+#[cfg(feature = "oxrdf")]
+impl From<BaseDirection> for oxrdf::BaseDirection {
+    fn from(input: BaseDirection) -> Self {
+        use BaseDirection::*;
+        match input {
+            Ltr => Self::Ltr,
+            Rtl => Self::Rtl,
+        }
+    }
+}
