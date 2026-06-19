@@ -1,11 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
-use core::hash::Hash;
+use core::{fmt::Debug, hash::Hash};
 use rdf_model::{QuadPattern, Statement, StatementPattern, Term};
 
 /// A read-write (R/W) transaction on a [`Store`].
 pub trait WriteTransaction {
-    type Error: Send;
+    type Error: Debug + Send;
     type Term: Term + Clone + PartialEq + Eq + Hash + Send;
     type Statement: Statement<Term = Self::Term> + Send;
     type StatementPattern: StatementPattern<Term = Self::Term>

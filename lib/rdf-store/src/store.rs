@@ -1,10 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
 use super::{ReadTransaction, WriteTransaction};
+use core::fmt::Debug;
 
 /// A store of statements that supports R/O and R/W transactions.
 pub trait Store {
-    type Error: Send;
+    type Error: Debug + Send;
     type Read: ReadTransaction<Error = Self::Error> + Send;
     type Write: WriteTransaction<Error = Self::Error> + Send;
 
