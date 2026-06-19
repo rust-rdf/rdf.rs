@@ -5,12 +5,12 @@ use futures::{
     FutureExt,
     stream::{self, Stream},
 };
-use rdf_model::{QuadPattern, Statement, StatementPattern, Term};
+use rdf_model::{HeapTerm, QuadPattern, Statement, StatementPattern, Term};
 
 /// A read-only (R/O) transaction on a [`Store`].
 pub trait ReadTransaction {
     type Error: Debug + Send;
-    type Term: Term + Clone + PartialEq + Eq + Hash + Send;
+    type Term: Term + Clone + PartialEq + Eq + Hash + Send + From<HeapTerm>;
     type Statement: Statement<Term = Self::Term> + Send;
     type StatementPattern: StatementPattern<Term = Self::Term>
         + From<QuadPattern<Self::Term>>
