@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["oxrdf"]
-alloc = ["rdf-model/alloc", "dep:parking_lot"]
+alloc = ["rdf-model/alloc"]
 std = ["alloc", "rdf-model/std"]
 unstable = []
 
@@ -27,8 +27,8 @@ oxrdf = ["dep:oxrdf", "dep:spareval", "rdf-model/oxrdf"]
 [dependencies]
 async-stream.workspace = true
 futures.workspace = true
-parking_lot = { workspace = true, optional = true }
 rdf-model.workspace = true
+tokio = { workspace = true, features = ["sync"] }
 
 # Integrations:
 oxrdf = { workspace = true, optional = true }

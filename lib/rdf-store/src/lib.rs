@@ -11,7 +11,7 @@
 
 #![no_std]
 #![deny(unsafe_code)]
-#![allow(unused_imports)]
+//#![allow(unused_imports)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -21,6 +21,8 @@ extern crate std;
 
 #[cfg(feature = "alloc")]
 mod heap {
+    mod error;
+    pub use error::*;
     mod store;
     pub use store::*;
     mod transaction;

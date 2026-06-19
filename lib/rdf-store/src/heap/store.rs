@@ -1,9 +1,9 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapTransaction, Store};
+use crate::{HeapStoreError, HeapTransaction, Store};
 use alloc::sync::Arc;
-use parking_lot::RwLock;
 use rdf_model::HeapQuadSet;
+use tokio::sync::RwLock;
 
 #[derive(Debug, Default)]
 pub struct HeapStore {
@@ -17,7 +17,7 @@ impl HeapStore {
 }
 
 impl Store for Arc<HeapStore> {
-    type Error = ();
+    type Error = HeapStoreError;
     type Read = Arc<HeapTransaction>;
     type Write = Arc<HeapTransaction>;
 

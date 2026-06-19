@@ -1,11 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapStore, ReadTransaction, WriteTransaction};
+use crate::{HeapStore, HeapStoreError, ReadTransaction, WriteTransaction};
 use alloc::{collections::BTreeMap, sync::Arc};
 use async_stream::stream;
 use futures::Stream;
-use parking_lot::RwLock;
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, Statement, StatementPattern};
+use tokio::sync::RwLock;
 
 #[derive(Debug, Default)]
 pub struct HeapTransaction {
@@ -25,24 +25,24 @@ impl HeapTransaction {
 }
 
 impl WriteTransaction for Arc<HeapTransaction> {
-    type Error = ();
+    type Error = HeapStoreError;
     type Term = HeapTerm;
     type Statement = HeapQuad;
     type StatementPattern = HeapQuadPattern;
 
     async fn rollback(self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
         Ok(())
     }
 
     async fn commit(self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
-        let mutations = self.mutations.read();
-        let mut quads = self.store.quads.write();
+        let mutations = self.mutations.read().await;
+        let mut quads = self.store.quads.write().await;
         for (quad, &flag) in mutations.iter() {
             if flag {
                 quads.insert(quad.clone());
@@ -55,7 +55,7 @@ impl WriteTransaction for Arc<HeapTransaction> {
 
     async fn clear(&mut self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
         todo!() // TODO
     }
@@ -65,10 +65,10 @@ impl WriteTransaction for Arc<HeapTransaction> {
         statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
         let quad = statement.into().to_quad();
-        let mut mutations = self.mutations.write();
+        let mut mutations = self.mutations.write().await;
         mutations.insert(quad, true);
         Ok(())
     }
@@ -78,10 +78,10 @@ impl WriteTransaction for Arc<HeapTransaction> {
         statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
         let quad = statement.into().to_quad();
-        let mut mutations = self.mutations.write();
+        let mut mutations = self.mutations.write().await;
         mutations.insert(quad, false);
         Ok(())
     }
@@ -91,11 +91,11 @@ impl WriteTransaction for Arc<HeapTransaction> {
         pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(HeapStoreError);
         }
         let pattern = pattern.into().to_quad_pattern();
-        let mut mutations = self.mutations.write();
-        for quad in self.store.quads.read().iter() {
+        let mut mutations = self.mutations.write().await;
+        for quad in self.store.quads.read().await.iter() {
             if pattern.matches(
                 quad.subject(),
                 quad.predicate(),
@@ -110,7 +110,7 @@ impl WriteTransaction for Arc<HeapTransaction> {
 }
 
 impl ReadTransaction for Arc<HeapTransaction> {
-    type Error = ();
+    type Error = HeapStoreError;
     type Term = HeapTerm;
     type Statement = HeapQuad;
     type StatementPattern = HeapQuadPattern;
@@ -118,11 +118,11 @@ impl ReadTransaction for Arc<HeapTransaction> {
     fn r#match(
         &self,
         pattern: impl Into<Self::StatementPattern>,
-    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
+    ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> + Send {
         let pattern = pattern.into();
-        let mutations = self.mutations.read();
-        let quads = self.store.quads.read();
         stream! {
+            let mutations = self.mutations.read().await;
+            let quads = self.store.quads.read().await;
             for quad in quads.iter() {
                 if pattern.matches(
                     quad.subject(),
