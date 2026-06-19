@@ -5,6 +5,7 @@ use alloc::string::String;
 use derive_more::Debug;
 use idb::{Database, Factory};
 use rdf_store::Store;
+use send_wrapper::SendWrapper;
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A quad store backed by an IndexedDB database.
@@ -31,7 +32,7 @@ use rdf_store::Store;
 #[derive(Debug)]
 pub struct IdbStore {
     pub name: String,
-    pub db: Database,
+    pub db: SendWrapper<Database>,
 }
 
 impl IdbStore {
@@ -41,7 +42,7 @@ impl IdbStore {
         let name = name.into();
         let factory = Factory::new()?;
         let open_request = factory.open(&name, Some(Self::CURRENT_VERSION))?;
-        let db = open_request.await?;
+        let db = SendWrapper::new(open_request.await?);
         Ok(Self { name, db })
     }
 }

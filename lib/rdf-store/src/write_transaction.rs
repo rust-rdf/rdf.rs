@@ -1,14 +1,16 @@
 // This is free and unencumbered software released into the public domain.
 
 use core::hash::Hash;
-use rdf_model::{Statement, StatementPattern, Term};
+use rdf_model::{QuadPattern, Statement, StatementPattern, Term};
 
 /// A read-write (R/W) transaction on a [`Store`].
 pub trait WriteTransaction {
-    type Error;
-    type Term: Term + Clone + PartialEq + Eq + Hash;
-    type Statement: Statement<Term = Self::Term>;
-    type StatementPattern: StatementPattern<Term = Self::Term>;
+    type Error: Send;
+    type Term: Term + Clone + PartialEq + Eq + Hash + Send;
+    type Statement: Statement<Term = Self::Term> + Send;
+    type StatementPattern: StatementPattern<Term = Self::Term>
+        + From<QuadPattern<Self::Term>>
+        + Send;
 
     /// Aborts the transaction, discarding any changes.
     fn rollback(self) -> impl Future<Output = Result<(), Self::Error>>;
