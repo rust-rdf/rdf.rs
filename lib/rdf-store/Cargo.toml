@@ -22,7 +22,7 @@ std = ["alloc", "rdf-model/std"]
 unstable = []
 
 # Integrations:
-oxrdf = ["dep:oxrdf", "dep:spareval", "rdf-model/oxrdf"]
+oxrdf = ["dep:oxrdf", "rdf-model/oxrdf"]
 
 [dependencies]
 async-stream.workspace = true
@@ -32,7 +32,6 @@ tokio = { workspace = true, features = ["sync"] }
 
 # Integrations:
 oxrdf = { workspace = true, optional = true }
-spareval = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio.workspace = true

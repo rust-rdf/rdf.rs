@@ -43,14 +43,6 @@ pub use read_transaction::*;
 mod write_transaction;
 pub use write_transaction::*;
 
-/// Interoperability with other Rust libraries.
-pub mod interop {
-    #[cfg(feature = "oxrdf")]
-    mod oxrdf;
-    #[cfg(feature = "oxrdf")]
-    pub use oxrdf::*;
-}
-
 #[doc = include_str!("../README.md")]
 #[cfg(doctest)]
 pub struct ReadmeDoctests;
