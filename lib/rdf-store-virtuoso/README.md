@@ -25,6 +25,7 @@ A [Virtuoso] storage adapter for **[RDF.rs]** knowledge graphs.
 
 - Implements a scalable, high-performance RDF store backed by [Virtuoso].
 - Built on async Rust using lazily-evaluated streams throughout.
+- Plays nice with others: interoperates with Oxigraph, Rudof, and Sophia.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
 - Supports opting out of any feature using comprehensive [feature flags].
 - Adheres to the Rust API Guidelines in its [naming conventions].
