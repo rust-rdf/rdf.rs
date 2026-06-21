@@ -47,6 +47,22 @@ impl IdbStore {
     }
 }
 
+/// # Cancel safety
+///
+/// - `read` / `write` (begin): the `begin` future awaits the
+///   browser/JS open operation; canceling the `begin` future before it
+///   completes should prevent a transaction object from being returned, but the
+///   underlying JS open request may still complete.
+/// - Mutating methods (`insert`, `remove`, `clear`, `delete`): these call
+///   IndexedDB operations on the created object store and are asynchronous.
+///   Canceling an in-flight method may stop local Rust-side work, but any
+///   requests already sent to the browser may still be queued/executed there.
+/// - `commit` / `rollback`: `commit` calls `tx.commit()` on the IndexedDB
+///   transaction wrapper and `rollback` calls `tx.abort()`. These invoke the
+///   browser-side transaction lifecycle; cancellation of the Rust future after
+///   initiating the call does not necessarily undo the browser-side effect. Do
+///   not rely on cancellation to prevent commits once the browser transaction
+///   has been committed or aborted.
 impl Store for IdbStore {
     type Error = IdbError;
     type Read = IdbTransaction;

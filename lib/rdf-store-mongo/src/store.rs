@@ -80,6 +80,21 @@ impl Default for MongoStore {
     }
 }
 
+/// # Cancel safety
+///
+/// - `read` / `write`: begin starts a client session and may start an
+///   isolated server-side transaction (controlled by `isolated`). Canceling the
+///   begin future will usually prevent a `MongoTransaction` value from being
+///   returned; however, network I/O may still have occurred and implementors
+///   should ensure sessions are closed if begin is dropped.
+/// - `insert` / `remove` etc.: in the current implementation writes are
+///   executed immediately against MongoDB (even when `isolated` is false).
+///   Canceling in-flight write futures does not undo already-sent operations.
+/// - `commit` / `rollback`: when `isolated` is true these call the driver's
+///   `commit_transaction` / `abort_transaction`. Server-side transactions are
+///   atomic, but cancellation of the client future while a commit is in
+///   progress can leave the client unsure whether the transaction committed.
+///   Therefore callers must drive `commit` to completion to avoid uncertainty.
 impl Store for MongoStore {
     type Error = MongoError;
     type Read = MongoTransaction;

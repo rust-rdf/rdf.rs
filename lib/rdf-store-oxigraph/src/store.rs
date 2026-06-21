@@ -33,6 +33,20 @@ impl OxigraphStore {
     }
 }
 
+/// # Cancel safety
+///
+/// - `read` / `write`: begin calls `OxigraphTransaction::begin` which starts an
+///   Oxigraph transaction via `start_transaction()` and returns a self-referencing
+///   `OxigraphTransaction`. Canceling the begin future while `start_transaction`
+///   is in-flight should normally stop the caller from obtaining a transaction
+///   object, but behavior depends on the underlying Oxigraph API for resource
+///   cleanup.
+/// - Mutating methods / commit / rollback: currently unimplemented in this
+///   crate. When implemented, they will rely on Oxigraph's transaction APIs and
+///   will inherit their cancellation/atomicity semantics. In general, database
+///   commits should be considered not cancel safe unless the backend documents
+///   atomic commit on the server side and the driver provides a synchronous
+///   confirmation.
 impl Store for OxigraphStore {
     type Error = OxigraphError;
     type Read = OxigraphTransaction;

@@ -61,6 +61,25 @@ impl Default for ValkeyStore {
     }
 }
 
+/// # Cancel safety
+///
+/// - `read` / `write` (begin): the `begin` implementation initializes a Redis
+///   client and, for writable transactions, starts a MULTI block (via
+///   `client.multi()`). The begin future awaits client initialization; canceling
+///   it before completion should prevent a transaction from being returned.
+/// - Mutating methods (`insert`, `remove`, `clear`, `delete`) enqueue commands
+///   on the Redis transaction (`MULTI`). These calls return once the command is
+///   queued. Canceling an individual enqueue future may stop local work, but
+///   queued commands already sent to the server will remain queued until `EXEC`
+///   or `DISCARD` is called.
+/// - `commit`: calls `EXEC` (via `tx.exec(true).await`) and is not cancel safe.
+///   Once `EXEC` is issued the server will atomically apply queued commands. If
+///   the commit future is canceled while `EXEC` is in flight the client may be
+///   uncertain whether the commands were applied.
+/// - `rollback`: calls `DISCARD` (`tx.reset()`) which is synchronous in the
+///   client; dropping the rollback future before it runs will leave queued
+///   commands present, so callers should call `rollback` or drop the transaction
+///   in a controlled way.
 impl Store for ValkeyStore {
     type Error = ValkeyError;
     type Read = ValkeyTransaction;

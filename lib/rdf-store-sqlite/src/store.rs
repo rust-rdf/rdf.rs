@@ -52,6 +52,22 @@ impl SqliteStore {
     }
 }
 
+/// # Cancel safety
+///
+/// - `read` / `write` (begin): these start a `turso::transaction::Transaction` and
+///   return a `SqliteTransaction`. The begin future awaits the underlying driver
+///   and should clean up if dropped, but the concrete `turso` behavior governs
+///   whether partially-started transactions can leak resources.
+/// - Mutating methods (`insert`, `remove`, etc.): use the transaction handle
+///   and execute SQL statements via the `turso` transaction API. Cancelling a
+///   single statement's future will not automatically roll back the whole
+///   transaction — the caller must explicitly call `rollback` or drop the
+///   transaction without committing.
+/// - `commit` / `rollback`: these call the underlying `tx.commit()` /
+///   `tx.rollback()` async APIs. These operations rely on the database driver's
+///   semantics — cancellation while a commit is in-flight can leave the client
+///   unsure whether the commit succeeded. Callers must drive `commit` to
+///   completion if they require determinism.
 impl Store for SqliteStore {
     type Error = SqliteError;
     type Read = SqliteTransaction<'static>;
