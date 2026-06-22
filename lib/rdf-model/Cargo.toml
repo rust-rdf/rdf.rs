@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde", "oxrdf"]
-alloc = ["serde_json?/alloc", "xsd/alloc"]
-std = ["alloc", "dogma/std", "serde?/std", "serde_json?/std", "xsd/std"]
+alloc = ["known-languages/alloc", "serde_json?/alloc", "xsd/alloc"]
+std = ["alloc", "dogma/std", "known-languages/std", "serde?/std", "serde_json?/std", "xsd/std"]
 unstable = []
 
 # Interoperability:
@@ -33,6 +33,7 @@ sophia = ["dep:sophia", "xsd/sophia"]
 
 [dependencies]
 dogma.workspace = true
+known-languages.workspace = true
 xsd = { workspace = true, features = ["datetime", "decimal"] }
 
 # Interoperability:

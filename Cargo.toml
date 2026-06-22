@@ -121,6 +121,7 @@ futures-util = "0.3"
 heapless = { version = "0.9", default-features = false }
 hex = { version = "0.4", default-features = false }
 itertools = { version = "0.14", default-features = false }
+known-languages = { version = "0.0", default-features = false }
 num-traits = { version = "0.2", default-features = false }
 num-integer = { version = "0.1", default-features = false }
 ouroboros = { version = "0.18", default-features = false }
