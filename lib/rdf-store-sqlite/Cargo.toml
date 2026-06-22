@@ -31,4 +31,5 @@ turso = { version = "0.6", default-features = false }
 xsd.workspace = true
 
 [dev-dependencies]
+sparql-store.workspace = true
 tokio.workspace = true

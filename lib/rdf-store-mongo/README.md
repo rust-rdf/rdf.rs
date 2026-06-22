@@ -91,6 +91,19 @@ tx.insert(new_quad).await?;
 tx.commit().await?;
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`MongoStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<MongoStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-mongo](https://docs.rs/rdf-store-mongo)
@@ -142,3 +155,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`MongoStore`]: https://docs.rs/rdf-store-mongo/latest/rdf_store_mongo/struct.MongoStore.html
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html

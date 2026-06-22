@@ -67,6 +67,19 @@ rdf-store-qlever = { version = "0.4", default-features = false, features = ["lib
 use rdf_store_qlever::{QleverStore, QleverTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`QleverStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<QleverStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-qlever](https://docs.rs/rdf-store-qlever)
@@ -92,3 +105,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`QleverStore`]: https://docs.rs/rdf-store-qlever/latest/rdf_store_qlever/struct.QleverStore.html
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html

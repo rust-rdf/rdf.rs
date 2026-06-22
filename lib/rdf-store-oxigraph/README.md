@@ -67,6 +67,19 @@ rdf-store-oxigraph = { version = "0.4", default-features = false, features = ["r
 use rdf_store_oxigraph::{OxigraphStore, OxigraphTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`OxigraphStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<OxigraphStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-oxigraph](https://docs.rs/rdf-store-oxigraph)
@@ -92,3 +105,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`OxigraphStore`]: https://docs.rs/rdf-store-oxigraph/latest/rdf_store_oxigraph/struct.OxigraphStore.html
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html

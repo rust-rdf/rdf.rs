@@ -38,4 +38,5 @@ wasm-bindgen = { version = "0.2", default-features = false }
 xsd.workspace = true
 
 [dev-dependencies]
+sparql-store.workspace = true
 wasm-bindgen-test = "0.3"

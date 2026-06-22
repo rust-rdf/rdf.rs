@@ -86,6 +86,9 @@ rudof = { version = "0.1", default-features = false }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 
+# Interoperability with SPARQL.rs:
+sparql-store = { version = "0", default-features = false, features = ["alloc"] }
+
 # Interoperability with Oxigraph:
 oxigraph = { version = "0.5.9", default-features = false, features = ["rdf-12"] }
 oxjsonld = { version = "0.2", default-features = false, features = ["async-tokio", "rdf-12"] }
@@ -178,6 +181,8 @@ rdf-writer-rdfxml = { path = "lib/rdf-writer-rdfxml" }
 rdf-writer-trig = { path = "lib/rdf-writer-trig" }
 rdf-writer-turtle = { path = "lib/rdf-writer-turtle" }
 xsd = { path = "lib/xsd" }
+
+#sparql-store = { path = "../sparql.rs/lib/sparql-store" }
 
 # See: https://github.com/oxigraph/oxigraph/issues/1759
 #oxigraph = { git = "https://github.com/artob/oxigraph.git", branch = "artob/tx-send" }

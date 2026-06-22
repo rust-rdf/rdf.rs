@@ -73,6 +73,19 @@ docker run -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/your_password neo4j
 use rdf_store_neo4j::{Neo4jStore, Neo4jTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`Neo4jStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<Neo4jStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-neo4j](https://docs.rs/rdf-store-neo4j)
@@ -98,3 +111,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`Neo4jStore`]: https://docs.rs/rdf-store-neo4j/latest/rdf_store_neo4j/struct.Neo4jStore.html
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html

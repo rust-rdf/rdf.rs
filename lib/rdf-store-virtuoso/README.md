@@ -88,6 +88,19 @@ docker run -p 1111:1111 -p 8890:8890 -e DBA_PASSWORD=mysecret openlink/virtuoso-
 use rdf_store_virtuoso::{VirtuosoStore, VirtuosoTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`VirtuosoStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<VirtuosoStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-virtuoso](https://docs.rs/rdf-store-virtuoso)
@@ -113,3 +126,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html
+[`VirtuosoStore`]: https://docs.rs/rdf-store-virtuoso/latest/rdf_store_virtuoso/struct.VirtuosoStore.html

@@ -67,6 +67,19 @@ rdf-store-turso = { version = "0.4", default-features = false, features = ["tls"
 use rdf_store_turso::{TursoStore, TursoTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`TursoStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<TursoStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-turso](https://docs.rs/rdf-store-turso)
@@ -91,5 +104,10 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
 [SQLite]: https://sqlite.org
 [Turso]: https://turso.tech
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html
+[`TursoStore`]: https://docs.rs/rdf-store-turso/latest/rdf_store_turso/struct.TursoStore.html

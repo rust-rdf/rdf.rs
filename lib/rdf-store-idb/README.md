@@ -67,6 +67,19 @@ rdf-store-idb = { version = "0.4", default-features = false, features = ["tracin
 use rdf_store_idb::{IdbStore, IdbTransaction};
 ```
 
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`IdbStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<IdbStore> = ... // TODO
+
+let tx = store.read().await?;
+```
+
 ## 📚 Reference
 
 [docs.rs/rdf-store-idb](https://docs.rs/rdf-store-idb)
@@ -99,3 +112,8 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
 [SQLite]: https://sqlite.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`IdbStore`]: https://docs.rs/rdf-store-idb/latest/rdf_store_idb/struct.IdbStore.html
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html

@@ -34,4 +34,5 @@ tokio = { workspace = true, features = ["sync"] }
 oxrdf = { workspace = true, optional = true }
 
 [dev-dependencies]
+sparql-store.workspace = true
 tokio.workspace = true

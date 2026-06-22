@@ -96,11 +96,27 @@ tx.commit().await?;
 ```rust,compile_fail
 let tx = store.read().await?;
 
+let count = tx.count(quad_pattern).await?;
+
 tx.r#match(quad_pattern)
     .for_each(|quad| async move {
         eprintln!("{:?}", quad);
     })
     .await;
+```
+
+### Querying the Store with SPARQL
+
+To execute SPARQL queries on the store, use the [sparql-store] crate to wrap
+the underlying [`ValkeyStore`] quad store into a [`SparqlStore`]:
+
+```rust,compile_fail
+use sparql_store::SparqlStore;
+
+let mut store: SparqlStore<ValkeyStore> =
+    ValkeyStore::open("redis://localhost:6379")?.into();
+
+let tx = store.read().await?;
 ```
 
 ## 📚 Reference
@@ -212,6 +228,11 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
 [RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
+[SPARQL]: https://www.w3.org/TR/sparql12-query/
 [Valkey]: https://valkey.io
 [Valkey Bundle]: https://valkey.io/topics/valkey-bundle/
 [Valkey JSON]: https://valkey.io/topics/valkey-json/
+[sparql-store]: https://github.com/rust-rdf/sparql.rs#readme
+
+[`SparqlStore`]: https://docs.rs/sparql-store/latest/sparql_store/struct.SparqlStore.html
+[`ValkeyStore`]: https://docs.rs/rdf-store-valkey/latest/rdf_store_valkey/struct.ValkeyStore.html
