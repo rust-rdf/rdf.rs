@@ -30,6 +30,7 @@ derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
+thiserror.workspace = true
 turso = { version = "0.6", default-features = false }
 xsd.workspace = true
 

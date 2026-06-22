@@ -5,7 +5,7 @@ use rdf_model::TripleSlot;
 use thiserror::Error;
 
 /// An error when interacting with a MongoDB store.
-#[derive(Error, Debug)]
+#[derive(Clone, Debug, Error)]
 pub enum MongoError {
     #[error("missing database name in mongodb:// URL")]
     NoDatabase,

@@ -32,21 +32,21 @@ impl WriteTransaction for QleverTransaction {
 
     async fn rollback(self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }
 
     async fn commit(self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }
 
     async fn clear(&mut self) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }
@@ -56,7 +56,7 @@ impl WriteTransaction for QleverTransaction {
         _statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }
@@ -66,7 +66,7 @@ impl WriteTransaction for QleverTransaction {
         _statement: impl Into<Self::Statement> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }
@@ -76,7 +76,7 @@ impl WriteTransaction for QleverTransaction {
         _pattern: impl Into<Self::StatementPattern> + Send,
     ) -> Result<(), Self::Error> {
         if !self.writable {
-            return Err(());
+            return Err(QleverError::ReadOnly);
         }
         Ok(()) // TODO
     }

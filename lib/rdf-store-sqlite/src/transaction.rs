@@ -123,6 +123,7 @@ impl<'conn> SqliteTransaction<'conn> {
             )
             .await
             .map(|count| count > 0)
+            .map_err(|e| e.into())
     }
 
     #[allow(unused)]
@@ -143,6 +144,7 @@ impl<'conn> SqliteTransaction<'conn> {
             )
             .await
             .map(|count| count > 0)
+            .map_err(|e| e.into())
     }
 
     async fn insert_triple_str(
@@ -163,6 +165,7 @@ impl<'conn> SqliteTransaction<'conn> {
             )
             .await
             .map(|count| count > 0)
+            .map_err(|e| e.into())
     }
 
     async fn intern_node(&mut self, term: &HeapTerm) -> Result<NodeId, SqliteError> {
@@ -189,7 +192,7 @@ impl<'conn> SqliteTransaction<'conn> {
             )
             .await?;
         let row = rows.next().await?.expect("should return a row");
-        row.get::<NodeId>(0)
+        row.get::<NodeId>(0).map_err(|e| e.into())
     }
 
     async fn intern_bnode(&mut self, val: &str) -> Result<NodeId, SqliteError> {
@@ -205,7 +208,7 @@ impl<'conn> SqliteTransaction<'conn> {
             )
             .await?;
         let row = rows.next().await?.expect("should return a row");
-        row.get::<NodeId>(0)
+        row.get::<NodeId>(0).map_err(|e| e.into())
     }
 
     fn match_triples(

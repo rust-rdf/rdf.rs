@@ -36,7 +36,7 @@ impl SqliteStore {
                     conn.execute_batch(SCHEMA_SQL).await?;
                     SCHEMA_VERSION
                 } else {
-                    return Err(err);
+                    return Err(err.into());
                 }
             },
             Ok(mut rows) => {
