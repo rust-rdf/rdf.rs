@@ -1,11 +1,11 @@
-# RDF.rs Reader: {{ package.name }}
+# RDF.rs Reader: {{ package.label }}
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
 [![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }})
 [![Documentation](https://docs.rs/{{ package.name }}/badge.svg)](https://docs.rs/{{ package.name }})
 
-**RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
+{{ package.summary }}
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -23,7 +23,9 @@
 
 ## ✨ Features
 
-- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, COTTAS, and more.
+{% for feature in package.features -%}
+- {{ feature }}
+{% endfor -%}
 - Built on async Rust using lazily-evaluated streams throughout.
 - Plays nice with others: interoperates with Oxigraph, Rudof, and Sophia.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
@@ -65,7 +67,7 @@ Enable only specific features:
 ### Importing the Library
 
 ```rust
-use {{ package.library.name }}::*;
+use {{ package.import }};
 ```
 
 ## 📚 Reference
@@ -79,6 +81,14 @@ use {{ package.library.name }}::*;
 | Feature      | Version | Summary |
 | :----------- | :------ | :------ |
 | `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
+
+### See Also
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+{%- for package in packages.reader %}
+| [{{ package.name }}]({{ github.repository.link }}/tree/master/{{ package.path }}#readme) | [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }}) | [![Documentation](https://img.shields.io/docsrs/{{ package.name }}?label=docs.rs)](https://docs.rs/{{ package.name }}) |
+{%- endfor %}
 
 ## 👨‍💻 Development
 
@@ -94,4 +104,5 @@ git clone {{ github.repository.url }}
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org

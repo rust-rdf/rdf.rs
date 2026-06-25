@@ -1,11 +1,11 @@
-# RDF.rs Writer: rdf-writer-hdt
+# RDF.rs Writer: HDT
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
 [![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt)
 [![Documentation](https://docs.rs/rdf-writer-hdt/badge.svg)](https://docs.rs/rdf-writer-hdt)
 
-**RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
+An HDT file writer for [RDF.rs] knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -23,7 +23,6 @@
 
 ## ✨ Features
 
-- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, COTTAS, and more.
 - Built on async Rust using lazily-evaluated streams throughout.
 - Plays nice with others: interoperates with Oxigraph, Rudof, and Sophia.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
@@ -65,7 +64,7 @@ rdf-writer-hdt = { version = "0.4", default-features = false, features = ["serde
 ### Importing the Library
 
 ```rust
-use rdf_writer_hdt::*;
+use rdf_writer_hdt::HdtWriter;
 ```
 
 ## 📚 Reference
@@ -79,6 +78,20 @@ use rdf_writer_hdt::*;
 | Feature      | Version | Summary |
 | :----------- | :------ | :------ |
 | `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
+
+### See Also
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+| [rdf-writer-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-cottas)](https://crates.io/crates/rdf-writer-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-cottas?label=docs.rs)](https://docs.rs/rdf-writer-cottas) |
+| [rdf-writer-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-hdt?label=docs.rs)](https://docs.rs/rdf-writer-hdt) |
+| [rdf-writer-jelly](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jelly#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jelly)](https://crates.io/crates/rdf-writer-jelly) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jelly?label=docs.rs)](https://docs.rs/rdf-writer-jelly) |
+| [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
+| [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
+| [rdf-writer-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-ntriples)](https://crates.io/crates/rdf-writer-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-ntriples?label=docs.rs)](https://docs.rs/rdf-writer-ntriples) |
+| [rdf-writer-rdfxml](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-rdfxml#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-rdfxml)](https://crates.io/crates/rdf-writer-rdfxml) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-rdfxml?label=docs.rs)](https://docs.rs/rdf-writer-rdfxml) |
+| [rdf-writer-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-trig)](https://crates.io/crates/rdf-writer-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-trig?label=docs.rs)](https://docs.rs/rdf-writer-trig) |
+| [rdf-writer-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-turtle)](https://crates.io/crates/rdf-writer-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-turtle?label=docs.rs)](https://docs.rs/rdf-writer-turtle) |
 
 ## 👨‍💻 Development
 
@@ -98,4 +111,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org

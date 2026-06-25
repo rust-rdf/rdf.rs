@@ -6,8 +6,20 @@ Package = Data.define(:name) do
   def path = "lib/#{self.name}"
   def library = { name: self.name.to_s.gsub('-', '_') }
   def binaries = []
+  def label = self.metadata[:label] || self.name
+  def summary
+    manifest = self.manifest
+    !(self.metadata.empty?) ?
+      self.metadata[:summary] :
+      manifest.package[:description].then { it.is_a?(String) ? it : nil }
+  end
+  def import = self.examples[:import] || "#{self.library[:name]}::*"
+  def examples = self.metadata[:examples] || {}
+  def features = self.metadata[:features] || []
+  def metadata = self.manifest.package[:metadata][:lvr] rescue {}
+  def manifest = Lvr::Rust::Manifest.load("#{self.path}/Cargo.toml")
   def to_liquid = self.to_h
-  def to_h = { name:, path:, library:, binaries: }
+  def to_h = { name:, path:, library:, binaries:, label:, summary:, import:, examples:, features:, metadata:, manifest: self.manifest.to_h }
 end
 
 def codegen(**context) = ->(t, _) { Lvr.codegen(t.name, t.source, **CONTEXT.merge(context)) }
@@ -26,7 +38,8 @@ task :default => %w[README.md] +
 file 'README.md' => %w[.config/codegen/README.md.liquid], &codegen
 
 CRATES.each do |crate_name|
-  crate_codegen = codegen(package: Package.new(crate_name).to_h)
+  package = Package.new(crate_name)
+  crate_codegen = codegen(package: package.to_h)
   case crate_name
     when "rdf_rs"
     when /^rdf-reader-/

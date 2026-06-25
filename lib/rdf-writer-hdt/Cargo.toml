@@ -14,6 +14,14 @@ keywords.workspace = true
 categories.workspace = true
 publish.workspace = true
 
+[package.metadata.lvr]
+label = "HDT"
+summary = "An HDT file writer for [RDF.rs] knowledge graphs."
+features = []
+
+[package.metadata.lvr.examples]
+import = "rdf_writer_hdt::HdtWriter"
+
 [features]
 default = ["all", "std"]
 all = []

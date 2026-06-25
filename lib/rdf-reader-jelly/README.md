@@ -1,11 +1,11 @@
-# RDF.rs Reader: rdf-reader-jelly
+# RDF.rs Reader: Jelly
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
 [![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![Package](https://img.shields.io/crates/v/rdf-reader-jelly)](https://crates.io/crates/rdf-reader-jelly)
 [![Documentation](https://docs.rs/rdf-reader-jelly/badge.svg)](https://docs.rs/rdf-reader-jelly)
 
-**RDF.rs** is a [Rust] framework for working with [RDF] knowledge graphs.
+A Jelly file reader for [RDF.rs] knowledge graphs.
 
 > [!TIP]
 > 🚧 _We are building in public. This is presently under heavy construction._
@@ -23,7 +23,6 @@
 
 ## ✨ Features
 
-- Supports JSON-LD, Turtle/TriG, N-Triples/N-Quads, COTTAS, and more.
 - Built on async Rust using lazily-evaluated streams throughout.
 - Plays nice with others: interoperates with Oxigraph, Rudof, and Sophia.
 - 100% pure and safe Rust with minimal dependencies and no bloat.
@@ -80,6 +79,20 @@ use rdf_reader_jelly::*;
 | :----------- | :------ | :------ |
 | `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
 
+### See Also
+
+| Package | Crate | Docs |
+| :------ | :---- | :--- |
+| [rdf-reader-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-cottas)](https://crates.io/crates/rdf-reader-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-cottas?label=docs.rs)](https://docs.rs/rdf-reader-cottas) |
+| [rdf-reader-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-hdt)](https://crates.io/crates/rdf-reader-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-hdt?label=docs.rs)](https://docs.rs/rdf-reader-hdt) |
+| [rdf-reader-jelly](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jelly#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jelly)](https://crates.io/crates/rdf-reader-jelly) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jelly?label=docs.rs)](https://docs.rs/rdf-reader-jelly) |
+| [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
+| [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
+| [rdf-reader-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-ntriples)](https://crates.io/crates/rdf-reader-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-ntriples?label=docs.rs)](https://docs.rs/rdf-reader-ntriples) |
+| [rdf-reader-rdfxml](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-rdfxml#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-rdfxml)](https://crates.io/crates/rdf-reader-rdfxml) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-rdfxml?label=docs.rs)](https://docs.rs/rdf-reader-rdfxml) |
+| [rdf-reader-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-trig)](https://crates.io/crates/rdf-reader-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-trig?label=docs.rs)](https://docs.rs/rdf-reader-trig) |
+| [rdf-reader-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-turtle)](https://crates.io/crates/rdf-reader-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-turtle?label=docs.rs)](https://docs.rs/rdf-reader-turtle) |
+
 ## 👨‍💻 Development
 
 ```bash
@@ -98,4 +111,5 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html
 
 [RDF]: https://www.w3.org/TR/rdf12-concepts/
+[RDF.rs]: https://github.com/rust-rdf/rdf.rs
 [Rust]: https://rust-lang.org
