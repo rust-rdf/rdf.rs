@@ -39,5 +39,5 @@ thiserror.workspace = true
 xsd.workspace = true
 
 [dev-dependencies]
-sparql-store.workspace = true
+#sparql-store.workspace = true
 tokio.workspace = true
