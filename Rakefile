@@ -2,6 +2,14 @@ abort("Expected Ruby 3.4+, but got #{RUBY_VERSION}.") if RUBY_VERSION < '3.4.0'
 
 require 'lvr'
 
+Package = Data.define(:name) do
+  def path = "lib/#{self.name}"
+  def library = { name: self.name.to_s.gsub('-', '_') }
+  def binaries = []
+  def to_liquid = self.to_h
+  def to_h = { name:, path:, library:, binaries: }
+end
+
 def codegen(**context) = ->(t, _) { Lvr.codegen(t.name, t.source, **CONTEXT.merge(context)) }
 def copy = ->(t, _) { cp t.source, t.name }
 
@@ -18,10 +26,7 @@ task :default => %w[README.md] +
 file 'README.md' => %w[.config/codegen/README.md.liquid], &codegen
 
 CRATES.each do |crate_name|
-  crate_codegen = codegen(package: {
-    name: crate_name,
-    path: "lib/#{crate_name}",
-  })
+  crate_codegen = codegen(package: Package.new(crate_name).to_h)
   case crate_name
     when "rdf_rs"
     when /^rdf-reader-/
@@ -44,9 +49,9 @@ CONTEXT = {
     }
   },
   packages: {
-    core: CORE_CRATES.map { {name: it, path: "lib/#{it}"} },
-    reader: READER_CRATES.map { {name: it, path: "lib/#{it}"} },
-    writer: WRITER_CRATES.map { {name: it, path: "lib/#{it}"} },
-    store: STORE_CRATES.map { {name: it, path: "lib/#{it}" } },
+    core: CORE_CRATES.map { Package.new(it).to_h },
+    reader: READER_CRATES.map { Package.new(it).to_h },
+    writer: WRITER_CRATES.map { Package.new(it).to_h },
+    store: STORE_CRATES.map { Package.new(it).to_h },
   }
 }
