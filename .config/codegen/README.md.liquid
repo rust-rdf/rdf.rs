@@ -78,60 +78,34 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
 | [rdf](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf_rs#readme) | [![Package](https://img.shields.io/crates/v/rdf_rs)](https://crates.io/crates/rdf_rs) | [![Documentation](https://img.shields.io/docsrs/rdf_rs?label=docs.rs)](https://docs.rs/rdf_rs) |
-| [rdf-derive](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-derive#readme) | [![Package](https://img.shields.io/crates/v/rdf-derive)](https://crates.io/crates/rdf-derive) | [![Documentation](https://img.shields.io/docsrs/rdf-derive?label=docs.rs)](https://docs.rs/rdf-derive) |
-| [rdf-format](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-format#readme) | [![Package](https://img.shields.io/crates/v/rdf-format)](https://crates.io/crates/rdf-format) | [![Documentation](https://img.shields.io/docsrs/rdf-format?label=docs.rs)](https://docs.rs/rdf-format) |
-| [rdf-hash](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-hash#readme) | [![Package](https://img.shields.io/crates/v/rdf-hash)](https://crates.io/crates/rdf-hash) | [![Documentation](https://img.shields.io/docsrs/rdf-hash?label=docs.rs)](https://docs.rs/rdf-hash) |
-| [rdf-id](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-id#readme) | [![Package](https://img.shields.io/crates/v/rdf-id)](https://crates.io/crates/rdf-id) | [![Documentation](https://img.shields.io/docsrs/rdf-id?label=docs.rs)](https://docs.rs/rdf-id) |
-| [rdf-model](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-model#readme) | [![Package](https://img.shields.io/crates/v/rdf-model)](https://crates.io/crates/rdf-model) | [![Documentation](https://img.shields.io/docsrs/rdf-model?label=docs.rs)](https://docs.rs/rdf-model) |
-| [rdf-query](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-query#readme) | [![Package](https://img.shields.io/crates/v/rdf-query)](https://crates.io/crates/rdf-query) | [![Documentation](https://img.shields.io/docsrs/rdf-query?label=docs.rs)](https://docs.rs/rdf-query) |
-| [rdf-reader](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader)](https://crates.io/crates/rdf-reader) | [![Documentation](https://img.shields.io/docsrs/rdf-reader?label=docs.rs)](https://docs.rs/rdf-reader) |
-| [rdf-store](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store#readme) | [![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store) | [![Documentation](https://img.shields.io/docsrs/rdf-store?label=docs.rs)](https://docs.rs/rdf-store) |
-| [rdf-stream](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-stream#readme) | [![Package](https://img.shields.io/crates/v/rdf-stream)](https://crates.io/crates/rdf-stream) | [![Documentation](https://img.shields.io/docsrs/rdf-stream?label=docs.rs)](https://docs.rs/rdf-stream) |
-| [rdf-vocab](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-vocab#readme) | [![Package](https://img.shields.io/crates/v/rdf-vocab)](https://crates.io/crates/rdf-vocab) | [![Documentation](https://img.shields.io/docsrs/rdf-vocab?label=docs.rs)](https://docs.rs/rdf-vocab) |
-| [rdf-writer](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer)](https://crates.io/crates/rdf-writer) | [![Documentation](https://img.shields.io/docsrs/rdf-writer?label=docs.rs)](https://docs.rs/rdf-writer) |
-| [xsd](https://github.com/rust-rdf/rdf.rs/tree/master/lib/xsd#readme) | [![Package](https://img.shields.io/crates/v/xsd)](https://crates.io/crates/xsd) | [![Documentation](https://img.shields.io/docsrs/xsd?label=docs.rs)](https://docs.rs/xsd) |
+{%- for package in packages.core %}
+| [{{ package.name }}]({{ github.repository.link }}/tree/master/{{ package.path }}#readme) | [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }}) | [![Documentation](https://img.shields.io/docsrs/{{ package.name }}?label=docs.rs)](https://docs.rs/{{ package.name }}) |
+{%- endfor %}
 
 ### File Readers
 
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
-| [rdf-reader-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-cottas)](https://crates.io/crates/rdf-reader-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-cottas?label=docs.rs)](https://docs.rs/rdf-reader-cottas) |
-| [rdf-reader-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-hdt)](https://crates.io/crates/rdf-reader-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-hdt?label=docs.rs)](https://docs.rs/rdf-reader-hdt) |
-| [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
-| [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
-| [rdf-reader-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-ntriples)](https://crates.io/crates/rdf-reader-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-ntriples?label=docs.rs)](https://docs.rs/rdf-reader-ntriples) |
-| [rdf-reader-rdfxml](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-rdfxml#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-rdfxml)](https://crates.io/crates/rdf-reader-rdfxml) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-rdfxml?label=docs.rs)](https://docs.rs/rdf-reader-rdfxml) |
-| [rdf-reader-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-trig)](https://crates.io/crates/rdf-reader-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-trig?label=docs.rs)](https://docs.rs/rdf-reader-trig) |
-| [rdf-reader-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-turtle)](https://crates.io/crates/rdf-reader-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-turtle?label=docs.rs)](https://docs.rs/rdf-reader-turtle) |
+{%- for package in packages.reader %}
+| [{{ package.name }}]({{ github.repository.link }}/tree/master/{{ package.path }}#readme) | [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }}) | [![Documentation](https://img.shields.io/docsrs/{{ package.name }}?label=docs.rs)](https://docs.rs/{{ package.name }}) |
+{%- endfor %}
 
 ### File Writers
 
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
-| [rdf-writer-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-cottas)](https://crates.io/crates/rdf-writer-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-cottas?label=docs.rs)](https://docs.rs/rdf-writer-cottas) |
-| [rdf-writer-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-hdt?label=docs.rs)](https://docs.rs/rdf-writer-hdt) |
-| [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
-| [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
-| [rdf-writer-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-ntriples)](https://crates.io/crates/rdf-writer-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-ntriples?label=docs.rs)](https://docs.rs/rdf-writer-ntriples) |
-| [rdf-writer-rdfxml](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-rdfxml#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-rdfxml)](https://crates.io/crates/rdf-writer-rdfxml) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-rdfxml?label=docs.rs)](https://docs.rs/rdf-writer-rdfxml) |
-| [rdf-writer-trig](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-trig#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-trig)](https://crates.io/crates/rdf-writer-trig) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-trig?label=docs.rs)](https://docs.rs/rdf-writer-trig) |
-| [rdf-writer-turtle](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-turtle#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-turtle)](https://crates.io/crates/rdf-writer-turtle) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-turtle?label=docs.rs)](https://docs.rs/rdf-writer-turtle) |
+{%- for package in packages.writer %}
+| [{{ package.name }}]({{ github.repository.link }}/tree/master/{{ package.path }}#readme) | [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }}) | [![Documentation](https://img.shields.io/docsrs/{{ package.name }}?label=docs.rs)](https://docs.rs/{{ package.name }}) |
+{%- endfor %}
 
 ### Storage Adapters
 
 | Package | Crate | Docs |
 | :------ | :---- | :--- |
 | [rdf-store](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store#readme) | [![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store) | [![Documentation](https://img.shields.io/docsrs/rdf-store?label=docs.rs)](https://docs.rs/rdf-store) |
-| [rdf-store-idb](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-idb#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-idb)](https://crates.io/crates/rdf-store-idb) | [![Documentation](https://img.shields.io/docsrs/rdf-store-idb?label=docs.rs)](https://docs.rs/rdf-store-idb) |
-| [rdf-store-mongo](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-mongo#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-mongo)](https://crates.io/crates/rdf-store-mongo) | [![Documentation](https://img.shields.io/docsrs/rdf-store-mongo?label=docs.rs)](https://docs.rs/rdf-store-mongo) |
-| [rdf-store-neo4j](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-neo4j#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-neo4j)](https://crates.io/crates/rdf-store-neo4j) | [![Documentation](https://img.shields.io/docsrs/rdf-store-neo4j?label=docs.rs)](https://docs.rs/rdf-store-neo4j) |
-| [rdf-store-oxigraph](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-oxigraph#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-oxigraph)](https://crates.io/crates/rdf-store-oxigraph) | [![Documentation](https://img.shields.io/docsrs/rdf-store-oxigraph?label=docs.rs)](https://docs.rs/rdf-store-oxigraph) |
-| [rdf-store-postgres](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-postgres#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-postgres)](https://crates.io/crates/rdf-store-postgres) | [![Documentation](https://img.shields.io/docsrs/rdf-store-postgres?label=docs.rs)](https://docs.rs/rdf-store-postgres) |
-| [rdf-store-qlever](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-qlever#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-qlever)](https://crates.io/crates/rdf-store-qlever) | [![Documentation](https://img.shields.io/docsrs/rdf-store-qlever?label=docs.rs)](https://docs.rs/rdf-store-qlever) |
-| [rdf-store-sqlite](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-sqlite#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-sqlite)](https://crates.io/crates/rdf-store-sqlite) | [![Documentation](https://img.shields.io/docsrs/rdf-store-sqlite?label=docs.rs)](https://docs.rs/rdf-store-sqlite) |
-| [rdf-store-turso](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-turso#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-turso)](https://crates.io/crates/rdf-store-turso) | [![Documentation](https://img.shields.io/docsrs/rdf-store-turso?label=docs.rs)](https://docs.rs/rdf-store-turso) |
-| [rdf-store-valkey](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-valkey#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-valkey)](https://crates.io/crates/rdf-store-valkey) | [![Documentation](https://img.shields.io/docsrs/rdf-store-valkey?label=docs.rs)](https://docs.rs/rdf-store-valkey) |
-| [rdf-store-virtuoso](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-store-virtuoso#readme) | [![Package](https://img.shields.io/crates/v/rdf-store-virtuoso)](https://crates.io/crates/rdf-store-virtuoso) | [![Documentation](https://img.shields.io/docsrs/rdf-store-virtuoso?label=docs.rs)](https://docs.rs/rdf-store-virtuoso) |
+{%- for package in packages.store %}
+| [{{ package.name }}]({{ github.repository.link }}/tree/master/{{ package.path }}#readme) | [![Package](https://img.shields.io/crates/v/{{ package.name }})](https://crates.io/crates/{{ package.name }}) | [![Documentation](https://img.shields.io/docsrs/{{ package.name }}?label=docs.rs)](https://docs.rs/{{ package.name }}) |
+{%- endfor %}
 
 ### Feature Flags
 

@@ -9,6 +9,7 @@ CRATES = Dir['lib/*'].map { |p| p.delete_prefix!("lib/") }.sort!.freeze
 READER_CRATES = CRATES.grep(/^rdf-reader-/).freeze
 WRITER_CRATES = CRATES.grep(/^rdf-writer-/).freeze
 STORE_CRATES  = CRATES.grep(/^rdf-store-/).freeze
+CORE_CRATES   = CRATES - READER_CRATES - WRITER_CRATES - STORE_CRATES - %w[rdf_rs rdf-borsh]
 
 task :default => %w[README.md] +
   READER_CRATES.map { |c| "lib/#{c}/README.md" } +
@@ -42,4 +43,10 @@ CONTEXT = {
       url:  'https://github.com/rust-rdf/rdf.rs.git',
     }
   },
+  packages: {
+    core: CORE_CRATES.map { {name: it, path: "lib/#{it}"} },
+    reader: READER_CRATES.map { {name: it, path: "lib/#{it}"} },
+    writer: WRITER_CRATES.map { {name: it, path: "lib/#{it}"} },
+    store: STORE_CRATES.map { {name: it, path: "lib/#{it}" } },
+  }
 }
