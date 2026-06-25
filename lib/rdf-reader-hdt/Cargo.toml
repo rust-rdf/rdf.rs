@@ -32,7 +32,7 @@ unstable = []
 [dependencies]
 async-stream.workspace = true
 futures.workspace = true
-hdt = { version = "0.7.2", features = ["sophia"] }
+hdt = { version = "0.7.3", features = ["sophia"] }
 rdf-format.workspace = true
 rdf-model = { workspace = true, features = ["sophia"] }
 rdf-reader.workspace = true
