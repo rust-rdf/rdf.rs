@@ -14,6 +14,14 @@ keywords.workspace = true
 categories.workspace = true
 publish.workspace = true
 
+[package.metadata.lvr]
+label = "Neo4j"
+summary = "A [Neo4j] storage adapter for **[RDF.rs]** knowledge graphs."
+features = ["Implements a scalable, high-performance RDF store backed by [Neo4j]."]
+
+[package.metadata.lvr.examples]
+import = "rdf_store_neo4j::{Neo4jStore, Neo4jTransaction}"
+
 [features]
 default = ["all", "std"]
 all = ["tls"]

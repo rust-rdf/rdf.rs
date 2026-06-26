@@ -18,9 +18,19 @@ Package = Data.define(:name) do
   def features = self.metadata[:features] || []
   def metadata = self.manifest.package[:metadata][:lvr] rescue {}
   def manifest = Lvr::Rust::Manifest.load("#{self.path}/Cargo.toml")
+  def struct = self.name.split('-').map(&:to_sym).then do |(_, kind, driver)|
+    [driver, kind].compact.map { it.to_s.capitalize }.join
+  end
+  def kind = case self.name
+    when /^rdf-reader-/ then :reader
+    when /^rdf-writer-/ then :writer
+    when /^rdf-store-/ then :store
+    else :core
+  end
   def to_liquid = self.to_h
-  def to_h = { name:, path:, library:, binaries:, label:, summary:, import:, examples:, features:, metadata:, manifest: self.manifest.to_h }
+  def to_h = { name:, path:, library:, binaries:, label:, summary:, import:, examples:, features:, metadata:, manifest: self.manifest.to_h, struct:, kind: }
 end
+
 
 def codegen(**context) = ->(t, _) { Lvr.codegen(t.name, t.source, **CONTEXT.merge(context)) }
 def copy = ->(t, _) { cp t.source, t.name }
@@ -33,22 +43,14 @@ CORE_CRATES   = CRATES - READER_CRATES - WRITER_CRATES - STORE_CRATES - %w[rdf_r
 
 task :default => %w[README.md] +
   READER_CRATES.map { |c| "lib/#{c}/README.md" } +
-  WRITER_CRATES.map { |c| "lib/#{c}/README.md" }
-  #STORE_CRATES.map { |c| "lib/#{c}/README.md" } # TODO
+  WRITER_CRATES.map { |c| "lib/#{c}/README.md" } +
+  STORE_CRATES.map { |c| "lib/#{c}/README.md" }
 file 'README.md' => %w[.config/codegen/README.md.liquid], &codegen
 
 CRATES.each do |crate_name|
   package = Package.new(crate_name)
   crate_codegen = codegen(package: package.to_h)
-  case crate_name
-    when "rdf_rs"
-    when /^rdf-reader-/
-      file "lib/#{crate_name}/README.md" => %w[.config/codegen/rdf-reader/README.md.liquid], &crate_codegen
-    when /^rdf-writer-/
-      file "lib/#{crate_name}/README.md" => %w[.config/codegen/rdf-writer/README.md.liquid], &crate_codegen
-    when /^rdf-store-/
-      file "lib/#{crate_name}/README.md" => %w[.config/codegen/rdf-store/README.md.liquid], &crate_codegen
-  end
+  file "lib/#{package.name}/README.md" => %W[.config/codegen/rdf-#{package.kind}/README.md.liquid], &crate_codegen
 end
 
 CONTEXT = {
