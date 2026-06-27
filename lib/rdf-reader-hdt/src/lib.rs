@@ -44,3 +44,7 @@ pub use reader::*;
 
 mod triple;
 pub use triple::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

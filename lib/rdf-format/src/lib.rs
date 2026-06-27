@@ -17,3 +17,7 @@ extern crate std;
 
 mod format;
 pub use format::*;
+
+#[doc = include_str!("../../../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

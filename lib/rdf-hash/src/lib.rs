@@ -26,3 +26,7 @@ pub use term_hash::*;
 mod triple_hash;
 #[cfg(feature = "blake3")]
 pub use triple_hash::*;
+
+#[doc = include_str!("../../../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;
