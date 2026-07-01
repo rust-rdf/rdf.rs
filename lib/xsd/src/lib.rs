@@ -53,6 +53,9 @@ pub mod primitive {
     mod gyearmonth;
     pub use gyearmonth::*;
 
+    mod integer;
+    pub use integer::*;
+
     mod string;
     pub use string::*;
 

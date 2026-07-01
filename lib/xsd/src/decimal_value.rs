@@ -48,8 +48,8 @@ impl DecimalValue {
     pub fn as_f64(&self) -> f64 {
         use DecimalValue::*;
         match self {
-            Decimal(d) => return d.as_f64(),
-            Integer(n) => *n as _,
+            Decimal(d) => d.as_f64(),
+            Integer(n) => n.as_f64(),
             Long(n) => *n as _,
             Int(n) => *n as _,
             Short(n) => *n as _,
@@ -78,8 +78,8 @@ impl DecimalValue {
         use DecimalValue::*;
         match self {
             Decimal(_) => None, // already the widest primitive base type
-            Integer(n) => (*n).try_into().ok(),
-            Long(n) => Some(Integer(*n as _)),
+            Integer(n) => Some(Decimal(n.into())),
+            Long(n) => Some(Integer(n.into())),
             Int(n) => Some(Long(*n as _)),
             Short(n) => Some(Int(*n as _)),
             Byte(n) => Some(Short(*n as _)),
@@ -92,11 +92,11 @@ impl DecimalValue {
         use DecimalValue::*;
         match self {
             Decimal(d) if !d.is_integer() => None,
-            Decimal(d) => i128::try_from(d).ok().map(Integer),
-            Integer(n) => i64::try_from(*n).ok().map(Long),
-            Long(n) => i32::try_from(*n).ok().map(Int),
-            Int(n) => i16::try_from(*n).ok().map(Short),
-            Short(n) => i8::try_from(*n).ok().map(Byte),
+            Decimal(d) => i128::try_from(d).ok().map(|z| Self::Integer(z.into())),
+            Integer(n) => i64::try_from(*n).ok().map(Self::Long),
+            Long(n) => i32::try_from(*n).ok().map(Self::Int),
+            Int(n) => i16::try_from(*n).ok().map(Self::Short),
+            Short(n) => i8::try_from(*n).ok().map(Self::Byte),
             Byte(_) => None, // already the narrowest derived type
         }
     }
@@ -110,12 +110,12 @@ impl DecimalValue {
     pub fn into_json(self) -> serde_json::Value {
         use DecimalValue::*;
         match self {
-            Decimal(d) => d.as_f64().into(), // TODO: string
-            Integer(n) => (n as f64).into(), // TODO: string
-            Long(n) => n.into(),
-            Int(n) => n.into(),
-            Short(n) => n.into(),
-            Byte(n) => n.into(),
+            Decimal(r) => r.as_f64().into(), // TODO: string
+            Integer(z) => z.as_f64().into(), // TODO: string
+            Long(z) => z.into(),
+            Int(z) => z.into(),
+            Short(z) => z.into(),
+            Byte(z) => z.into(),
         }
     }
 
@@ -129,15 +129,12 @@ impl DecimalValue {
         use DecimalValue::*;
         use bson::{Bson, Decimal128};
         match self {
-            Decimal(d) => d.into_bson(),
-            Integer(n) => {
-                if n >= i64::MIN as _ && n <= i64::MAX as _ {
-                    Bson::Int64(n as _)
-                } else {
-                    use alloc::string::ToString;
-                    use core::str::FromStr;
-                    Bson::Decimal128(Decimal128::from_str(n.to_string().as_str()).unwrap()) // FIXME
-                }
+            Decimal(r) => r.into_bson().unwrap(),
+            Integer(z) if z.to_i64().is_some() => Bson::Int64(z.to_i64().unwrap() as _),
+            Integer(z) => {
+                use alloc::string::ToString;
+                use core::str::FromStr;
+                Bson::Decimal128(Decimal128::from_str(z.to_string().as_str()).unwrap()) // FIXME
             },
             Long(n) => Bson::Int64(n),
             Int(n) => Bson::Int32(n),
@@ -189,6 +186,12 @@ impl From<i128> for DecimalValue {
 impl From<isize> for DecimalValue {
     fn from(input: isize) -> Self {
         Self::Integer((input as i128).into()) // TODO
+    }
+}
+
+impl From<Integer> for DecimalValue {
+    fn from(input: Integer) -> Self {
+        Self::Integer(input)
     }
 }
 
