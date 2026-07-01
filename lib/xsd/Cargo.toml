@@ -23,17 +23,17 @@ unstable = []
 
 # Features:
 datetime = ["jiff"]
-decimal = ["rust_decimal", "valuand/decimal"]
+decimal = ["valuand/decimal"]
 
 # Interoperability:
-borsh = ["dep:borsh", "valuand/borsh", "rust_decimal?/borsh"]
+borsh = ["dep:borsh", "valuand/borsh"]
 bson = ["dep:bson", "valuand/bson"]
 datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
 oxrdf = ["dep:oxrdf", "dep:oxsdatatypes"]
 rudof = ["dep:oxsdatatypes"]
-rust_decimal = ["dep:rust_decimal"]
+rust_decimal = ["dep:rust_decimal", "valuand/rust_decimal"]
 serde = ["dep:serde", "dep:serde_json", "decorum/serde", "valuand/serde", "jiff?/serde", "rust_decimal?/serde-with-str"]
 sophia = []
 

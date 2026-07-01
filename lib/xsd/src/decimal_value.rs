@@ -1,7 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{
-    DecimalType, ParseDecimalError,
+    DecimalType,
     primitive::{Byte, Decimal, Int, Integer, Long, Short},
 };
 use strum_macros::Display;
@@ -206,7 +206,7 @@ impl From<rust_decimal::Decimal> for DecimalValue {
 }
 
 impl TryFrom<f32> for DecimalValue {
-    type Error = ParseDecimalError;
+    type Error = valuand::DecimalError;
 
     fn try_from(input: f32) -> Result<Self, Self::Error> {
         Ok(Self::Decimal(input.try_into()?))
@@ -214,7 +214,7 @@ impl TryFrom<f32> for DecimalValue {
 }
 
 impl TryFrom<f64> for DecimalValue {
-    type Error = ParseDecimalError;
+    type Error = valuand::DecimalError;
 
     fn try_from(input: f64) -> Result<Self, Self::Error> {
         Ok(Self::Decimal(input.try_into()?))

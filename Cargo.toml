@@ -133,7 +133,7 @@ parquet = { version = "59.0", default-features = false, features = ["async"] }
 send_wrapper = { version = "0.6", default-features = false, features = ["futures"] }
 tempfile = { version = "3.15", default-features = false }
 thiserror = { version = "2", default-features = false }
-valuand = { version = "=0.0.3", default-features = false }
+valuand = { version = "=0.0.4", default-features = false }
 zeroize = { version = "1.8", default-features = false }
 
 # Development:
