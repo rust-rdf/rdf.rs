@@ -25,9 +25,9 @@ unstable = []
 datetime = ["jiff"]
 decimal = ["rust_decimal", "valuand/decimal"]
 
-# Integrations:
-borsh = ["dep:borsh", "rust_decimal?/borsh"]
-bson = ["dep:bson"]
+# Interoperability:
+borsh = ["dep:borsh", "valuand/borsh", "rust_decimal?/borsh"]
+bson = ["dep:bson", "valuand/bson"]
 datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
@@ -46,7 +46,7 @@ strum = "0.28"
 strum_macros = "0.28"
 valuand = { workspace = true, features = ["number"] }
 
-# Integrations:
+# Interoperability:
 borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, optional = true }
