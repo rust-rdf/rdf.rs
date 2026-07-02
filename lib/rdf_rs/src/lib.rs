@@ -6,6 +6,10 @@
 //! use rdf_rs::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 //! ```
 
+#![no_std]
+#![forbid(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 pub use rdf_derive as derive;
 
 pub use rdf_format as format;

@@ -8,6 +8,7 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[doc = include_str!("../../../README.md")]
 #[cfg(doctest)]

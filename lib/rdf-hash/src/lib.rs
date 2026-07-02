@@ -11,6 +11,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 extern crate alloc;
 

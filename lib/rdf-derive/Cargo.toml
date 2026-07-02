@@ -32,3 +32,8 @@ syn = { version = "2", default-features = true }
 
 [dev-dependencies]
 rdf-model.workspace = true
+
+# Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

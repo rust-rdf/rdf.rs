@@ -44,3 +44,8 @@ tokio = { workspace = true, features = ["io-util"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["fs"] }
+
+# Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -1,5 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
+//! XML Schema (XSD) datatypes for Rust.
+//!
 //! ```rust
 //! use xsd::{Type, Value};
 //! use xsd::primitive::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
@@ -7,6 +9,7 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;

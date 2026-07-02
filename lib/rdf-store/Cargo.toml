@@ -36,3 +36,8 @@ oxrdf = { workspace = true, optional = true }
 [dev-dependencies]
 ##sparql-store.workspace = true
 tokio.workspace = true
+
+# Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
