@@ -108,10 +108,10 @@ pub use traits::*;
 
 /// Interoperability with other Rust libraries.
 pub mod interop {
-    #[cfg(feature = "datafusion")]
-    mod datafusion;
-    #[cfg(feature = "datafusion")]
-    pub use datafusion::*;
+    //#[cfg(feature = "datafusion")]
+    //mod datafusion;
+    //#[cfg(feature = "datafusion")]
+    //pub use datafusion::*;
 
     #[cfg(feature = "json-ld")]
     mod json_ld;

@@ -28,7 +28,7 @@ decimal = ["valuand/decimal"]
 # Interoperability:
 borsh = ["dep:borsh", "valuand/borsh"]
 bson = ["dep:bson", "valuand/bson"]
-datafusion = ["dep:rdf-fusion"]
+#datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
 oxrdf = ["dep:oxrdf", "dep:oxsdatatypes"]
@@ -52,7 +52,7 @@ bson = { workspace = true, optional = true }
 jiff = { version = "0.2", default-features = false, optional = true }
 oxrdf = { workspace = true, optional = true }
 oxsdatatypes = { workspace = true, optional = true }
-rdf-fusion = { workspace = true, optional = true }
+#rdf-fusion = { workspace = true, optional = true }
 rust_decimal = { version = "1.42", default-features = false, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }

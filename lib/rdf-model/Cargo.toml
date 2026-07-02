@@ -24,7 +24,7 @@ unstable = []
 # Interoperability:
 borsh = ["dep:borsh", "xsd/borsh"]
 bson = ["dep:bson", "xsd/bson"]
-datafusion = ["dep:rdf-fusion", "xsd/datafusion"]
+#datafusion = ["dep:rdf-fusion", "xsd/datafusion"]
 json-ld = ["dep:json-ld", "xsd/json-ld"]
 oxrdf = ["dep:oxrdf", "xsd/oxrdf"]
 rudof = ["dep:rudof", "xsd/rudof"]
@@ -41,7 +41,7 @@ borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
 json-ld = { workspace = true, optional = true }
 oxrdf = { workspace = true, optional = true }
-rdf-fusion = { workspace = true, optional = true }
+#rdf-fusion = { workspace = true, optional = true }
 rudof = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
