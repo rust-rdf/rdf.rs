@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{Term, TermKind};
-use alloc::borrow::Cow;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct OxrdfNamedNode(oxrdf::NamedNode);
@@ -11,7 +10,9 @@ impl Term for OxrdfNamedNode {
         TermKind::Iri
     }
 
-    fn value_str(&self) -> Cow<'_, str> {
+    #[cfg(feature = "alloc")]
+    fn value_str(&self) -> alloc::borrow::Cow<'_, str> {
+        use alloc::borrow::Cow;
         Cow::Borrowed(self.0.as_str())
     }
 }
@@ -29,7 +30,9 @@ impl Term for OxrdfGraphName {
         }
     }
 
-    fn value_str(&self) -> Cow<'_, str> {
+    #[cfg(feature = "alloc")]
+    fn value_str(&self) -> alloc::borrow::Cow<'_, str> {
+        use alloc::borrow::Cow;
         use oxrdf::GraphName;
         match &self.0 {
             GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),

@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{Term, TermKind};
-use alloc::borrow::Cow;
 use sophia::api::term::SimpleTerm;
 
 pub struct SophiaTerm<'a> {
@@ -14,7 +13,9 @@ impl<'a> Term for SophiaTerm<'a> {
         self.inner.kind().into()
     }
 
-    fn value_str(&self) -> Cow<'_, str> {
+    #[cfg(feature = "alloc")]
+    fn value_str(&self) -> alloc::borrow::Cow<'_, str> {
+        use alloc::borrow::Cow;
         match &self.inner {
             SimpleTerm::Iri(iri) => Cow::Borrowed(iri.as_str()),
             SimpleTerm::BlankNode(id) => Cow::Borrowed(id.as_str()),

@@ -1,7 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::TermKind;
-use alloc::borrow::Cow;
 
 /// An RDF term.
 ///
@@ -30,7 +29,7 @@ pub trait Term {
     }
 
     #[cfg(feature = "alloc")]
-    fn value_str(&self) -> Cow<'_, str>;
+    fn value_str(&self) -> alloc::borrow::Cow<'_, str>;
 }
 
 impl core::fmt::Debug for dyn Term {
