@@ -22,6 +22,7 @@ alloc = [
     "rdf-format/alloc",
     "rdf-hash/alloc",
     "rdf-id/alloc",
+    "rdf-message/alloc",
     "rdf-model/alloc",
     "rdf-query/alloc",
     "rdf-reader/alloc",
@@ -36,6 +37,7 @@ std = [
     "rdf-format/std",
     "rdf-hash/std",
     "rdf-id/std",
+    "rdf-message/std",
     "rdf-model/std",
     "rdf-query/std",
     "rdf-reader/std",
@@ -49,6 +51,7 @@ unstable = [
     "rdf-format/unstable",
     "rdf-hash/unstable",
     "rdf-id/unstable",
+    "rdf-message/unstable",
     "rdf-model/unstable",
     "rdf-query/unstable",
     "rdf-reader/unstable",
@@ -100,6 +103,7 @@ rdf-derive.workspace = true
 rdf-format.workspace = true
 rdf-hash.workspace = true
 rdf-id.workspace = true
+rdf-message.workspace = true
 rdf-model.workspace = true
 rdf-query.workspace = true
 rdf-reader.workspace = true

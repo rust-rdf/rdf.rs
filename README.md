@@ -66,7 +66,7 @@ rdf = { package = "rdf_rs", version = "0.4", default-features = false, features 
 ### Importing the Library
 
 ```rust,compile_fail
-use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
+use rdf::{format, hash, id, message, model, query, reader, store, stream, vocab, writer};
 ```
 
 ## 📚 Reference
@@ -82,6 +82,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | [rdf-format](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-format#readme) | [![Package](https://img.shields.io/crates/v/rdf-format)](https://crates.io/crates/rdf-format) | [![Documentation](https://img.shields.io/docsrs/rdf-format?label=docs.rs)](https://docs.rs/rdf-format) |
 | [rdf-hash](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-hash#readme) | [![Package](https://img.shields.io/crates/v/rdf-hash)](https://crates.io/crates/rdf-hash) | [![Documentation](https://img.shields.io/docsrs/rdf-hash?label=docs.rs)](https://docs.rs/rdf-hash) |
 | [rdf-id](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-id#readme) | [![Package](https://img.shields.io/crates/v/rdf-id)](https://crates.io/crates/rdf-id) | [![Documentation](https://img.shields.io/docsrs/rdf-id?label=docs.rs)](https://docs.rs/rdf-id) |
+| [rdf-message](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-message#readme) | [![Package](https://img.shields.io/crates/v/rdf-message)](https://crates.io/crates/rdf-message) | [![Documentation](https://img.shields.io/docsrs/rdf-message?label=docs.rs)](https://docs.rs/rdf-message) |
 | [rdf-model](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-model#readme) | [![Package](https://img.shields.io/crates/v/rdf-model)](https://crates.io/crates/rdf-model) | [![Documentation](https://img.shields.io/docsrs/rdf-model?label=docs.rs)](https://docs.rs/rdf-model) |
 | [rdf-query](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-query#readme) | [![Package](https://img.shields.io/crates/v/rdf-query)](https://crates.io/crates/rdf-query) | [![Documentation](https://img.shields.io/docsrs/rdf-query?label=docs.rs)](https://docs.rs/rdf-query) |
 | [rdf-reader](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader)](https://crates.io/crates/rdf-reader) | [![Documentation](https://img.shields.io/docsrs/rdf-reader?label=docs.rs)](https://docs.rs/rdf-reader) |

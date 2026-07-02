@@ -27,11 +27,12 @@ shadow-rs = { version = "0.36", default-features = false, features = ["tzdb"] }
 clap = { version = "4.5", default-features = false }
 clientele = { version = "0.3", default-features = true }
 rdf.workspace = true
-rdf-borsh.workspace = true
+#rdf-borsh.workspace = true
 rdf-derive.workspace = true
 rdf-format.workspace = true
 rdf-hash.workspace = true
 rdf-id.workspace = true
+rdf-message.workspace = true
 rdf-model.workspace = true
 rdf-query.workspace = true
 rdf-reader.workspace = true

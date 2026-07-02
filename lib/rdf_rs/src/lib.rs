@@ -3,7 +3,7 @@
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
 //! ```rust
-//! use rdf_rs::{format, hash, id, model, query, reader, store, stream, vocab, writer};
+//! use rdf_rs::{format, hash, id, message, model, query, reader, store, stream, vocab, writer};
 //! ```
 
 #![no_std]
@@ -15,6 +15,7 @@ pub use rdf_derive as derive;
 pub use rdf_format as format;
 pub use rdf_hash as hash;
 pub use rdf_id as id;
+pub use rdf_message as message;
 pub use rdf_model as model;
 pub use rdf_query as query;
 pub use rdf_reader as reader;

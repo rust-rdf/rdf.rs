@@ -16,7 +16,7 @@ Package = Data.define(:name) do
   def import = self.examples[:import] || "#{self.library[:name]}::*"
   def examples = self.metadata[:examples] || {}
   def features = self.metadata[:features] || []
-  def metadata = self.manifest.package[:metadata][:lvr] rescue {}
+  def metadata = (self.manifest.package[:metadata][:lvr] rescue nil) || {}
   def manifest = Lvr::Rust::Manifest.load("#{self.path}/Cargo.toml")
   def struct = self.name.split('-').map(&:to_sym).then do |(_, kind, driver)|
     [driver, kind].compact.map { it.to_s.capitalize }.join
@@ -30,7 +30,6 @@ Package = Data.define(:name) do
   def to_liquid = self.to_h
   def to_h = { name:, path:, library:, binaries:, label:, summary:, import:, examples:, features:, metadata:, manifest: self.manifest.to_h, struct:, kind: }
 end
-
 
 def codegen(**context) = ->(t, _) { Lvr.codegen(t.name, t.source, **CONTEXT.merge(context)) }
 def copy = ->(t, _) { cp t.source, t.name }
