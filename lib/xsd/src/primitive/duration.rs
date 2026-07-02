@@ -1,9 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
-/// Rust type for representing values of the `xsd:duration` datatype.
+/// A value of the `xsd:duration` datatype.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#duration>
 #[cfg(feature = "jiff")]
 pub use jiff::SignedDuration as Duration;
 
-/// Rust type for representing values of the `xsd:duration` datatype.
+/// A value of the `xsd:duration` datatype.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#duration>
 #[cfg(not(feature = "jiff"))]
 pub use core::time::Duration;

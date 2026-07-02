@@ -3,7 +3,8 @@
 use crate::{
     DecimalValue, ParseBooleanError, ParseDecimalError, ParseDoubleError, ParseError,
     ParseFloatError, ParseIntegerError, Type, Value,
-    primitive::{Boolean, Byte, Decimal, Double, Float, Int, Integer, Long, Short},
+    derived::{Byte, Int, Integer, Long, Short},
+    primitive::{Boolean, Decimal, Double, Float},
 };
 use core::convert::Infallible;
 
@@ -106,7 +107,11 @@ pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, Infallible> {
 
 /// Parses an input string containing an `xsd:boolean` literal.
 pub fn parse_boolean(input: impl AsRef<str>) -> Result<Value, ParseBooleanError> {
-    input.as_ref().parse::<Boolean>().map(Value::from)
+    input
+        .as_ref()
+        .parse::<Boolean>()
+        .map(Value::from)
+        .map_err(|_| ParseError)
 }
 
 /// Parses an input string containing an `xsd:float` literal.

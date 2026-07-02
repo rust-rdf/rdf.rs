@@ -159,7 +159,7 @@ impl PrimitiveValue {
         match self {
             String(s) => Value::String(s),
             Boolean(b) => b.into_json(),
-            Decimal(d) => d.into_json(),
+            Decimal(d) => d.into_json().unwrap(),
             Float(f) => f.into_json(),
             Double(d) => d.into_json(),
             #[cfg(feature = "jiff")]
@@ -201,7 +201,7 @@ impl PrimitiveValue {
         match self {
             String(s) => Bson::String(s),
             Boolean(b) => b.into_bson(),
-            Decimal(d) => d.into_bson(),
+            Decimal(d) => d.into_bson().unwrap(),
             Float(f) => f.into_bson(),
             Double(d) => d.into_bson(),
             #[cfg(feature = "jiff")]

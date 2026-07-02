@@ -62,7 +62,8 @@ pub mod primitive {
 
 /// Rust types for representing values of XSD derived datatypes.
 pub mod derived {
-    // TODO
+    mod integer;
+    pub use integer::*;
 }
 
 mod decimal_type;

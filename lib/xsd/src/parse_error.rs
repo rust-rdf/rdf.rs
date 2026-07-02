@@ -32,30 +32,4 @@ impl core::fmt::Display for ParseError {
 
 impl core::error::Error for ParseError {}
 
-/// An error encountered when parsing an `xsd:decimal` literal.
-#[cfg(feature = "rust_decimal")]
-#[derive(Debug)]
-pub struct ParseDecimalError(rust_decimal::Error);
-
-/// An error encountered when parsing an `xsd:decimal` literal.
-#[cfg(not(feature = "rust_decimal"))]
-#[derive(Debug)]
-pub struct ParseDecimalError;
-
-impl core::fmt::Display for ParseDecimalError {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        #[cfg(feature = "rust_decimal")]
-        return self.0.fmt(f);
-        #[cfg(not(feature = "rust_decimal"))]
-        return write!(f, "parse decimal error");
-    }
-}
-
-impl core::error::Error for ParseDecimalError {}
-
-#[cfg(feature = "rust_decimal")]
-impl From<rust_decimal::Error> for ParseDecimalError {
-    fn from(input: rust_decimal::Error) -> Self {
-        Self(input)
-    }
-}
+pub type ParseDecimalError = valuand::DecimalError;
