@@ -17,40 +17,42 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["datetime", "decimal"]
-alloc = ["heapless/alloc"]
-std = ["alloc"]
+alloc = ["heapless/alloc", "valuand/alloc"]
+std = ["alloc", "valuand/std"]
 unstable = []
 
 # Features:
 datetime = ["jiff"]
-decimal = ["rust_decimal"]
+decimal = ["valuand/decimal"]
 
-# Integrations:
-bson = ["dep:bson"]
-datafusion = ["dep:rdf-fusion"]
+# Interoperability:
+borsh = ["dep:borsh", "valuand/borsh"]
+bson = ["dep:bson", "valuand/bson"]
+#datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
 oxrdf = ["dep:oxrdf", "dep:oxsdatatypes"]
 rudof = ["dep:oxsdatatypes"]
-rust_decimal = ["dep:rust_decimal"]
-serde = ["dep:serde", "dep:serde_json"]
+rust_decimal = ["dep:rust_decimal", "valuand/rust_decimal"]
+serde = ["dep:serde", "dep:serde_json", "decorum/serde", "valuand/serde", "jiff?/serde", "rust_decimal?/serde-with-str"]
 sophia = []
 
 [dependencies]
-decorum = { workspace = true, features = ["serde"] }
+decorum.workspace = true
 dogma.workspace = true
 heapless.workspace = true
-phf = { version = "0.13", default-features = false, features = ["macros"] }
+phf = { version = "0.14", default-features = false, features = ["macros"] }
 strum = "0.28"
 strum_macros = "0.28"
+valuand = { workspace = true, features = ["number"] }
 
-# Integrations:
+# Interoperability:
 borsh = { workspace = true, optional = true }
 bson = { workspace = true, optional = true }
-jiff = { version = "0.2", default-features = false, features = ["serde"], optional = true }
+jiff = { version = "0.2", default-features = false, optional = true }
 oxrdf = { workspace = true, optional = true }
 oxsdatatypes = { workspace = true, optional = true }
-rdf-fusion = { workspace = true, optional = true }
-rust_decimal = { version = "1.42", default-features = false, features = ["borsh", "serde-with-str"], optional = true }
+#rdf-fusion = { workspace = true, optional = true }
+rust_decimal = { version = "1.42", default-features = false, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }

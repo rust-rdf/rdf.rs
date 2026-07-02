@@ -20,7 +20,7 @@ default-members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.4.2"
+version = "0.4.4"
 authors = ["Arto Bendiken"]
 edition = "2024"
 rust-version = "1.85"
@@ -35,46 +35,48 @@ categories = ["data-structures", "no-std"]
 publish = true
 
 [workspace.dependencies]
-rdf = { package = "rdf_rs", version = "=0.4.2", default-features = true }
-rdf-borsh = { version = "=0.4.2", default-features = true }
-rdf-derive = { version = "=0.4.2", default-features = true }
-rdf-format = { version = "=0.4.2", default-features = true }
-rdf-hash = { version = "=0.4.2", default-features = true }
-rdf-id = { version = "=0.4.2", default-features = true }
-rdf-model = { version = "=0.4.2", default-features = true }
-rdf-query = { version = "=0.4.2", default-features = true }
-rdf-reader = { version = "=0.4.2", default-features = true }
-rdf-reader-cottas = { version = "=0.4.2", default-features = true }
-rdf-reader-hdt = { version = "=0.4.2", default-features = true }
-rdf-reader-jsonld = { version = "=0.4.2", default-features = true }
-rdf-reader-nquads = { version = "=0.4.2", default-features = true }
-rdf-reader-ntriples = { version = "=0.4.2", default-features = true }
-rdf-reader-rdfxml = { version = "=0.4.2", default-features = true }
-rdf-reader-trig = { version = "=0.4.2", default-features = true }
-rdf-reader-turtle = { version = "=0.4.2", default-features = true }
-rdf-store = { version = "=0.4.2", default-features = true }
-rdf-store-idb = { version = "=0.4.2", default-features = true }
-rdf-store-mongo = { version = "=0.4.2", default-features = true }
-rdf-store-neo4j = { version = "=0.4.2", default-features = true }
-rdf-store-oxigraph = { version = "=0.4.2", default-features = true }
-rdf-store-postgres = { version = "=0.4.2", default-features = true }
-rdf-store-qlever = { version = "=0.4.2", default-features = true }
-rdf-store-sqlite = { version = "=0.4.2", default-features = true }
-rdf-store-turso = { version = "=0.4.2", default-features = true }
-rdf-store-valkey = { version = "=0.4.2", default-features = true }
-rdf-store-virtuoso = { version = "=0.4.2", default-features = true }
-rdf-stream = { version = "=0.4.2", default-features = true }
-rdf-vocab = { version = "=0.4.2", default-features = true }
-rdf-writer = { version = "=0.4.2", default-features = true }
-rdf-writer-cottas = { version = "=0.4.2", default-features = true }
-rdf-writer-hdt = { version = "=0.4.2", default-features = true }
-rdf-writer-jsonld = { version = "=0.4.2", default-features = true }
-rdf-writer-nquads = { version = "=0.4.2", default-features = true }
-rdf-writer-ntriples = { version = "=0.4.2", default-features = true }
-rdf-writer-rdfxml = { version = "=0.4.2", default-features = true }
-rdf-writer-trig = { version = "=0.4.2", default-features = true }
-rdf-writer-turtle = { version = "=0.4.2", default-features = true }
-xsd = { version = "=0.4.2", default-features = true }
+rdf = { package = "rdf_rs", version = "=0.4.4", default-features = true }
+rdf-borsh = { version = "=0.4.4", default-features = true }
+rdf-derive = { version = "=0.4.4", default-features = true }
+rdf-format = { version = "=0.4.4", default-features = true }
+rdf-hash = { version = "=0.4.4", default-features = true }
+rdf-id = { version = "=0.4.4", default-features = true }
+rdf-model = { version = "=0.4.4", default-features = true }
+rdf-query = { version = "=0.4.4", default-features = true }
+rdf-reader = { version = "=0.4.4", default-features = true }
+rdf-reader-cottas = { version = "=0.4.4", default-features = true }
+rdf-reader-hdt = { version = "=0.4.4", default-features = true }
+rdf-reader-jelly = { version = "=0.4.4", default-features = true }
+rdf-reader-jsonld = { version = "=0.4.4", default-features = true }
+rdf-reader-nquads = { version = "=0.4.4", default-features = true }
+rdf-reader-ntriples = { version = "=0.4.4", default-features = true }
+rdf-reader-rdfxml = { version = "=0.4.4", default-features = true }
+rdf-reader-trig = { version = "=0.4.4", default-features = true }
+rdf-reader-turtle = { version = "=0.4.4", default-features = true }
+rdf-store = { version = "=0.4.4", default-features = true }
+rdf-store-idb = { version = "=0.4.4", default-features = true }
+rdf-store-mongo = { version = "=0.4.4", default-features = true }
+rdf-store-neo4j = { version = "=0.4.4", default-features = true }
+rdf-store-oxigraph = { version = "=0.4.4", default-features = true }
+rdf-store-postgres = { version = "=0.4.4", default-features = true }
+rdf-store-qlever = { version = "=0.4.4", default-features = true }
+rdf-store-sqlite = { version = "=0.4.4", default-features = true }
+rdf-store-turso = { version = "=0.4.4", default-features = true }
+rdf-store-valkey = { version = "=0.4.4", default-features = true }
+rdf-store-virtuoso = { version = "=0.4.4", default-features = true }
+rdf-stream = { version = "=0.4.4", default-features = true }
+rdf-vocab = { version = "=0.4.4", default-features = true }
+rdf-writer = { version = "=0.4.4", default-features = true }
+rdf-writer-cottas = { version = "=0.4.4", default-features = true }
+rdf-writer-hdt = { version = "=0.4.4", default-features = true }
+rdf-writer-jelly = { version = "=0.4.4", default-features = true }
+rdf-writer-jsonld = { version = "=0.4.4", default-features = true }
+rdf-writer-nquads = { version = "=0.4.4", default-features = true }
+rdf-writer-ntriples = { version = "=0.4.4", default-features = true }
+rdf-writer-rdfxml = { version = "=0.4.4", default-features = true }
+rdf-writer-trig = { version = "=0.4.4", default-features = true }
+rdf-writer-turtle = { version = "=0.4.4", default-features = true }
+xsd = { version = "=0.4.4", default-features = true }
 
 # Interoperability:
 borsh = { version = "1.6", default-features = false, features = ["derive"] }
@@ -82,7 +84,7 @@ bson = { version = "3.1", default-features = false, features = ["compat-3-0-0"] 
 dogma = { version = "0.1", default-features = false, features = ["traits"] }
 json-ld = { version = "0.21", default-features = false }
 rdf-fusion = { version = "0.1", default-features = false }
-rudof = { version = "0.1", default-features = false }
+rudof_rdf = { version = "0.3.5", default-features = false }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 
@@ -131,6 +133,7 @@ parquet = { version = "59.0", default-features = false, features = ["async"] }
 send_wrapper = { version = "0.6", default-features = false, features = ["futures"] }
 tempfile = { version = "3.15", default-features = false }
 thiserror = { version = "2", default-features = false }
+valuand = { version = "0.1", default-features = false }
 zeroize = { version = "1.8", default-features = false }
 
 # Development:
@@ -153,6 +156,7 @@ rdf-query = { path = "lib/rdf-query" }
 rdf-reader = { path = "lib/rdf-reader" }
 rdf-reader-cottas = { path = "lib/rdf-reader-cottas" }
 rdf-reader-hdt = { path = "lib/rdf-reader-hdt" }
+rdf-reader-jelly = { path = "lib/rdf-reader-jelly" }
 rdf-reader-jsonld = { path = "lib/rdf-reader-jsonld" }
 rdf-reader-nquads = { path = "lib/rdf-reader-nquads" }
 rdf-reader-ntriples = { path = "lib/rdf-reader-ntriples" }
@@ -175,6 +179,7 @@ rdf-vocab = { path = "lib/rdf-vocab" }
 rdf-writer = { path = "lib/rdf-writer" }
 rdf-writer-cottas = { path = "lib/rdf-writer-cottas" }
 rdf-writer-hdt = { path = "lib/rdf-writer-hdt" }
+rdf-writer-jelly = { path = "lib/rdf-writer-jelly" }
 rdf-writer-jsonld = { path = "lib/rdf-writer-jsonld" }
 rdf-writer-nquads = { path = "lib/rdf-writer-nquads" }
 rdf-writer-ntriples = { path = "lib/rdf-writer-ntriples" }

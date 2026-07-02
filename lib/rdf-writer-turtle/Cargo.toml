@@ -6,13 +6,21 @@ edition.workspace = true
 rust-version.workspace = true
 description = "A Turtle file writer for RDF.rs knowledge graphs."
 #documentation.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 license.workspace = true
 keywords.workspace = true
 categories.workspace = true
 publish.workspace = true
+
+[package.metadata.lvr]
+label = "Turtle"
+summary = "A Turtle file writer for [RDF.rs] knowledge graphs."
+features = []
+
+[package.metadata.lvr.examples]
+import = "rdf_writer_turtle::TurtleWriter"
 
 [features]
 default = ["all", "std"]

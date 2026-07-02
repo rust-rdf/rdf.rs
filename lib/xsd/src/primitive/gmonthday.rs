@@ -2,5 +2,7 @@
 
 use super::{GDay, GMonth};
 
-/// Rust type for representing values of the `xsd:gMonthDay` datatype.
+/// A value of the `xsd:gMonthDay` datatype.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
 pub type GMonthDay = (GMonth, GDay);

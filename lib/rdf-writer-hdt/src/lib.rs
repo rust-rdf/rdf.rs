@@ -35,3 +35,7 @@ pub use error::*;
 
 mod writer;
 pub use writer::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

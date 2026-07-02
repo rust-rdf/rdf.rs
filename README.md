@@ -97,6 +97,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | :------ | :---- | :--- |
 | [rdf-reader-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-cottas)](https://crates.io/crates/rdf-reader-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-cottas?label=docs.rs)](https://docs.rs/rdf-reader-cottas) |
 | [rdf-reader-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-hdt)](https://crates.io/crates/rdf-reader-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-hdt?label=docs.rs)](https://docs.rs/rdf-reader-hdt) |
+| [rdf-reader-jelly](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jelly#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jelly)](https://crates.io/crates/rdf-reader-jelly) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jelly?label=docs.rs)](https://docs.rs/rdf-reader-jelly) |
 | [rdf-reader-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-jsonld)](https://crates.io/crates/rdf-reader-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-jsonld?label=docs.rs)](https://docs.rs/rdf-reader-jsonld) |
 | [rdf-reader-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-nquads)](https://crates.io/crates/rdf-reader-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-nquads?label=docs.rs)](https://docs.rs/rdf-reader-nquads) |
 | [rdf-reader-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-reader-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-reader-ntriples)](https://crates.io/crates/rdf-reader-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-reader-ntriples?label=docs.rs)](https://docs.rs/rdf-reader-ntriples) |
@@ -110,6 +111,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | :------ | :---- | :--- |
 | [rdf-writer-cottas](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-cottas#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-cottas)](https://crates.io/crates/rdf-writer-cottas) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-cottas?label=docs.rs)](https://docs.rs/rdf-writer-cottas) |
 | [rdf-writer-hdt](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-hdt#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-hdt)](https://crates.io/crates/rdf-writer-hdt) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-hdt?label=docs.rs)](https://docs.rs/rdf-writer-hdt) |
+| [rdf-writer-jelly](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jelly#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jelly)](https://crates.io/crates/rdf-writer-jelly) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jelly?label=docs.rs)](https://docs.rs/rdf-writer-jelly) |
 | [rdf-writer-jsonld](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-jsonld#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-jsonld)](https://crates.io/crates/rdf-writer-jsonld) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-jsonld?label=docs.rs)](https://docs.rs/rdf-writer-jsonld) |
 | [rdf-writer-nquads](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-nquads#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-nquads)](https://crates.io/crates/rdf-writer-nquads) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-nquads?label=docs.rs)](https://docs.rs/rdf-writer-nquads) |
 | [rdf-writer-ntriples](https://github.com/rust-rdf/rdf.rs/tree/master/lib/rdf-writer-ntriples#readme) | [![Package](https://img.shields.io/crates/v/rdf-writer-ntriples)](https://crates.io/crates/rdf-writer-ntriples) | [![Documentation](https://img.shields.io/docsrs/rdf-writer-ntriples?label=docs.rs)](https://docs.rs/rdf-writer-ntriples) |
@@ -143,7 +145,7 @@ use rdf::{format, hash, id, model, query, reader, store, stream, vocab, writer};
 | `bson`       | 3.1     | Implements `From<T> for bson::Bson`
 | `datafusion` | 50.0    | Planned interop with Apache DataFusion and `rdf-fusion`
 | `oxrdf`      | 0.3     | Implements `From<T> for oxrdf::T`, `From<oxrdf::T> for T`
-| `rudof`      | 0.1     | Planned interop with `rudof`
+| `rudof`      | 0.3     | Planned interop with `rudof_rdf`
 | `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
 | `sophia`     | 0.10    | Implements `From<T> for sophia::T`, `From<sophia::T> for T`
 
@@ -155,11 +157,11 @@ git clone https://github.com/rust-rdf/rdf.rs.git
 
 ---
 
-[![Share on X](https://img.shields.io/badge/share%20on-x-03A9F4?logo=x)](https://x.com/intent/post?url=https://github.com/rust-rdf/rdf.rs&text=RDF.rs)
-[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/rust-rdf/rdf.rs&title=RDF.rs)
-[![Share on Hacker News](https://img.shields.io/badge/share%20on-hn-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/rust-rdf/rdf.rs&t=RDF.rs)
-[![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/rust-rdf/rdf.rs)
-[![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/rust-rdf/rdf.rs)
+[![Share on X](https://img.shields.io/badge/share%20on-x-03A9F4?logo=x)](https://x.com/intent/post?url=https%3A%2F%2Fgithub.com%2Frust-rdf%2Frdf.rs&text=RDF.rs)
+[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https%3A%2F%2Fgithub.com%2Frust-rdf%2Frdf.rs&title=RDF.rs)
+[![Share on Hacker News](https://img.shields.io/badge/share%20on-hn-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fgithub.com%2Frust-rdf%2Frdf.rs&t=RDF.rs)
+[![Share on Facebook](https://img.shields.io/badge/share%20on-fb-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgithub.com%2Frust-rdf%2Frdf.rs)
+[![Share on LinkedIn](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fgithub.com%2Frust-rdf%2Frdf.rs)
 
 [feature flags]: https://github.com/rust-rdf/rdf.rs/blob/master/lib/rdf_rs/Cargo.toml
 [naming conventions]: https://rust-lang.github.io/api-guidelines/naming.html

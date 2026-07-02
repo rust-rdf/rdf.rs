@@ -36,3 +36,7 @@ pub mod interop {
     #[cfg(feature = "sophia")]
     pub use sophia::*;
 }
+
+#[doc = include_str!("../../../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

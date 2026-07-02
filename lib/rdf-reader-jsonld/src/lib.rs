@@ -49,3 +49,7 @@ mod oxrdf {
 }
 #[cfg(feature = "oxrdf")]
 pub use oxrdf::*;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

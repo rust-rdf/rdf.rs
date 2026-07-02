@@ -8,3 +8,7 @@
 
 #![no_std]
 #![deny(unsafe_code)]
+
+#[doc = include_str!("../../../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;

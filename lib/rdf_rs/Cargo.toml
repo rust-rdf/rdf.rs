@@ -65,9 +65,9 @@ borsh = [
 bson = [
     "rdf-model/bson",
 ]
-datafusion = [
-    "rdf-model/datafusion",
-]
+#datafusion = [
+#    "rdf-model/datafusion",
+#]
 json-ld = [
     "rdf-model/json-ld",
 ]

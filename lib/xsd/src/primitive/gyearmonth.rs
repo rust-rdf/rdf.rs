@@ -2,5 +2,7 @@
 
 use super::{GMonth, GYear};
 
-/// Rust type for representing values of the `xsd:gYearMonth` datatype.
+/// A value of the `xsd:gYearMonth` datatype.
+///
+/// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
 pub type GYearMonth = (GYear, GMonth);

@@ -12,3 +12,7 @@
 pub mod rdf;
 pub mod rdfs;
 pub mod xsd;
+
+#[doc = include_str!("../../../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;
