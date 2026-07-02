@@ -41,7 +41,7 @@ sophia = []
 decorum.workspace = true
 dogma.workspace = true
 heapless.workspace = true
-phf = { version = "0.13", default-features = false, features = ["macros"] }
+phf = { version = "0.14", default-features = false, features = ["macros"] }
 strum = "0.28"
 strum_macros = "0.28"
 valuand = { workspace = true, features = ["number"] }
