@@ -53,9 +53,6 @@ pub mod primitive {
     mod gyearmonth;
     pub use gyearmonth::*;
 
-    mod integer;
-    pub use integer::*;
-
     mod string;
     pub use string::*;
 
@@ -65,7 +62,8 @@ pub mod primitive {
 
 /// Rust types for representing values of XSD derived datatypes.
 pub mod derived {
-    // TODO
+    mod integer;
+    pub use integer::*;
 }
 
 mod decimal_type;

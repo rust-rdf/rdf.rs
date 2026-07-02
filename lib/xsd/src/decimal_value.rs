@@ -2,7 +2,8 @@
 
 use crate::{
     DecimalType,
-    primitive::{Byte, Decimal, Int, Integer, Long, Short},
+    derived::{Byte, Int, Integer, Long, Short},
+    primitive::Decimal,
 };
 use strum_macros::Display;
 
