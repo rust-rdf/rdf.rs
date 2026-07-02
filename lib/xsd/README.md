@@ -124,6 +124,20 @@ match value.as_decimal() {
 
 [docs.rs/xsd](https://docs.rs/xsd)
 
+### Feature Flags
+
+#### Interoperability
+
+| Feature      | Version | Summary |
+| :----------- | :------ | :------ |
+| `borsh`      | 1.6     | Derives `borsh::{BorshSerialize, BorshDeserialize}`
+| `bson`       | 3.1     | Implements `From<T> for bson::Bson`
+| `jiff`       | 0.2     | Implements `From<T> for jiff::T`, `From<jiff::T> for T`
+| `oxrdf`      | 0.3     | Implements `From<T> for oxrdf::T`, `From<oxrdf::T> for T`
+| `rudof`      | 0.1     | Planned interop with `rudof`
+| `serde`      | 1.0     | Derives `serde::{Serialize, Deserialize}`
+| `sophia`     | 0.10    | Implements `From<T> for sophia::T`, `From<sophia::T> for T`
+
 ## 👨‍💻 Development
 
 ```bash
