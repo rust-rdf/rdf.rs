@@ -2,12 +2,19 @@
 
 use alloc::{borrow::Cow, string::ToString};
 use rdf_hash::TermHash;
-use rdf_model::{HeapTerm, Term, TermKind};
+use rdf_model::{DEFAULT_GRAPH_URN, DefaultGraph, HeapTerm, Term, TermKind};
 use serde_json::Value;
 
 /// A term that can be stored in Valkey.
+/// The default-graph marker is distinguished internally from its external URN.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub struct ValkeyTerm(pub(crate) Value);
+pub struct ValkeyTerm(pub(crate) Value, pub(crate) bool);
+
+impl From<DefaultGraph> for ValkeyTerm {
+    fn from(_: DefaultGraph) -> Self {
+        Self(Value::String(DEFAULT_GRAPH_URN.into()), true)
+    }
+}
 
 impl<T> From<&T> for ValkeyTerm
 where
@@ -20,7 +27,8 @@ where
 
 impl From<HeapTerm> for ValkeyTerm {
     fn from(input: HeapTerm) -> Self {
-        ValkeyTerm(input.into_json())
+        let default_graph = input.is_default_graph();
+        ValkeyTerm(input.into_json(), default_graph)
     }
 }
 
@@ -28,7 +36,11 @@ impl TryFrom<ValkeyTerm> for HeapTerm {
     type Error = ();
 
     fn try_from(input: ValkeyTerm) -> Result<Self, Self::Error> {
-        HeapTerm::try_from(input.0)
+        if input.is_default_graph() {
+            Ok(HeapTerm::DefaultGraph)
+        } else {
+            HeapTerm::try_from(input.0)
+        }
     }
 }
 
@@ -36,7 +48,11 @@ impl TryFrom<&ValkeyTerm> for HeapTerm {
     type Error = ();
 
     fn try_from(input: &ValkeyTerm) -> Result<Self, Self::Error> {
-        HeapTerm::try_from(&input.0)
+        if input.is_default_graph() {
+            Ok(HeapTerm::DefaultGraph)
+        } else {
+            HeapTerm::try_from(&input.0)
+        }
     }
 }
 
@@ -44,12 +60,15 @@ impl TryFrom<&ValkeyTerm> for TermHash {
     type Error = ();
 
     fn try_from(input: &ValkeyTerm) -> Result<Self, Self::Error> {
-        HeapTerm::try_from(&input.0).map(TermHash::from)
+        HeapTerm::try_from(input).map(TermHash::from)
     }
 }
 
 impl Term for ValkeyTerm {
     fn kind(&self) -> TermKind {
+        if self.1 {
+            return TermKind::DefaultGraph;
+        }
         match self.0 {
             Value::Null => TermKind::Literal,
             Value::Bool(_) => TermKind::Literal,

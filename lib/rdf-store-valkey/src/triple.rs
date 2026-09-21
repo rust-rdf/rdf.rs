@@ -3,7 +3,7 @@
 use crate::{
     ValkeyError, ValkeyQuad, ValkeyTerm, ValkeyTripleId, ValkeyTripleKey, ValkeyTriplePattern,
 };
-use rdf_model::{HeapTriple, Quad, Statement, TripleSlot};
+use rdf_model::{HeapTriple, Quad, QuadPattern, Statement, TripleSlot};
 use serde_json::Value;
 
 /// A triple statement (S, P, O) in Valkey.
@@ -12,7 +12,7 @@ pub struct ValkeyTriple(pub(crate) ValkeyTripleId, pub(crate) Quad<ValkeyTerm>);
 
 impl ValkeyTriple {
     pub fn with_context(self, g: impl Into<Option<ValkeyTerm>>) -> ValkeyQuad {
-        ValkeyQuad(self, g.into())
+        ValkeyQuad(self, None).with_context(g)
     }
 
     pub fn id(&self) -> &ValkeyTripleId {
@@ -42,6 +42,10 @@ impl Statement for ValkeyTriple {
     fn context(&self) -> Option<&Self::Term> {
         None
     }
+
+    fn to_quad_pattern(&self) -> QuadPattern<Self::Term> {
+        self.to_triple_pattern().to_quad_pattern()
+    }
 }
 
 impl<T> From<&T> for ValkeyTriple
@@ -63,15 +67,7 @@ impl From<HeapTriple> for ValkeyTriple {
     fn from(input: HeapTriple) -> Self {
         let (s, p, o) = input.into_inner();
         let id = ValkeyTripleId::from(((&s).into(), (&p).into(), (&o).into()));
-        Self(
-            id,
-            Quad::new(
-                ValkeyTerm(s.into_json()),
-                ValkeyTerm(p.into_json()),
-                ValkeyTerm(o.into_json()),
-                None,
-            ),
-        )
+        Self(id, Quad::new(s.into(), p.into(), o.into(), None))
     }
 }
 
@@ -92,14 +88,15 @@ impl From<&ValkeyTriple> for Value {
     }
 }
 
+/// Projects a subject/predicate/object-bound pattern to a graphless triple.
 impl TryFrom<ValkeyTriplePattern> for ValkeyTriple {
     type Error = ValkeyError;
 
     fn try_from(input: ValkeyTriplePattern) -> Result<Self, Self::Error> {
-        let (Some(s), Some(p), Some(o), g) = input.matcher.into_inner() else {
-            return Err(ValkeyError::Other);
+        let (Some(s), Some(p), Some(o), _) = input.matcher.into_inner() else {
+            return Err(ValkeyError::UnboundPattern);
         };
-        Ok(Self(input.glob.into(), Quad::new(s, p, o, g)))
+        Ok(Self(input.glob, Quad::new(s, p, o, None)))
     }
 }
 
@@ -109,15 +106,24 @@ impl TryFrom<(ValkeyTripleId, Value)> for ValkeyTriple {
     fn try_from((id, input): (ValkeyTripleId, Value)) -> Result<Self, Self::Error> {
         match input {
             Value::Object(mut input) => {
-                let s = ValkeyTerm(input.remove("s").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Subject)
-                })?);
-                let p = ValkeyTerm(input.remove("p").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Predicate)
-                })?);
-                let o = ValkeyTerm(input.remove("o").ok_or_else(|| {
-                    ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Object)
-                })?);
+                let s = ValkeyTerm(
+                    input.remove("s").ok_or_else(|| {
+                        ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Subject)
+                    })?,
+                    false,
+                );
+                let p = ValkeyTerm(
+                    input.remove("p").ok_or_else(|| {
+                        ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Predicate)
+                    })?,
+                    false,
+                );
+                let o = ValkeyTerm(
+                    input.remove("o").ok_or_else(|| {
+                        ValkeyError::InvalidTripleTerm(id.clone(), TripleSlot::Object)
+                    })?,
+                    false,
+                );
                 Ok(Self(id, Quad::new(s, p, o, None)))
             },
             _ => Err(ValkeyError::InvalidTriple(id)),

@@ -2,7 +2,7 @@
 
 use crate::TermKind;
 
-/// An RDF term.
+/// An RDF term or the distinguished default-graph marker used in graph slots.
 ///
 /// See: <https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-term>
 pub trait Term {
@@ -26,6 +26,12 @@ pub trait Term {
 
     fn is_literal(&self) -> bool {
         self.kind() == TermKind::Literal
+    }
+
+    /// Whether this term is the distinguished default-graph marker.
+    /// An ordinary IRI equal to the marker's external URN returns `false`.
+    fn is_default_graph(&self) -> bool {
+        self.kind() == TermKind::DefaultGraph
     }
 
     #[cfg(feature = "alloc")]

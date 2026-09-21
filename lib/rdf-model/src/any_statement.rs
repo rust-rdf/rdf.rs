@@ -13,36 +13,32 @@ pub struct AnyStatement;
 
 impl StatementPattern for AnyStatement {
     type Term = AnyTerm;
+}
 
-    #[cfg(feature = "alloc")]
-    fn matches(&self, _: impl Term, _: impl Term, _: impl Term, _: Option<impl Term>) -> bool {
+impl AnyStatement {
+    /// Matches any terms in any graph, without requiring cross-type equality.
+    pub fn matches(&self, _: impl Term, _: impl Term, _: impl Term, _: Option<impl Term>) -> bool {
         true
     }
+
+    /// Matches any statement without inspecting or cloning its terms.
+    pub fn matches_statement(&self, _: &(impl Statement + ?Sized)) -> bool {
+        true
+    }
+
+    /// Produces an unconstrained pattern without constructing a graph marker.
+    pub fn to_quad_pattern(&self) -> QuadPattern<AnyTerm> {
+        QuadPattern::empty()
+    }
 }
 
-#[cfg(feature = "alloc")]
-impl From<AnyStatement> for crate::CowTriplePattern<'_> {
+impl<T: Term> From<AnyStatement> for crate::TriplePattern<T> {
     fn from(_: AnyStatement) -> Self {
         Self::empty()
     }
 }
 
-#[cfg(feature = "alloc")]
-impl From<AnyStatement> for crate::CowQuadPattern<'_> {
-    fn from(_: AnyStatement) -> Self {
-        Self::empty()
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl From<AnyStatement> for crate::HeapTriplePattern {
-    fn from(_: AnyStatement) -> Self {
-        Self::empty()
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl From<AnyStatement> for crate::HeapQuadPattern {
+impl<T: Term> From<AnyStatement> for QuadPattern<T> {
     fn from(_: AnyStatement) -> Self {
         Self::empty()
     }

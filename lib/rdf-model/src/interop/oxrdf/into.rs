@@ -2,20 +2,22 @@
 
 use std::string::ToString;
 
-use crate::{CowTerm, HeapTerm, Term, interop::OxrdfTerm};
+use crate::{CowTerm, DEFAULT_GRAPH_URN, HeapTerm, Term, interop::OxrdfTerm};
 
 /// Provides `Into<oxrdf::Term>` for `OxrdfTerm`.
 impl From<OxrdfTerm> for oxrdf::Term {
     fn from(input: OxrdfTerm) -> Self {
-        input.0
+        input.into_inner()
     }
 }
 
 /// Provides `Into<oxrdf::Term>` for `HeapTerm`.
+/// The default-graph singleton maps to the reserved URN at this term-only boundary.
 impl From<HeapTerm> for oxrdf::Term {
     fn from(input: HeapTerm) -> Self {
         use oxrdf::{BaseDirection, BlankNode, Literal, NamedNode, Term};
         match input {
+            HeapTerm::DefaultGraph => Term::NamedNode(NamedNode::new_unchecked(DEFAULT_GRAPH_URN)),
             HeapTerm::Iri(iri) => Term::NamedNode(NamedNode::new_unchecked(iri)),
             HeapTerm::BNode(id) => Term::BlankNode(BlankNode::new_unchecked(id)),
             HeapTerm::String(val) => Term::Literal(Literal::new_simple_literal(val)),
@@ -42,10 +44,12 @@ impl From<HeapTerm> for oxrdf::Term {
 }
 
 /// Provides `Into<oxrdf::Term>` for `CowTerm`.
+/// The default-graph singleton maps to the reserved URN at this term-only boundary.
 impl From<CowTerm<'_>> for oxrdf::Term {
     fn from(input: CowTerm<'_>) -> Self {
         use oxrdf::{BaseDirection, BlankNode, Literal, NamedNode, Term};
         match input {
+            CowTerm::DefaultGraph => Term::NamedNode(NamedNode::new_unchecked(DEFAULT_GRAPH_URN)),
             CowTerm::Iri(iri) => Term::NamedNode(NamedNode::new_unchecked(iri)),
             CowTerm::BNode(id) => Term::BlankNode(BlankNode::new_unchecked(id)),
             CowTerm::String(val) => Term::Literal(Literal::new_simple_literal(val)),

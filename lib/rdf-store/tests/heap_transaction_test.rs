@@ -461,3 +461,44 @@ async fn racing_commit_and_rollback_have_exactly_one_winner() {
         results => panic!("expected exactly one finalization winner: {results:?}"),
     }
 }
+
+#[tokio::test]
+async fn default_graph_selectors_do_not_match_named_graphs_or_the_reserved_iri() {
+    use rdf_model::{DEFAULT_GRAPH, DEFAULT_GRAPH_URN};
+    let default = quad("shared");
+    let named = default
+        .clone()
+        .with_context(HeapTerm::iri(DEFAULT_GRAPH_URN));
+    let blank = default.clone().with_context(HeapTerm::bnode("graph"));
+    let mut store = store_with(&[default.clone(), named.clone(), blank.clone()]).await;
+    let mut tx = store.write().await.unwrap();
+    // Exercise the const constructor's explicit marker alias, not the normalizing builder.
+    tx.insert(HeapQuad::new(
+        default.subject().clone(),
+        default.predicate().clone(),
+        default.object().clone(),
+        Some(DEFAULT_GRAPH.into()),
+    ))
+    .await
+    .unwrap();
+    assert_view(&tx, &[default.clone(), named.clone(), blank.clone()]).await;
+    let exact_default = default.to_quad_pattern();
+    assert_eq!(tx.count(exact_default.clone()).await.unwrap(), 1);
+    assert!(tx.contains(exact_default.clone()).await.unwrap());
+    assert_eq!(
+        tx.r#match(exact_default.clone())
+            .try_collect::<Vec<_>>()
+            .await
+            .unwrap(),
+        vec![default]
+    );
+    tx.delete(exact_default).await.unwrap();
+    assert!(
+        !tx.contains(HeapQuadPattern::with_default_context())
+            .await
+            .unwrap()
+    );
+    assert_view(&tx, &[named.clone(), blank.clone()]).await;
+    tx.commit().await.unwrap();
+    assert_view(&store.read().await.unwrap(), &[named, blank]).await;
+}

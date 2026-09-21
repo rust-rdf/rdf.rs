@@ -2,7 +2,7 @@
 
 #[cfg(feature = "alloc")]
 use crate::{CowTerm, HeapTerm};
-use crate::{Quad, QuadPattern, Statement, StatementPattern, Term, TriplePattern};
+use crate::{DefaultGraph, Quad, QuadPattern, Statement, StatementPattern, Term, TriplePattern};
 
 pub type TripleSlot = crate::StatementSlot;
 
@@ -100,6 +100,13 @@ impl<T: Term + Clone> Statement for Triple<T> {
     fn object(&self) -> &Self::Term {
         &self.o
     }
+
+    fn to_quad_pattern(&self) -> QuadPattern<T>
+    where
+        T: From<DefaultGraph>,
+    {
+        self.to_quad_pattern()
+    }
 }
 
 impl<T: Term + Clone> StatementPattern for Triple<T> {
@@ -131,6 +138,8 @@ impl<T: Term + Clone> Triple<T> {
         Quad::new(self.s.clone(), self.p.clone(), self.o.clone(), None)
     }
 
+    /// Binds the three terms while leaving the graph unconstrained. Convert to
+    /// a concrete quad first to request an exact default-graph pattern instead.
     pub fn to_quad_pattern(&self) -> QuadPattern<T> {
         QuadPattern::new(
             Some(self.s.clone()),

@@ -8,7 +8,7 @@ use alloc::{
 
 impl From<oxrdf::Term> for OxrdfTerm {
     fn from(input: oxrdf::Term) -> Self {
-        Self(input)
+        Self(Some(input))
     }
 }
 

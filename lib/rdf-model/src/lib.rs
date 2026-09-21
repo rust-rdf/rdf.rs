@@ -9,7 +9,9 @@
 //! `CowTerm`, datatypes, and boxed iterator/source abstractions. `serde` and
 //! `borsh` imply `alloc`; ecosystem integrations (`oxrdf`, `bson`, `json-ld`,
 //! `rudof`, `sophia`) imply `std`. `datetime` and `decimal` forward XSD features.
-//! The lexical `StatementPattern::matches` helper is available with `alloc`.
+//! Pattern matching uses borrowed, explicitly comparable terms and works without
+//! `alloc`. In graph patterns, `None` is a wildcard and `DEFAULT_GRAPH` selects
+//! the default graph.
 //!
 //! # Examples
 //!
@@ -46,6 +48,9 @@ pub use any_term::*;
 
 mod base_direction;
 pub use base_direction::*;
+
+mod default_graph;
+pub use default_graph::*;
 
 #[cfg(feature = "alloc")]
 mod dataset;

@@ -2,7 +2,7 @@
 
 #[cfg(feature = "alloc")]
 use crate::HeapTerm;
-use crate::{Quad, QuadPattern, Term, Triple, TriplePattern};
+use crate::{DEFAULT_GRAPH, DefaultGraph, Quad, QuadPattern, Term, Triple, TriplePattern};
 
 /// An RDF statement.
 ///
@@ -13,6 +13,8 @@ pub trait Statement {
     // TODO: associated type defaults (https://github.com/rust-lang/rust/issues/29661)
     //type Term: Term = &dyn Term;
 
+    /// Whether the statement exposes a named graph rather than the default or
+    /// an absent graph. Pattern graph constraints use `StatementPattern` instead.
     fn has_context(&self) -> bool {
         self.context().is_some()
     }
@@ -52,12 +54,21 @@ pub trait Statement {
         )
     }
 
-    fn to_quad_pattern(&self) -> QuadPattern<Self::Term> {
+    /// Produces an exact graph constraint, using the singleton for a default
+    /// context. Graphless triples override this to preserve their wildcard graph.
+    fn to_quad_pattern(&self) -> QuadPattern<Self::Term>
+    where
+        Self::Term: From<DefaultGraph>,
+    {
         QuadPattern::new(
             Some(self.subject().clone()),
             Some(self.predicate().clone()),
             Some(self.object().clone()),
-            self.context().cloned(),
+            Some(
+                self.context()
+                    .cloned()
+                    .unwrap_or_else(|| DEFAULT_GRAPH.into()),
+            ),
         )
     }
 }

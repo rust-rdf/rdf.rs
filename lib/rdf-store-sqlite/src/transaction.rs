@@ -38,10 +38,9 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
     ) -> Result<(), Self::Error> {
         use HeapTerm::*;
         let statement = statement.into();
-        let _g = match statement.context() {
-            Some(g) => Some(self.intern_node(g).await?), // TODO
-            None => None,
-        };
+        if statement.context().is_some() {
+            return Err(SqliteError::UnsupportedNamedGraph);
+        }
         let s = self.intern_node(statement.subject()).await?;
         let p = self.intern_node(statement.predicate()).await?;
         match statement.object() {
@@ -69,6 +68,7 @@ impl<'conn> WriteTransaction for SqliteTransaction<'conn> {
                 self.insert_triple_str(s, p, Some(o_dt), None, o_val)
                     .await?;
             },
+            DefaultGraph => return Err(SqliteError::InvalidDefaultGraphTerm),
         }
         Ok(()) // TODO
     }
@@ -172,6 +172,7 @@ impl<'conn> SqliteTransaction<'conn> {
         Ok(match term {
             HeapTerm::Iri(val) => self.intern_iri(val).await?,
             HeapTerm::BNode(val) => self.intern_bnode(val).await?,
+            HeapTerm::DefaultGraph => return Err(SqliteError::InvalidDefaultGraphTerm),
             HeapTerm::String(_)
             | HeapTerm::TaggedString(_, _, _)
             | HeapTerm::TypedValue(_)
@@ -213,7 +214,7 @@ impl<'conn> SqliteTransaction<'conn> {
 
     fn match_triples(
         &self,
-        pattern: impl StatementPattern,
+        pattern: impl StatementPattern<Term = HeapTerm>,
     ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
         stream! {
             let mut rows = self.tx.query(r#"
@@ -229,7 +230,7 @@ impl<'conn> SqliteTransaction<'conn> {
                 let p = HeapTerm::iri(row.get::<String>(1)?);
                 let o = HeapTerm::iri(row.get::<String>(2)?);
                 let g: Option<HeapTerm> = None;
-                if pattern.matches(&s, &p, &o, g) {
+                if pattern.matches(&s, &p, &o, g.as_ref()) {
                     yield Ok(HeapQuad::new(s, p, o, None));
                 }
             }
@@ -238,7 +239,7 @@ impl<'conn> SqliteTransaction<'conn> {
 
     fn match_triples_str(
         &self,
-        pattern: impl StatementPattern,
+        pattern: impl StatementPattern<Term = HeapTerm>,
     ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
         stream! {
             let mut rows = self.tx.query(r#"
@@ -257,7 +258,7 @@ impl<'conn> SqliteTransaction<'conn> {
                 let o_val = row.get::<String>(4)?;
                 let o = HeapTerm::from((o_val, o_dt, o_lang));
                 let g: Option<HeapTerm> = None;
-                if pattern.matches(&s, &p, &o, g) {
+                if pattern.matches(&s, &p, &o, g.as_ref()) {
                     yield Ok(HeapQuad::new(s, p, o, None));
                 }
             }
@@ -266,7 +267,7 @@ impl<'conn> SqliteTransaction<'conn> {
 
     fn match_triples_num(
         &self,
-        pattern: impl StatementPattern,
+        pattern: impl StatementPattern<Term = HeapTerm>,
     ) -> impl Stream<Item = Result<HeapQuad, SqliteError>> {
         stream! {
             let mut rows = self.tx.query(r#"
@@ -284,7 +285,7 @@ impl<'conn> SqliteTransaction<'conn> {
                 let o_val = row.get::<String>(3)?;
                 let o = HeapTerm::from((o_val, o_dt, None));
                 let g: Option<HeapTerm> = None;
-                if pattern.matches(&s, &p, &o, g) {
+                if pattern.matches(&s, &p, &o, g.as_ref()) {
                     yield Ok(HeapQuad::new(s, p, o, None));
                 }
             }

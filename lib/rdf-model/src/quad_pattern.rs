@@ -2,7 +2,7 @@
 
 #[cfg(feature = "alloc")]
 use crate::{CowTerm, HeapTerm};
-use crate::{StatementPattern, Term, TriplePattern};
+use crate::{DEFAULT_GRAPH, DefaultGraph, StatementPattern, Term, TriplePattern};
 
 #[cfg(feature = "alloc")]
 pub static EMPTY_COW_QUAD_PATTERN: QuadPattern<CowTerm> = QuadPattern::EMPTY;
@@ -10,6 +10,10 @@ pub static EMPTY_COW_QUAD_PATTERN: QuadPattern<CowTerm> = QuadPattern::EMPTY;
 pub static EMPTY_HEAP_QUAD_PATTERN: QuadPattern<HeapTerm> = QuadPattern::EMPTY;
 
 /// A quad statement pattern.
+///
+/// `None` in any slot is a wildcard. In the graph slot, `Some(DEFAULT_GRAPH.into())`
+/// selects the default graph and another term selects its named graph. Existing
+/// `Option<T>` constructors and tuple conversions preserve these distinctions.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct QuadPattern<T: Term> {
@@ -32,6 +36,7 @@ impl<T: Term> QuadPattern<T> {
         Self::new(None, None, None, None)
     }
 
+    /// Creates a pattern; `g: None` matches every graph, not just the default.
     pub const fn new(s: Option<T>, p: Option<T>, o: Option<T>, g: Option<T>) -> Self {
         Self { s, p, o, g }
     }
@@ -48,6 +53,8 @@ impl<T: Term> QuadPattern<T> {
         Self::new(None, None, Some(o), None)
     }
 
+    /// Matches every statement in the graph denoted by `g`. The singleton
+    /// selects the default graph; ordinary IRIs and blank nodes select names.
     pub const fn with_context(g: T) -> Self {
         Self::new(None, None, None, Some(g))
     }
@@ -56,6 +63,7 @@ impl<T: Term> QuadPattern<T> {
         self.s.is_none() && self.p.is_none() && self.o.is_none() && self.g.is_none()
     }
 
+    /// Whether every slot is bound, including a named or default graph.
     pub fn is_constant(&self) -> bool {
         self.s.is_some() && self.p.is_some() && self.o.is_some() && self.g.is_some()
     }
@@ -64,12 +72,26 @@ impl<T: Term> QuadPattern<T> {
         !self.is_constant()
     }
 
+    /// Extracts all slots without losing graph constraints. A default-graph
+    /// selector is returned as `Some(marker)`; only a wildcard returns `None`.
     pub fn into_inner(self) -> (Option<T>, Option<T>, Option<T>, Option<T>) {
         (self.s, self.p, self.o, self.g)
     }
 }
 
+impl<T: Term + From<DefaultGraph>> QuadPattern<T> {
+    /// Matches every statement in the default graph only.
+    pub fn with_default_context() -> Self {
+        Self::with_context(DEFAULT_GRAPH.into())
+    }
+}
+
 impl<T: Term + Clone> QuadPattern<T> {
+    /// Copies this pattern without requiring construction of new term values.
+    pub fn to_quad_pattern(&self) -> Self {
+        self.clone()
+    }
+
     pub fn to_triple_pattern(&self) -> TriplePattern<T> {
         TriplePattern::new(self.s.clone(), self.p.clone(), self.o.clone())
     }

@@ -1,8 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
 use alloc::{borrow::Cow, string::String};
-use rdf_model::{HeapTerm, Term, TermKind};
+use rdf_model::{DefaultGraph, HeapTerm, Term, TermKind};
 
+/// A dictionary term in the RDF/Borsh format.
+///
+/// The default graph uses context ID zero in quad records. Serializing its
+/// singleton as a dictionary term returns `InvalidInput` rather than changing
+/// the existing wire format or conflating it with an ordinary IRI.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BorshTerm(pub(crate) HeapTerm);
 
@@ -34,6 +39,12 @@ impl From<HeapTerm> for BorshTerm {
     }
 }
 
+impl From<DefaultGraph> for BorshTerm {
+    fn from(_: DefaultGraph) -> Self {
+        Self(HeapTerm::DefaultGraph)
+    }
+}
+
 impl From<&dyn Term> for BorshTerm {
     fn from(term: &dyn Term) -> Self {
         Self(HeapTerm::from(term))
@@ -43,32 +54,36 @@ impl From<&dyn Term> for BorshTerm {
 impl borsh::BorshSerialize for BorshTerm {
     fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> borsh::io::Result<()> {
         match &self.0 {
+            HeapTerm::DefaultGraph => Err(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidInput,
+                "the default graph must use context ID zero, not a dictionary term",
+            )),
             HeapTerm::Iri(value) => {
                 0x01u8.serialize(writer)?;
                 value.serialize(writer)
-            }
+            },
             HeapTerm::BNode(value) => {
                 0x02u8.serialize(writer)?;
                 value.serialize(writer)
-            }
+            },
             HeapTerm::String(value) => {
                 0x03u8.serialize(writer)?;
                 value.serialize(writer)
-            }
+            },
             HeapTerm::TypedValue(_value) => {
                 0x04u8.serialize(writer)?;
                 todo!() // FIXME
-            }
+            },
             HeapTerm::TypedLiteral(value, datatype) => {
                 0x04u8.serialize(writer)?;
                 value.serialize(writer)?;
                 datatype.serialize(writer)
-            }
+            },
             HeapTerm::TaggedString(value, language, _) => {
                 0x05u8.serialize(writer)?;
                 value.serialize(writer)?;
                 language.serialize(writer)
-            }
+            },
         }
     }
 }
@@ -79,25 +94,25 @@ impl borsh::BorshDeserialize for BorshTerm {
             0x01 => {
                 let value = String::deserialize_reader(reader)?;
                 HeapTerm::Iri(value)
-            }
+            },
             0x02 => {
                 let value = String::deserialize_reader(reader)?;
                 HeapTerm::BNode(value)
-            }
+            },
             0x03 => {
                 let value = String::deserialize_reader(reader)?;
                 HeapTerm::String(value)
-            }
+            },
             0x04 => {
                 let value = String::deserialize_reader(reader)?;
                 let datatype = String::deserialize_reader(reader)?;
                 HeapTerm::TypedLiteral(value, datatype.into()) // TODO: HeapTerm::TypedValue
-            }
+            },
             0x05 => {
                 let value = String::deserialize_reader(reader)?;
                 let language = String::deserialize_reader(reader)?;
                 HeapTerm::TaggedString(value, language, None) // TODO
-            }
+            },
             _ => return Err(borsh::io::ErrorKind::InvalidData.into()),
         }))
     }

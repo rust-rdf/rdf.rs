@@ -5,6 +5,10 @@ use alloc::{boxed::Box, string::ToString};
 use rdf_store::Store;
 use turso::{Builder, Connection, Database, transaction::TransactionBehavior};
 
+/// A SQLite-backed store, currently limited to the default graph.
+/// Named-graph insertion returns [`SqliteError::UnsupportedNamedGraph`] rather
+/// than discarding the graph name. The default-graph singleton is accepted as
+/// an alias for a quad's `None` context.
 #[allow(unused)]
 #[derive(Debug)]
 pub struct SqliteStore {

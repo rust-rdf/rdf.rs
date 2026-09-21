@@ -3,15 +3,16 @@
 use crate::{
     ValkeyError, ValkeyTerm, ValkeyTriple, ValkeyTripleId, ValkeyTripleKey, ValkeyTriplePattern,
 };
-use rdf_model::Statement;
+use rdf_model::{Statement, StatementPattern, Term};
 
 /// A quad statement (S, P, O, C) in Valkey.
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct ValkeyQuad(pub(crate) ValkeyTriple, pub(crate) Option<ValkeyTerm>);
 
 impl ValkeyQuad {
+    /// Sets the graph, normalizing the singleton to the default `None` context.
     pub fn with_context(self, g: impl Into<Option<ValkeyTerm>>) -> Self {
-        Self(self.0, g.into())
+        Self(self.0, g.into().filter(|term| !term.is_default_graph()))
     }
 
     pub fn id(&self) -> &ValkeyTripleId {
@@ -39,7 +40,7 @@ impl Statement for ValkeyQuad {
     }
 
     fn context(&self) -> Option<&Self::Term> {
-        self.1.as_ref()
+        self.1.as_ref().filter(|term| !term.is_default_graph())
     }
 }
 
@@ -58,10 +59,15 @@ impl From<ValkeyTriple> for ValkeyQuad {
     }
 }
 
+/// Converts a fully bound pattern without dropping its graph constraint.
 impl TryFrom<ValkeyTriplePattern> for ValkeyQuad {
     type Error = ValkeyError;
 
     fn try_from(input: ValkeyTriplePattern) -> Result<Self, Self::Error> {
-        Ok(Self(input.try_into()?, None))
+        if !input.is_constant() {
+            return Err(ValkeyError::UnboundPattern);
+        }
+        let context = input.context().cloned();
+        Ok(Self(input.try_into()?, None).with_context(context))
     }
 }

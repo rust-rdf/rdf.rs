@@ -56,7 +56,8 @@ impl Changes {
 ///
 /// Matching compares complete [`HeapTerm`] values. Every `None` pattern slot is
 /// a wildcard, including the context slot; a quad's `None` context is the default
-/// graph. Context enumeration returns distinct graph names of visible quads and
+/// graph. `Some(DEFAULT_GRAPH.into())` in a pattern selects only that graph.
+/// Context enumeration returns distinct graph names of visible quads and
 /// excludes the default graph.
 ///
 /// # Locks and cancellation
@@ -152,19 +153,6 @@ impl HeapTransaction {
     }
 }
 
-// The generic StatementPattern::matches currently compares only lexical values
-// and unwraps a missing context. The heap view needs complete term equality.
-fn matches(quad: &HeapQuad, pattern: &HeapQuadPattern) -> bool {
-    pattern.subject().is_none_or(|term| term == quad.subject())
-        && pattern
-            .predicate()
-            .is_none_or(|term| term == quad.predicate())
-        && pattern.object().is_none_or(|term| term == quad.object())
-        && pattern
-            .context()
-            .is_none_or(|term| Some(term) == quad.context())
-}
-
 impl WriteTransaction for Arc<HeapTransaction> {
     type Error = HeapStoreError;
     type Term = HeapTerm;
@@ -238,12 +226,12 @@ impl WriteTransaction for Arc<HeapTransaction> {
         if !changes.cleared {
             let quads = self.store.quads.read().await;
             self.ensure_active()?;
-            for quad in quads.iter().filter(|quad| matches(quad, &pattern)) {
+            for quad in quads.iter().filter(|quad| pattern.matches_statement(*quad)) {
                 changes.mutations.insert(quad.clone(), false);
             }
         }
         for (quad, insert) in changes.mutations.iter_mut() {
-            if *insert && matches(quad, &pattern) {
+            if *insert && pattern.matches_statement(quad) {
                 *insert = false;
             }
         }
@@ -263,7 +251,9 @@ impl ReadTransaction for Arc<HeapTransaction> {
     ) -> Result<bool, Self::Error> {
         let pattern = pattern.into();
         let (changes, quads) = self.read_view().await?;
-        Ok(changes.visible(&quads).any(|quad| matches(quad, &pattern)))
+        Ok(changes
+            .visible(&quads)
+            .any(|quad| pattern.matches_statement(quad)))
     }
 
     async fn count(
@@ -281,7 +271,7 @@ impl ReadTransaction for Arc<HeapTransaction> {
         }
         Ok(changes
             .visible(&quads)
-            .filter(|quad| matches(quad, &pattern))
+            .filter(|quad| pattern.matches_statement(*quad))
             .count() as u64)
     }
 
@@ -310,7 +300,7 @@ impl ReadTransaction for Arc<HeapTransaction> {
             let (changes, quads) = self.read_view().await?;
             for quad in changes.visible(&quads) {
                 self.ensure_active()?;
-                if matches(quad, &pattern) {
+                if pattern.matches_statement(quad) {
                     yield quad.clone();
                     self.ensure_active()?;
                 }

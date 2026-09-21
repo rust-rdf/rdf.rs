@@ -6,6 +6,7 @@ use alloc::{
     string::{String, ToString},
 };
 use fred::types::Key;
+use rdf_model::Term;
 use serde_json::Value;
 
 /// A graph key for fetching a graph from Valkey.
@@ -31,6 +32,7 @@ impl From<&Option<ValkeyTerm>> for ValkeyGraphKey {
     fn from(input: &Option<ValkeyTerm>) -> Self {
         match input {
             None => Self::default(),
+            Some(term) if term.is_default_graph() => Self::default(),
             Some(term) => Self(term.0.as_str().unwrap().to_string()),
         }
     }

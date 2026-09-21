@@ -41,7 +41,15 @@ impl<T: Integer> BorshWriter<T> {
         self.dataset.quads_set.len()
     }
 
+    /// Interns an RDF term. Returns `InvalidInput` for the default-graph marker,
+    /// which is represented by context ID zero, or an error on dictionary overflow.
     pub fn intern_term(&mut self, term: &dyn Term) -> Result<BorshTermId<u16>> {
+        if term.is_default_graph() {
+            return Err(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidInput,
+                "the default graph must use context ID zero",
+            ));
+        }
         self.dataset
             .intern_term(term.into())
             .map_err(|_| borsh::io::Error::other("term dictionary overflow"))

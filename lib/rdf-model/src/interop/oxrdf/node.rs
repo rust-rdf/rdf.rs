@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{Term, TermKind};
+use crate::{DEFAULT_GRAPH_URN, DefaultGraph, Term, TermKind};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct OxrdfNamedNode(oxrdf::NamedNode);
@@ -26,7 +26,7 @@ impl Term for OxrdfGraphName {
         match &self.0 {
             GraphName::NamedNode(_) => TermKind::Iri,
             GraphName::BlankNode(_) => TermKind::BNode,
-            GraphName::DefaultGraph => todo!(), // TODO
+            GraphName::DefaultGraph => TermKind::DefaultGraph,
         }
     }
 
@@ -37,7 +37,13 @@ impl Term for OxrdfGraphName {
         match &self.0 {
             GraphName::NamedNode(node) => Cow::Borrowed(node.as_str()),
             GraphName::BlankNode(node) => Cow::Borrowed(node.as_str()),
-            GraphName::DefaultGraph => Cow::Borrowed(""), // TODO
+            GraphName::DefaultGraph => Cow::Borrowed(DEFAULT_GRAPH_URN),
         }
+    }
+}
+
+impl From<DefaultGraph> for OxrdfGraphName {
+    fn from(_: DefaultGraph) -> Self {
+        Self(oxrdf::GraphName::DefaultGraph)
     }
 }

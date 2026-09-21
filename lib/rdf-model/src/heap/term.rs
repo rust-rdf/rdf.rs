@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{BaseDirection, CowTerm, Datatype, Term, TermKind};
+use crate::{BaseDirection, CowTerm, DEFAULT_GRAPH_URN, Datatype, DefaultGraph, Term, TermKind};
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
@@ -37,6 +37,9 @@ pub enum HeapTerm {
     /// A typed literal term that could not be instantiated as a typed value.
     /// The term is either an ill-typed literal and/or an unsupported datatype.
     TypedLiteral(String, Datatype),
+
+    /// The default-graph singleton; distinct from `Iri(DEFAULT_GRAPH_URN)`.
+    DefaultGraph,
 }
 
 impl HeapTerm {
@@ -74,6 +77,7 @@ impl HeapTerm {
 
     pub fn kind(&self) -> TermKind {
         match self {
+            Self::DefaultGraph => TermKind::DefaultGraph,
             Self::Iri(_) => TermKind::Iri,
             Self::BNode(_) => TermKind::BNode,
             Self::String(_)
@@ -85,6 +89,7 @@ impl HeapTerm {
 
     pub fn value_str(&self) -> Cow<'_, str> {
         Cow::Borrowed(match self {
+            Self::DefaultGraph => DEFAULT_GRAPH_URN,
             Self::Iri(s) => s.as_str(),
             Self::BNode(s) => s.as_str(),
             Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s.as_str(),
@@ -103,9 +108,13 @@ impl HeapTerm {
     }
 
     #[cfg(feature = "serde")]
+    /// Exports this term in the JSON boundary representation. The default-graph
+    /// marker uses `urn:rdf:default-graph`; generic IRI imports do not implicitly
+    /// decode that convention. Serde's tagged enum encoding retains its identity.
     pub fn into_json(self) -> serde_json::Value {
         use serde_json::{Value as JsonValue, json};
         match self {
+            Self::DefaultGraph => JsonValue::String(DEFAULT_GRAPH_URN.into()),
             Self::Iri(str) => JsonValue::String(str),
             Self::BNode(id) => JsonValue::String(id),
             Self::String(val) => json!({ "@value": val }),
@@ -138,9 +147,11 @@ impl HeapTerm {
     }
 
     #[cfg(feature = "bson")]
+    /// Exports the term as BSON, using `urn:rdf:default-graph` for the marker.
     pub fn into_bson(self) -> bson::Bson {
         use bson::{Bson, Document};
         match self {
+            Self::DefaultGraph => Bson::String(DEFAULT_GRAPH_URN.into()),
             Self::Iri(str) => Bson::String(str),
             Self::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
             Self::String(val) => {
@@ -191,6 +202,18 @@ impl Term for &HeapTerm {
     }
 }
 
+impl From<DefaultGraph> for HeapTerm {
+    fn from(_: DefaultGraph) -> Self {
+        Self::DefaultGraph
+    }
+}
+
+impl From<DefaultGraph> for &HeapTerm {
+    fn from(_: DefaultGraph) -> Self {
+        &HeapTerm::DefaultGraph
+    }
+}
+
 impl<T> From<&T> for HeapTerm
 where
     T: Clone + Into<Self>,
@@ -203,6 +226,7 @@ where
 impl From<&dyn Term> for HeapTerm {
     fn from(term: &dyn Term) -> Self {
         match term.kind() {
+            TermKind::DefaultGraph => Self::DefaultGraph,
             TermKind::Iri => Self::iri(term.value_str()),
             TermKind::BNode => Self::bnode(term.value_str()),
             TermKind::Literal => Self::string(term.value_str()), // FIXME
@@ -213,6 +237,7 @@ impl From<&dyn Term> for HeapTerm {
 impl From<CowTerm<'_>> for HeapTerm {
     fn from(input: CowTerm<'_>) -> Self {
         match input {
+            CowTerm::DefaultGraph => Self::DefaultGraph,
             CowTerm::Iri(s) => Self::Iri(s.to_string()),
             CowTerm::BNode(s) => Self::BNode(s.to_string()),
             CowTerm::String(s) => Self::String(s.to_string()),

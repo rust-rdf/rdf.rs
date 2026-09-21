@@ -2,21 +2,87 @@
 
 #[cfg(feature = "alloc")]
 use crate::{CowTerm, HeapTerm};
-use crate::{QuadPattern, Statement, StatementPattern, Term, Triple, TriplePattern};
+use crate::{
+    DEFAULT_GRAPH, DefaultGraph, QuadPattern, Statement, StatementPattern, Term, Triple,
+    TriplePattern,
+};
+use core::{
+    cmp::Ordering,
+    hash::{Hash, Hasher},
+};
 
 pub type QuadSlot = crate::StatementSlot;
 
 /// A quad statement.
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+///
+/// A `None` context denotes the default graph. An explicit default-graph marker
+/// is accepted as an alias: accessors, extraction, equality, ordering, hashing,
+/// and serialization use the canonical `None` context. Pattern conversion instead
+/// uses `Some(DEFAULT_GRAPH.into())` to distinguish this graph from a wildcard.
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Quad<T: Term> {
     pub(crate) s: T,
     pub(crate) p: T,
     pub(crate) o: T,
+    #[cfg_attr(feature = "serde", serde(serialize_with = "serialize_context"))]
     pub(crate) g: Option<T>,
 }
 
+impl<T: Term + PartialEq> PartialEq for Quad<T> {
+    fn eq(&self, other: &Self) -> bool {
+        (&self.s, &self.p, &self.o, self.context())
+            == (&other.s, &other.p, &other.o, other.context())
+    }
+}
+
+impl<T: Term + Eq> Eq for Quad<T> {}
+
+impl<T: Term + PartialOrd> PartialOrd for Quad<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        (&self.s, &self.p, &self.o, self.context()).partial_cmp(&(
+            &other.s,
+            &other.p,
+            &other.o,
+            other.context(),
+        ))
+    }
+}
+
+impl<T: Term + Ord> Ord for Quad<T> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (&self.s, &self.p, &self.o, self.context()).cmp(&(
+            &other.s,
+            &other.p,
+            &other.o,
+            other.context(),
+        ))
+    }
+}
+
+impl<T: Term + Hash> Hash for Quad<T> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.s.hash(state);
+        self.p.hash(state);
+        self.o.hash(state);
+        self.context().hash(state);
+    }
+}
+
+#[cfg(feature = "serde")]
+fn serialize_context<T: Term + serde::Serialize, S: serde::Serializer>(
+    context: &Option<T>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    serde::Serialize::serialize(
+        &context.as_ref().filter(|g| !g.is_default_graph()),
+        serializer,
+    )
+}
+
 impl<T: Term> Quad<T> {
+    /// Constructs a quad. `None` or the default-graph singleton denotes the
+    /// default graph; a different term denotes its named graph.
     pub const fn new(s: T, p: T, o: T, g: Option<T>) -> Self {
         Self { s, p, o, g }
     }
@@ -42,15 +108,23 @@ impl<T: Term> Quad<T> {
         }
     }
 
+    /// Replaces the graph, normalizing a default-graph marker to `None`.
     pub fn with_context(self, g: impl Into<Option<T>>) -> Self {
         Self {
-            g: g.into(),
+            g: g.into().filter(|term| !term.is_default_graph()),
             ..self
         }
     }
 
+    /// Extracts the statement, returning `None` for the default graph, including
+    /// an explicitly supplied singleton alias.
     pub fn into_inner(self) -> (T, T, T, Option<T>) {
-        (self.s, self.p, self.o, self.g)
+        (
+            self.s,
+            self.p,
+            self.o,
+            self.g.filter(|term| !term.is_default_graph()),
+        )
     }
 
     /// Whether the statement has a constant subject.
@@ -68,7 +142,8 @@ impl<T: Term> Quad<T> {
         true
     }
 
-    /// Whether the statement has a constant context (graph).
+    /// Whether this quad has a named graph. Both representations of the default
+    /// graph return `false`; as a pattern, the quad still constrains its graph.
     pub fn has_context(&self) -> bool {
         self.context().is_some()
     }
@@ -85,8 +160,10 @@ impl<T: Term> Quad<T> {
         &self.o
     }
 
+    /// Returns the graph name, or `None` for the default graph. The singleton
+    /// alias is normalized without allocation or mutation.
     pub fn context(&self) -> Option<&T> {
-        self.g.as_ref()
+        self.g.as_ref().filter(|term| !term.is_default_graph())
     }
 }
 
@@ -106,7 +183,7 @@ impl<T: Term + Clone> Statement for Quad<T> {
     }
 
     fn context(&self) -> Option<&Self::Term> {
-        self.g.as_ref()
+        self.context()
     }
 }
 
@@ -128,6 +205,10 @@ impl<T: Term + Clone> StatementPattern for Quad<T> {
     fn context(&self) -> Option<&Self::Term> {
         self.g.as_ref()
     }
+
+    fn is_default_graph(&self) -> bool {
+        self.context().is_none()
+    }
 }
 
 impl<T: Term + Clone> Quad<T> {
@@ -143,12 +224,21 @@ impl<T: Term + Clone> Quad<T> {
         )
     }
 
-    pub fn to_quad_pattern(&self) -> QuadPattern<T> {
+    /// Produces an exact pattern, preserving the default graph via its singleton.
+    /// The term representation must support `From<DefaultGraph>`.
+    pub fn to_quad_pattern(&self) -> QuadPattern<T>
+    where
+        T: From<DefaultGraph>,
+    {
         QuadPattern::new(
             Some(self.s.clone()),
             Some(self.p.clone()),
             Some(self.o.clone()),
-            self.g.clone(),
+            Some(
+                self.context()
+                    .cloned()
+                    .unwrap_or_else(|| DEFAULT_GRAPH.into()),
+            ),
         )
     }
 }
@@ -218,7 +308,12 @@ impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
 #[cfg(feature = "alloc")]
 impl<'a> From<Quad<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: Quad<HeapTerm>) -> Self {
-        Self::new(input.s.into(), input.p.into(), input.o.into(), None)
+        Self::new(
+            input.s.into(),
+            input.p.into(),
+            input.o.into(),
+            input.g.map(Into::into),
+        )
     }
 }
 
@@ -292,6 +387,8 @@ impl<T: Term> TryFrom<TriplePattern<T>> for Quad<T> {
     }
 }
 
+/// Extracts a fully bound statement. Wildcard graph patterns are rejected;
+/// a singleton-bound default graph becomes the concrete `None` context.
 impl<T: Term> TryFrom<QuadPattern<T>> for Quad<T> {
     type Error = ();
 
@@ -303,7 +400,7 @@ impl<T: Term> TryFrom<QuadPattern<T>> for Quad<T> {
             input.s.unwrap(),
             input.p.unwrap(),
             input.o.unwrap(),
-            input.g,
+            input.g.filter(|term| !term.is_default_graph()),
         ))
     }
 }

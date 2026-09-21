@@ -38,6 +38,9 @@ pub const DEFAULT_URL: &str = "redis://localhost:6379";
 ///
 /// # Limitations
 ///
+/// - Matching requires an explicit default-graph singleton or an IRI graph name.
+///   Wildcard graph searches, blank-node graph names, and the reserved legacy
+///   graph ID `default` return `ValkeyError::UnsupportedGraphPattern`.
 /// - Currently, does not support reading from the store in the same
 ///   transaction as writing.
 ///

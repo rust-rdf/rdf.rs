@@ -10,11 +10,16 @@ extern crate alloc;
 fn minimal() -> Result<(), xsd::ParseError> {
     use rdf::{
         format::Format,
-        model::{AnyTerm, Quad, QuadPattern, TermKind, Triple},
+        model::{
+            AnyTerm, DEFAULT_GRAPH, DefaultGraph, Quad, QuadPattern, StatementPattern, TermKind,
+            Triple,
+        },
     };
     let triple = Triple::new(AnyTerm, AnyTerm, AnyTerm);
     let quad: Quad<AnyTerm> = triple.to_quad();
-    let _: QuadPattern<AnyTerm> = quad.to_quad_pattern();
+    let _: QuadPattern<AnyTerm> = quad.to_triple_pattern().to_quad_pattern();
+    let default_graph = QuadPattern::<DefaultGraph>::with_default_context();
+    let _ = default_graph.matches(&DEFAULT_GRAPH, &DEFAULT_GRAPH, &DEFAULT_GRAPH, None);
     let _ = (TermKind::Iri, Format::from_extension("nt"));
     let _ = xsd::parse("42", xsd::INT)?;
     Ok(())

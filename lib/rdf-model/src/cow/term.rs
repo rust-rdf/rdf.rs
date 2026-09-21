@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{BaseDirection, Datatype, HeapTerm, Term, TermKind};
+use crate::{BaseDirection, DEFAULT_GRAPH_URN, Datatype, DefaultGraph, HeapTerm, Term, TermKind};
 use alloc::{
     borrow::Cow,
     string::{String, ToString},
@@ -37,6 +37,9 @@ pub enum CowTerm<'a> {
     /// A typed literal term that could not be instantiated as a typed value.
     /// The term is either an ill-typed literal and/or an unsupported datatype.
     TypedLiteral(Cow<'a, str>, Datatype),
+
+    /// The default-graph singleton; distinct from an IRI with the reserved URN.
+    DefaultGraph,
 }
 
 impl<'a> CowTerm<'a> {
@@ -82,6 +85,7 @@ impl<'a> CowTerm<'a> {
 
     pub fn kind(&self) -> TermKind {
         match self {
+            Self::DefaultGraph => TermKind::DefaultGraph,
             Self::Iri(_) => TermKind::Iri,
             Self::BNode(_) => TermKind::BNode,
             Self::String(_)
@@ -93,6 +97,7 @@ impl<'a> CowTerm<'a> {
 
     pub fn value_str(&self) -> Cow<'_, str> {
         Cow::Borrowed(match self {
+            Self::DefaultGraph => DEFAULT_GRAPH_URN,
             Self::Iri(s) => s,
             Self::BNode(s) => s,
             Self::String(s) | Self::TaggedString(s, _, _) | Self::TypedLiteral(s, _) => s,
@@ -111,9 +116,11 @@ impl<'a> CowTerm<'a> {
     }
 
     #[cfg(feature = "bson")]
+    /// Exports the term as BSON, using `urn:rdf:default-graph` for the marker.
     pub fn into_bson(self) -> bson::Bson {
         use bson::{Bson, Document};
         match self {
+            CowTerm::DefaultGraph => Bson::String(DEFAULT_GRAPH_URN.into()),
             CowTerm::Iri(str) => Bson::String(str.to_string()),
             CowTerm::BNode(id) => Bson::String(alloc::format!("_:{}", id)),
             CowTerm::String(val) => {
@@ -164,6 +171,18 @@ impl<'a> Term for &CowTerm<'a> {
     }
 }
 
+impl From<DefaultGraph> for CowTerm<'_> {
+    fn from(_: DefaultGraph) -> Self {
+        Self::DefaultGraph
+    }
+}
+
+impl<'a, 'b: 'a> From<DefaultGraph> for &'a CowTerm<'b> {
+    fn from(_: DefaultGraph) -> Self {
+        &CowTerm::DefaultGraph
+    }
+}
+
 impl<'a, T> From<&'a T> for CowTerm<'a>
 where
     T: Clone + Into<Self> + 'a,
@@ -188,6 +207,7 @@ impl<'a> From<String> for CowTerm<'a> {
 impl<'a> From<&'a dyn Term> for CowTerm<'a> {
     fn from(term: &'a dyn Term) -> Self {
         match term.kind() {
+            TermKind::DefaultGraph => Self::DefaultGraph,
             TermKind::Iri => Self::iri(Cow::from(term.value_str())),
             TermKind::BNode => Self::bnode(Cow::from(term.value_str())),
             TermKind::Literal => Self::string(Cow::from(term.value_str())), // TODO
@@ -198,6 +218,7 @@ impl<'a> From<&'a dyn Term> for CowTerm<'a> {
 impl<'a> From<HeapTerm> for CowTerm<'a> {
     fn from(input: HeapTerm) -> Self {
         match input {
+            HeapTerm::DefaultGraph => CowTerm::DefaultGraph,
             HeapTerm::Iri(s) => CowTerm::Iri(s.into()),
             HeapTerm::BNode(s) => CowTerm::BNode(s.into()),
             HeapTerm::String(s) => CowTerm::String(s.into()),

@@ -9,10 +9,18 @@ use async_stream::stream;
 use core::time::Duration;
 use derive_more::Debug;
 use fred::{clients::Transaction, prelude::*, types::scan::Scanner, util::NONE};
-use futures::{FutureExt, Stream, StreamExt, TryStreamExt, stream};
+use futures::{Stream, StreamExt, TryStreamExt, stream};
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, StatementPattern};
 use rdf_store::{ReadTransaction, WriteTransaction};
 use serde_json::Value;
+
+fn graph_id(context: Option<&HeapTerm>) -> Result<Cow<'_, str>, ValkeyError> {
+    match context {
+        None | Some(HeapTerm::DefaultGraph) => Ok(Cow::Borrowed("default")),
+        Some(HeapTerm::Iri(name)) if name != "default" => Ok(Cow::Borrowed(name)),
+        _ => Err(ValkeyError::UnsupportedGraphPattern),
+    }
+}
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A transaction for reading and writing statements in Valkey.
@@ -172,10 +180,7 @@ impl WriteTransaction for ValkeyTransaction {
         //self.removes.remove(statement);
         //self.inserts.insert(statement.clone());
 
-        let graph_id: Cow<'_, str> = statement
-            .context()
-            .map(|g| g.value_str())
-            .unwrap_or_else(|| "default".into());
+        let graph_id = graph_id(statement.context())?;
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
@@ -206,10 +211,7 @@ impl WriteTransaction for ValkeyTransaction {
         //self.inserts.remove(statement);
         //self.removes.insert(statement.clone());
 
-        let graph_id: Cow<'_, str> = statement
-            .context()
-            .map(|g| g.value_str())
-            .unwrap_or_else(|| "default".into());
+        let graph_id = graph_id(statement.context())?;
         let graph_key = ValkeyGraphKey::from(&graph_id);
 
         let triple = ValkeyTriple::from(statement.to_triple());
@@ -240,7 +242,7 @@ impl ReadTransaction for ValkeyTransaction {
             for graph_id in graph_ids {
                 let graph_term = match graph_id.as_str() {
                     "default" => continue, // skip the default graph
-                    _ => ValkeyTerm(Value::String(graph_id.into())),
+                    _ => ValkeyTerm(Value::String(graph_id.into()), false),
                 };
                 yield Ok(graph_term);
             }
@@ -252,35 +254,36 @@ impl ReadTransaction for ValkeyTransaction {
         pattern: impl Into<Self::StatementPattern>,
     ) -> impl Stream<Item = Result<Self::Statement, Self::Error>> {
         let pattern = pattern.into();
-        let context: Arc<Option<ValkeyTerm>> = Arc::new(pattern.context().cloned());
-        let pattern: ValkeyTriplePattern = pattern.into();
-        let graph_key: ValkeyGraphKey = (&*context).into();
+        let (graph_key, context) = match pattern.graph_key_and_context() {
+            Ok(graph) => graph,
+            Err(error) => return stream::once(core::future::ready(Err(error))).boxed(),
+        };
+        let context = Arc::new(context);
 
         if pattern.is_constant() {
-            return self
-                .client
-                .sismember::<bool, ValkeyGraphKey, ValkeyTriplePattern>(
-                    graph_key.clone(),
-                    pattern.clone(),
-                )
-                .into_stream()
-                .filter_map(move |result| {
-                    let pattern = pattern.clone();
-                    async move {
-                        match result {
-                            Ok(false) => None,
-                            Ok(true) => Some(Ok(pattern.try_into().unwrap())),
-                            Err(err) => Some(Err(err.into())),
-                        }
+            return async_stream::try_stream! {
+                let exists: bool = self.client.sismember(graph_key, pattern.clone()).await?;
+                if exists {
+                    // IDs are currently truncated hashes. Fetch and compare the
+                    // actual terms rather than synthesizing a match from the query.
+                    let id = pattern.glob.clone();
+                    let key = ValkeyTripleKey::from(&id);
+                    let json: Value = self.client.json_get(key, NONE, NONE, NONE, "").await?;
+                    let quad = ValkeyTriple::try_from((id, json))?.with_context((*context).clone());
+                    if pattern.matches_statement(&quad) {
+                        yield quad;
                     }
-                })
-                .boxed();
+                }
+            }
+            .boxed();
         }
 
+        let matcher = Arc::new(pattern.clone());
         let stream = self.client.sscan(graph_key, pattern, None);
         stream
             .and_then(move |mut sscan_result| {
                 let context = Arc::clone(&context);
+                let matcher = Arc::clone(&matcher);
                 async move {
                     let mut output: Vec<Result<Self::Statement, Self::Error>> = Vec::new();
 
@@ -296,15 +299,67 @@ impl ReadTransaction for ValkeyTransaction {
                         let triple_json: Value =
                             client.json_get(triple_key, NONE, NONE, NONE, "").await?;
                         //std::eprintln!("{:?}", triple_json); // DEBUG
-                        output.push(match ValkeyTriple::try_from((triple_id, triple_json)) {
-                            Ok(triple) => Ok(triple.with_context((*context).clone())),
-                            Err(err) => Err(err),
-                        });
+                        match ValkeyTriple::try_from((triple_id, triple_json)) {
+                            Ok(triple) => {
+                                let quad = triple.with_context((*context).clone());
+                                if matcher.matches_statement(&quad) {
+                                    output.push(Ok(quad));
+                                }
+                            },
+                            Err(err) => output.push(Err(err)),
+                        }
                     }
                     Ok(stream::iter(output))
                 }
             })
             .try_flatten_unordered(1)
             .boxed()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use futures::FutureExt;
+    use rdf_model::DEFAULT_GRAPH_URN;
+
+    #[tokio::test]
+    async fn unsupported_graph_patterns_fail_without_contacting_the_server() {
+        let tx = ValkeyTransaction {
+            client: Builder::from_config(Config::default()).build().unwrap(),
+            tx: None,
+        };
+        for pattern in [
+            HeapQuadPattern::empty(),
+            HeapQuadPattern::with_context(HeapTerm::bnode("g")),
+            HeapQuadPattern::with_context(HeapTerm::string("g")),
+            HeapQuadPattern::with_context(HeapTerm::iri("default")),
+        ] {
+            let mut stream = alloc::boxed::Box::pin(tx.r#match(pattern));
+            assert!(matches!(
+                stream.next().now_or_never(),
+                Some(Some(Err(ValkeyError::UnsupportedGraphPattern)))
+            ));
+        }
+    }
+
+    #[test]
+    fn write_graph_ids_do_not_alias_named_graphs_to_the_default_graph() {
+        assert_eq!(graph_id(None).unwrap(), "default");
+        assert_eq!(graph_id(Some(&HeapTerm::DefaultGraph)).unwrap(), "default");
+        assert_eq!(
+            graph_id(Some(&HeapTerm::iri(DEFAULT_GRAPH_URN))).unwrap(),
+            DEFAULT_GRAPH_URN
+        );
+        for graph in [
+            HeapTerm::bnode("default"),
+            HeapTerm::iri("default"),
+            HeapTerm::string("g"),
+        ] {
+            assert!(matches!(
+                graph_id(Some(&graph)),
+                Err(ValkeyError::UnsupportedGraphPattern)
+            ));
+        }
     }
 }

@@ -10,6 +10,10 @@ pub const TERM_HASH_LEN: usize = blake3::OUT_LEN;
 pub const TERM_HASH_ZERO: [u8; TERM_HASH_LEN] = [0u8; TERM_HASH_LEN];
 
 /// A cryptographically-secure hash of a term.
+///
+/// The default-graph singleton uses the distinct `@default-graph` domain token,
+/// not the encoding of its external URN as an IRI. Existing RDF-term encodings
+/// are unchanged by this additional marker kind.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TermHash(Hash);
@@ -117,6 +121,9 @@ impl From<&CowTerm<'_>> for TermHash {
         use heapless::String;
         let mut hasher = Hasher::new();
         match input {
+            CowTerm::DefaultGraph => {
+                hasher.update(b"@default-graph");
+            },
             CowTerm::Iri(str) => {
                 hasher.update(b"<");
                 hasher.update(str.as_bytes()); // TODO: escaping
