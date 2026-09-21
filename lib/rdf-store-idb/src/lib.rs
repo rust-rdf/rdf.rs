@@ -9,7 +9,14 @@
 //! use rdf_store_idb::{IdbStore, IdbTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API requires `std` and a browser with IndexedDB. `alloc` alone
+//! does not enable the driver or expose a storage implementation.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

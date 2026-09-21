@@ -21,6 +21,12 @@
 //!
 //! See: <https://json-ld.org>
 
+//!
+//! # Features
+//!
+//! Concrete writer APIs use the `oxrdf` backend, which enables `std` and Tokio
+//! I/O. `alloc` alone does not enable serialization or runtime dependencies.
+
 #![no_std]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

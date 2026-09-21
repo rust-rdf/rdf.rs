@@ -2,6 +2,15 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! # Features
+//!
+//! With defaults disabled, generic terms, triples/quads, and pattern types need
+//! neither this crate's `alloc` nor `std` feature. `alloc` exposes `HeapTerm`,
+//! `CowTerm`, datatypes, and boxed iterator/source abstractions. `serde` and
+//! `borsh` imply `alloc`; ecosystem integrations (`oxrdf`, `bson`, `json-ld`,
+//! `rudof`, `sophia`) imply `std`. `datetime` and `decimal` forward XSD features.
+//! The lexical `StatementPattern::matches` helper is available with `alloc`.
+//!
 //! # Examples
 //!
 //! ```rust
@@ -38,19 +47,27 @@ pub use any_term::*;
 mod base_direction;
 pub use base_direction::*;
 
+#[cfg(feature = "alloc")]
 mod dataset;
+#[cfg(feature = "alloc")]
 pub use dataset::*;
 
+#[cfg(feature = "alloc")]
 mod datatype;
+#[cfg(feature = "alloc")]
 pub use datatype::*;
 
+#[cfg(feature = "alloc")]
 mod document;
+#[cfg(feature = "alloc")]
 pub use document::*;
 
 mod feature;
 pub use feature::*;
 
+#[cfg(feature = "alloc")]
 mod graph;
+#[cfg(feature = "alloc")]
 pub use graph::*;
 
 mod quad;
@@ -59,7 +76,9 @@ pub use quad::*;
 mod quad_pattern;
 pub use quad_pattern::*;
 
+#[cfg(feature = "alloc")]
 mod source;
+#[cfg(feature = "alloc")]
 pub use source::*;
 
 mod statement;
@@ -90,7 +109,9 @@ mod traits {
     mod countable;
     pub use countable::*;
 
+    #[cfg(feature = "alloc")]
     mod enumerable;
+    #[cfg(feature = "alloc")]
     pub use enumerable::*;
 
     mod maybe_durable;
@@ -102,7 +123,9 @@ mod traits {
     mod maybe_mutable;
     pub use maybe_mutable::*;
 
+    #[cfg(feature = "alloc")]
     mod queryable;
+    #[cfg(feature = "alloc")]
     pub use queryable::*;
 }
 pub use traits::*;

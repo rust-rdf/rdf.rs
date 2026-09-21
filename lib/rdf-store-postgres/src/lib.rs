@@ -9,7 +9,14 @@
 //! use rdf_store_postgres::{PostgresStore, PostgresTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API requires `std` and the Tokio-based driver. `alloc` alone does
+//! not expose a storage implementation. The `tokio` and `tls` options enable `std`.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

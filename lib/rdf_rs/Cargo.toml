@@ -16,7 +16,10 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["oxrdf", "serde"]
+all = ["oxrdf", "serde", "datetime", "decimal", "blake3"]
+datetime = ["rdf-model/datetime"]
+decimal = ["rdf-model/decimal"]
+blake3 = ["rdf-hash/blake3"]
 alloc = [
     "rdf-derive/alloc",
     "rdf-format/alloc",
@@ -63,18 +66,22 @@ unstable = [
 
 # Interoperability:
 borsh = [
+    "alloc",
     "rdf-model/borsh",
 ]
 bson = [
+    "std",
     "rdf-model/bson",
 ]
 #datafusion = [
 #    "rdf-model/datafusion",
 #]
 json-ld = [
+    "std",
     "rdf-model/json-ld",
 ]
 oxrdf = [
+    "std",
     "rdf-format/oxrdf",
     "rdf-model/oxrdf",
     "rdf-reader/oxrdf",
@@ -82,9 +89,11 @@ oxrdf = [
     "rdf-writer/oxrdf",
 ]
 rudof = [
+    "std",
     "rdf-model/rudof",
 ]
 serde = [
+    "alloc",
     "rdf-format/serde",
     "rdf-hash/serde",
     "rdf-model/serde",
@@ -92,6 +101,7 @@ serde = [
     "rdf-writer/serde",
 ]
 sophia = [
+    "std",
     "rdf-format/sophia",
     "rdf-model/sophia",
     "rdf-reader/sophia",
@@ -113,7 +123,7 @@ rdf-vocab.workspace = true
 rdf-writer.workspace = true
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

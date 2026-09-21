@@ -44,4 +44,4 @@ rdf-writer.workspace = true
 [[bin]]
 name = "rdf"
 path = "src/main.rs"
-required-features = []
+required-features = ["std"]

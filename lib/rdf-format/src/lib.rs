@@ -2,6 +2,11 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! Format identifiers, extension lookup, and display work without `alloc` or
+//! `std`. The `alloc` feature adds allocated extension lists and the `Named` /
+//! `Labeled` implementations. `serde` works without `alloc`; `oxrdf` and `sophia`
+//! require `std`. Disable default features when selecting these tiers explicitly.
+//!
 //! ```rust
 //! use rdf_format::*;
 //! ```

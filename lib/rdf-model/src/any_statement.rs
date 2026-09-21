@@ -1,9 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{
-    AnyTerm, CowTerm, EMPTY_COW_QUAD_PATTERN, EMPTY_HEAP_QUAD_PATTERN, HeapTerm, QuadPattern,
-    Statement, StatementPattern, Term,
-};
+use crate::{AnyTerm, QuadPattern, Statement, StatementPattern, Term};
+#[cfg(feature = "alloc")]
+use crate::{CowTerm, EMPTY_COW_QUAD_PATTERN, EMPTY_HEAP_QUAD_PATTERN, HeapTerm};
 use core::{borrow::Borrow, marker::PhantomData};
 
 pub type AnyQuad = AnyStatement;
@@ -15,6 +14,7 @@ pub struct AnyStatement;
 impl StatementPattern for AnyStatement {
     type Term = AnyTerm;
 
+    #[cfg(feature = "alloc")]
     fn matches(&self, _: impl Term, _: impl Term, _: impl Term, _: Option<impl Term>) -> bool {
         true
     }
@@ -100,12 +100,14 @@ impl TryFrom<crate::HeapQuadPattern> for AnyStatement {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl Borrow<QuadPattern<CowTerm<'static>>> for AnyStatement {
     fn borrow(&self) -> &QuadPattern<CowTerm<'static>> {
         &EMPTY_COW_QUAD_PATTERN
     }
 }
 
+#[cfg(feature = "alloc")]
 impl Borrow<QuadPattern<HeapTerm>> for AnyStatement {
     fn borrow(&self) -> &QuadPattern<HeapTerm> {
         &EMPTY_HEAP_QUAD_PATTERN

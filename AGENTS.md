@@ -15,7 +15,7 @@ Rust 2024 workspace; declared MSRV 1.85. Work within this repository; do not ins
 
 - Read the target crate's `Cargo.toml` and `src/lib.rs` first. Confirm module declarations/re-exports: a file or feature name does not imply a working API. Many crates, examples, and methods are scaffolds.
 - Shared versions/dependencies and local `[patch.crates-io]` entries live in root `Cargo.toml`. Follow workspace inheritance and existing module/re-export conventions.
-- Do not add unsafe Rust. Preserve `no_std`, `alloc`/`std` gates and optional interop boundaries. Inherited dependency defaults currently enable `std` transitively; `--no-default-features` alone does not prove `no_std` support.
+- Do not add unsafe Rust. Internal dependencies disable defaults: forward required features explicitly. Preserve `no_std`, `alloc`/`std` gates and optional interop boundaries. Heap storage and Tokio I/O require `std`; transaction traits require `alloc`.
 - Preserve RDF term kind, lexical form, datatype, language, direction, and graph through conversions. A quad's `None` context denotes the default graph; a pattern's `None` slot is a wildcard. Compare complete terms, not just `value_str()`.
 - Keep streams lazy and propagate errors. Run blocking `StreamIter` consumption off Tokio workers (`spawn_blocking`). Read transaction semantics in `lib/rdf-store/src/{store,read_transaction,write_transaction}.rs`; preserve required `Send` bounds and document backend isolation/cancellation behavior accurately.
 - Unsupported operations must return meaningful errors, not successful no-ops or fabricated empty results. Existing TODOs are not implementation examples.
@@ -34,6 +34,7 @@ cargo fmt --all -- --check
 
 - Root CI runs `cargo build`, `cargo build --examples`, `cargo test`: only the 14 `default-members`. Select CLI, adapters, and `rdf-borsh` explicitly with `-p`; whole-workspace checks involve native/browser dependencies.
 - For feature changes, also check the affected package with `--no-default-features`, with `--no-default-features --features alloc`, and with relevant interop features. Report existing failures precisely.
+- Run `python3 .config/check-features.py` with each mode: `core`, `interop`, `adapters`, `no-std`. The last requires `rustup target add thumbv7em-none-eabihf` and builds a consuming crate without target `std`; host-only checks cannot prove this.
 - IndexedDB tests: `wasm-pack test --headless --chrome` from `lib/rdf-store-idb`.
 - Add focused regression tests for behavior fixes, including errors and RDF round trips. Avoid unrelated formatting or dependency churn.
 

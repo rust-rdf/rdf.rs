@@ -26,27 +26,31 @@ import = "rdf_store_turso::{TursoStore, TursoTransaction}"
 default = ["all", "std"]
 all = []
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-store/std", "futures/std", "dep:async-stream", "dep:turso"]
 unstable = []
 
 # Features:
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
-turso = { version = "0.6", default-features = false }
+turso = { version = "0.6", default-features = false, optional = true }
 xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_turso"
+required-features = ["std"]

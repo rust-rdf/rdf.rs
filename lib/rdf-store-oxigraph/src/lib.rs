@@ -9,7 +9,14 @@
 //! use rdf_store_oxigraph::{OxigraphStore, OxigraphTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API requires `std`. `rocksdb` enables persistent storage and its
+//! native build dependencies; `alloc` alone does not enable a storage backend.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

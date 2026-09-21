@@ -26,22 +26,30 @@ import = "rdf_reader_hdt::HdtReader"
 default = ["all", "std"]
 all = []
 alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-reader/alloc"]
-std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
+std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-model/sophia", "rdf-reader/std", "futures/std", "dep:async-stream", "dep:hdt", "dep:tokio", "dep:tokio-util"]
 unstable = []
 
 [dependencies]
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 futures.workspace = true
-hdt = { version = "0.7.3", features = ["sophia"] }
+hdt = { version = "0.7.3", optional = true, features = ["sophia"] }
 rdf-format.workspace = true
-rdf-model = { workspace = true, features = ["sophia"] }
+rdf-model.workspace = true
 rdf-reader.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["io-util"] }
-tokio-util = { workspace = true, features = ["io-util"] }
+tokio = { workspace = true, optional = true, features = ["io-util"] }
+tokio-util = { workspace = true, optional = true, features = ["io-util"] }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["fs"] }
+tokio = { workspace = true, features = ["fs", "rt-multi-thread", "macros"] }
+
+[[example]]
+name = "read_hdt_iter"
+required-features = ["std"]
+
+[[example]]
+name = "read_hdt_stream"
+required-features = ["std"]
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

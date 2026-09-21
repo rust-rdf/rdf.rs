@@ -26,18 +26,18 @@ import = "rdf_store_neo4j::{Neo4jStore, Neo4jTransaction}"
 default = ["all", "std"]
 all = ["tls"]
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-store/std", "futures/executor", "dep:async-stream", "dep:neo4rs"]
 unstable = []
 
 # Features:
-tls = []
+tls = ["std"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-neo4rs = { version = "0.8", default-features = false }
+neo4rs = { version = "0.8", default-features = false, optional = true }
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
@@ -45,9 +45,13 @@ xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_neo4j"
+required-features = ["std"]

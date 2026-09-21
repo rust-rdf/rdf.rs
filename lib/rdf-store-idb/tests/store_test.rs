@@ -1,5 +1,7 @@
 // This is free and unencumbered software released into the public domain.
 
+#![cfg(all(feature = "std", target_arch = "wasm32"))]
+
 use rdf_store_idb::IdbStore;
 use wasm_bindgen_test::*;
 

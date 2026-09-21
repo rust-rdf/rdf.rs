@@ -27,6 +27,12 @@
 //!
 //! See: <https://www.w3.org/TR/rdf12-turtle/>
 
+//!
+//! # Features
+//!
+//! Concrete reader APIs use the `oxrdf` backend, which enables `std` and Tokio.
+//! `alloc` alone does not enable parsing or runtime dependencies.
+
 #![no_std]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

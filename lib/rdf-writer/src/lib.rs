@@ -2,6 +2,13 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! # Features
+//!
+//! The generic writer trait and options work without default features. `alloc`
+//! enables owned model/format helpers. `serde` enables model serialization and
+//! implies `alloc`; `oxrdf` and `sophia` require `std`. Concrete asynchronous
+//! format adapters require `std` and Tokio I/O.
+//!
 //! # Examples
 //!
 //! ```rust

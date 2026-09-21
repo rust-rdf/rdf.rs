@@ -1,10 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
 #[cfg(feature = "alloc")]
-use alloc::vec::Vec;
+use alloc::{boxed::Box, vec::Vec};
 use core::{fmt::Debug, hash::Hash};
-#[cfg(feature = "alloc")]
-use futures::pin_mut;
 use futures::{Stream, TryFutureExt, TryStreamExt, future};
 use rdf_model::{HeapTerm, QuadPattern, Statement, StatementPattern, Term};
 
@@ -86,20 +84,22 @@ pub trait ReadTransaction {
     /// iteration completes.
     #[cfg(feature = "alloc")]
     fn contexts(&self) -> impl Stream<Item = Result<Self::Term, Self::Error>> + Send {
-        let statements = self.r#match(QuadPattern::default());
-        async_stream::try_stream! {
-            pin_mut!(statements);
-            let mut seen = Vec::new();
-            while let Some(statement) = statements.try_next().await? {
-                let Some(context) = statement.context().cloned() else {
-                    continue;
-                };
-                if !seen.contains(&context) {
-                    seen.push(context.clone());
-                    yield context;
+        let statements = Box::pin(self.r#match(QuadPattern::default()));
+        futures::stream::try_unfold(
+            (statements, Vec::new()),
+            |(mut statements, mut seen)| async move {
+                while let Some(statement) = statements.try_next().await? {
+                    let Some(context) = statement.context().cloned() else {
+                        continue;
+                    };
+                    if !seen.contains(&context) {
+                        seen.push(context.clone());
+                        return Ok(Some((context, (statements, seen))));
+                    }
                 }
-            }
-        }
+                Ok(None)
+            },
+        )
     }
 
     /// Returns a stream of distinct context terms (graph names) in the store,

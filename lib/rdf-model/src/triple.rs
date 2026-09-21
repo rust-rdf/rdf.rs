@@ -1,8 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{
-    CowTerm, HeapTerm, Quad, QuadPattern, Statement, StatementPattern, Term, TriplePattern,
-};
+#[cfg(feature = "alloc")]
+use crate::{CowTerm, HeapTerm};
+use crate::{Quad, QuadPattern, Statement, StatementPattern, Term, TriplePattern};
 
 pub type TripleSlot = crate::StatementSlot;
 
@@ -141,48 +141,56 @@ impl<T: Term + Clone> Triple<T> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Triple<CowTerm<'_>>> for Triple<HeapTerm> {
     fn from(input: Triple<CowTerm<'_>>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Triple<CowTerm<'a>>> for Triple<HeapTerm> {
     fn from(input: &'a Triple<CowTerm<'a>>) -> Self {
         Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Quad<CowTerm<'_>>> for Triple<HeapTerm> {
     fn from(input: Quad<CowTerm<'_>>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Quad<CowTerm<'a>>> for Triple<HeapTerm> {
     fn from(input: &'a Quad<CowTerm<'a>>) -> Self {
         Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<Triple<HeapTerm>> for Triple<CowTerm<'a>> {
     fn from(input: Triple<HeapTerm>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Triple<HeapTerm>> for Triple<CowTerm<'a>> {
     fn from(input: &'a Triple<HeapTerm>) -> Self {
         Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<Quad<HeapTerm>> for Triple<CowTerm<'a>> {
     fn from(input: Quad<HeapTerm>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Quad<HeapTerm>> for Triple<CowTerm<'a>> {
     fn from(input: &'a Quad<HeapTerm>) -> Self {
         Self::new((&input.s).into(), (&input.p).into(), (&input.o).into())

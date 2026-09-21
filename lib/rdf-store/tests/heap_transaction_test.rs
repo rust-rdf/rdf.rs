@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-#![cfg(feature = "alloc")]
+#![cfg(feature = "std")]
 
 use futures::{FutureExt, StreamExt, TryStreamExt};
 use rdf_model::{BaseDirection, HeapQuad, HeapQuadPattern, HeapTerm};

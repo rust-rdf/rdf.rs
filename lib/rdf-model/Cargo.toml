@@ -16,25 +16,27 @@ publish.workspace = true
 
 [features]
 default = ["all", "std"]
-all = ["serde", "oxrdf"]
-alloc = ["known-languages/alloc", "serde_json?/alloc", "xsd/alloc"]
-std = ["alloc", "dogma/std", "known-languages/std", "serde?/std", "serde_json?/std", "xsd/std"]
+all = ["serde", "oxrdf", "datetime", "decimal"]
+alloc = ["known-languages/alloc", "serde?/alloc", "serde_json?/alloc", "xsd/alloc"]
+std = ["alloc", "dogma/std", "known-languages/std", "serde?/std", "serde_json?/preserve_order", "xsd/std"]
 unstable = []
+datetime = ["xsd/datetime"]
+decimal = ["xsd/decimal"]
 
 # Interoperability:
-borsh = ["dep:borsh", "xsd/borsh"]
-bson = ["dep:bson", "xsd/bson"]
+borsh = ["alloc", "dep:borsh", "xsd/borsh"]
+bson = ["std", "dep:bson", "xsd/bson"]
 #datafusion = ["dep:rdf-fusion", "xsd/datafusion"]
-json-ld = ["dep:json-ld", "xsd/json-ld"]
-oxrdf = ["dep:oxrdf", "xsd/oxrdf"]
-rudof = ["dep:rudof_rdf", "xsd/rudof"]
-serde = ["dep:serde", "dep:serde_json", "xsd/serde"]
-sophia = ["dep:sophia", "xsd/sophia"]
+json-ld = ["std", "dep:json-ld", "xsd/json-ld"]
+oxrdf = ["std", "dep:oxrdf", "xsd/oxrdf"]
+rudof = ["std", "dep:rudof_rdf", "xsd/rudof"]
+serde = ["alloc", "dep:serde", "dep:serde_json", "xsd/serde"]
+sophia = ["std", "dep:sophia", "xsd/sophia"]
 
 [dependencies]
 dogma.workspace = true
 known-languages.workspace = true
-xsd = { workspace = true, features = ["datetime", "decimal"] }
+xsd.workspace = true
 
 # Interoperability:
 borsh = { workspace = true, optional = true }
@@ -48,7 +50,7 @@ serde_json = { workspace = true, optional = true }
 sophia = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

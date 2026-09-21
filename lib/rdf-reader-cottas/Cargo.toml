@@ -26,24 +26,32 @@ import = "rdf_reader_cottas::CottasReader"
 default = ["all", "std"]
 all = []
 alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-reader/alloc"]
-std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
+std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std", "futures/std", "futures-util/std", "dep:arrow-array", "dep:arrow-schema", "dep:async-stream", "dep:parquet", "dep:tokio"]
 unstable = []
 
 [dependencies]
-arrow-array.workspace = true
-arrow-schema.workspace = true
-async-stream.workspace = true
+arrow-array = { workspace = true, optional = true }
+arrow-schema = { workspace = true, optional = true }
+async-stream = { workspace = true, optional = true }
 futures.workspace = true
 futures-util.workspace = true
-parquet = { workspace = true, features = ["arrow", "zstd"] }
+parquet = { workspace = true, optional = true, features = ["arrow", "zstd"] }
 rdf-format.workspace = true
 rdf-model.workspace = true
 rdf-reader.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["fs", "io-util"] }
+tokio = { workspace = true, optional = true, features = ["fs", "io-util"] }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["fs"] }
+tokio = { workspace = true, features = ["fs", "rt-multi-thread", "macros"] }
+
+[[example]]
+name = "read_cottas_iter"
+required-features = ["std"]
+
+[[example]]
+name = "read_cottas_stream"
+required-features = ["std"]
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

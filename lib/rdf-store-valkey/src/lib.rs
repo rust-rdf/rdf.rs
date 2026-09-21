@@ -23,7 +23,14 @@
 //! # }
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API and driver require `std`. `alloc` alone does not expose a
+//! storage implementation. The `tokio`, `tls`, and `tracing` options enable `std`.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

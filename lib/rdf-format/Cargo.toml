@@ -25,9 +25,9 @@ unstable = []
 rdf-star = [] # @deprecated
 
 # Integrations:
-oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
-serde = ["rdf-model/serde", "dep:serde"]
-sophia = ["rdf-model/sophia", "dep:sophia"]
+oxrdf = ["std", "rdf-model/oxrdf", "dep:oxrdfio"]
+serde = ["dep:serde"]
+sophia = ["std", "rdf-model/sophia", "dep:sophia"]
 
 [dependencies]
 dogma.workspace = true
@@ -39,7 +39,7 @@ serde = { workspace = true, optional = true }
 sophia = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

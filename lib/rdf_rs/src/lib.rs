@@ -2,6 +2,25 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! # Feature tiers
+//!
+//! Disable default features for `no_std`. With no features, generic terms,
+//! statements, patterns, and format identifiers remain available. `alloc` adds
+//! owned/Cow terms, vocabularies, reader abstractions, and transaction traits;
+//! applications must supply an allocator when they allocate. `std` adds the
+//! Tokio stream bridge and heap store. Runtime adapters require `std`.
+//!
+//! `serde`, `borsh`, and `blake3` imply `alloc`, not `std`. `datetime` and
+//! `decimal` forward XSD feature selections. `oxrdf`, `bson`, `json-ld`, `rudof`,
+//! and `sophia` imply `std` because their dependencies require it. Defaults
+//! enable `all` and `std`; `all` includes std-dependent interoperability.
+//! These flags select existing APIs/dependencies, including integrations that
+//! are still scaffolds.
+//!
+//! The workspace checks a consuming `#![no_std]` crate on
+//! `thumbv7em-none-eabihf`, where `std` is unavailable. Procedural macros run on
+//! the host and may use its standard library independently of the target.
+//!
 //! ```rust
 //! use rdf_rs::{format, hash, id, message, model, query, reader, store, stream, vocab, writer};
 //! ```

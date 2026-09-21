@@ -152,7 +152,6 @@ impl PrimitiveValue {
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
         use PrimitiveValue::*;
-        #[cfg(feature = "jiff")]
         use alloc::string::ToString;
         use serde_json::Value;
         #[allow(unused)]
@@ -194,7 +193,6 @@ impl PrimitiveValue {
     #[cfg(feature = "bson")]
     pub fn into_bson(self) -> bson::Bson {
         use PrimitiveValue::*;
-        #[cfg(feature = "jiff")]
         use alloc::string::ToString;
         use bson::{Binary, Bson, spec::BinarySubtype};
         #[allow(unused)]

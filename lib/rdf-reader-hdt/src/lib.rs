@@ -3,6 +3,10 @@
 //! An HDT file reader for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
+//! # Features
+//!
+//! Reader APIs require `std` and a Tokio runtime. `alloc` alone does not enable I/O.
+//!
 //! # Examples
 //!
 //! ```rust,no_run
@@ -28,6 +32,7 @@
 //! See: <https://rdfhdt.org>
 
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

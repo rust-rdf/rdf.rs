@@ -25,8 +25,11 @@ impl OxigraphStore {
         Self { inner }
     }
 
-    /// Opens an Oxigraph store from a file path.
-    #[cfg(feature = "std")]
+    /// Opens an Oxigraph store from a file path (requires `rocksdb`).
+    ///
+    /// Returns an error if the database cannot be opened. Use [`Self::new`] for
+    /// in-memory storage when the native RocksDB backend is disabled.
+    #[cfg(feature = "rocksdb")]
     pub fn open(path: impl AsRef<std::path::Path>) -> Result<Self, OxigraphError> {
         let store = oxigraph::store::Store::open(path)?;
         Ok(Self { inner: store })

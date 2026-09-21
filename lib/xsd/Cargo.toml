@@ -17,8 +17,8 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["datetime", "decimal"]
-alloc = ["heapless/alloc", "valuand/alloc"]
-std = ["alloc", "valuand/std"]
+alloc = ["heapless/alloc", "valuand/alloc", "serde?/alloc", "serde_json?/alloc"]
+std = ["alloc", "valuand/std", "strum/std", "serde?/std", "serde_json?/preserve_order"]
 unstable = []
 
 # Features:
@@ -26,15 +26,15 @@ datetime = ["jiff"]
 decimal = ["valuand/decimal"]
 
 # Interoperability:
-borsh = ["dep:borsh", "valuand/borsh"]
-bson = ["dep:bson", "valuand/bson"]
+borsh = ["alloc", "dep:borsh", "valuand/borsh"]
+bson = ["std", "dep:bson", "valuand/bson"]
 #datafusion = ["dep:rdf-fusion"]
 jiff = ["dep:jiff"]
 json-ld = []
-oxrdf = ["dep:oxrdf", "dep:oxsdatatypes"]
-rudof = ["dep:oxsdatatypes"]
+oxrdf = ["std", "dep:oxrdf", "dep:oxsdatatypes"]
+rudof = ["std", "dep:oxsdatatypes"]
 rust_decimal = ["dep:rust_decimal", "valuand/rust_decimal"]
-serde = ["dep:serde", "dep:serde_json", "decorum/serde", "valuand/serde", "jiff?/serde", "rust_decimal?/serde-with-str"]
+serde = ["alloc", "dep:serde", "dep:serde_json", "decorum/serde", "valuand/serde", "jiff?/serde", "rust_decimal?/serde-with-str"]
 sophia = []
 
 [dependencies]
@@ -42,7 +42,7 @@ decorum.workspace = true
 dogma.workspace = true
 heapless.workspace = true
 phf = { version = "0.14", default-features = false, features = ["macros"] }
-strum = "0.28"
+strum = { version = "0.28", default-features = false }
 strum_macros = "0.28"
 valuand = { workspace = true, features = ["number"] }
 
@@ -61,3 +61,7 @@ serde_json = { workspace = true, optional = true }
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "parse_xsd"
+required-features = ["alloc", "datetime"]

@@ -1,7 +1,7 @@
 # See: https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["bin/*", "lib/*"]
+members = ["bin/*", "lib/*", ".config/checks/no-std"]
 default-members = [
     "lib/rdf_rs",
     "lib/rdf-derive",
@@ -36,49 +36,50 @@ categories = ["data-structures", "no-std"]
 publish = true
 
 [workspace.dependencies]
-rdf = { package = "rdf_rs", version = "=0.4.4", default-features = true }
-rdf-borsh = { version = "=0.4.4", default-features = true }
-rdf-derive = { version = "=0.4.4", default-features = true }
-rdf-format = { version = "=0.4.4", default-features = true }
-rdf-hash = { version = "=0.4.4", default-features = true }
-rdf-id = { version = "=0.4.4", default-features = true }
-rdf-message = { version = "=0.4.4", default-features = true }
-rdf-model = { version = "=0.4.4", default-features = true }
-rdf-query = { version = "=0.4.4", default-features = true }
-rdf-reader = { version = "=0.4.4", default-features = true }
-rdf-reader-cottas = { version = "=0.4.4", default-features = true }
-rdf-reader-hdt = { version = "=0.4.4", default-features = true }
-rdf-reader-jelly = { version = "=0.4.4", default-features = true }
-rdf-reader-jsonld = { version = "=0.4.4", default-features = true }
-rdf-reader-nquads = { version = "=0.4.4", default-features = true }
-rdf-reader-ntriples = { version = "=0.4.4", default-features = true }
-rdf-reader-rdfxml = { version = "=0.4.4", default-features = true }
-rdf-reader-trig = { version = "=0.4.4", default-features = true }
-rdf-reader-turtle = { version = "=0.4.4", default-features = true }
-rdf-store = { version = "=0.4.4", default-features = true }
-rdf-store-idb = { version = "=0.4.4", default-features = true }
-rdf-store-mongo = { version = "=0.4.4", default-features = true }
-rdf-store-neo4j = { version = "=0.4.4", default-features = true }
-rdf-store-oxigraph = { version = "=0.4.4", default-features = true }
-rdf-store-postgres = { version = "=0.4.4", default-features = true }
-rdf-store-qlever = { version = "=0.4.4", default-features = true }
-rdf-store-sqlite = { version = "=0.4.4", default-features = true }
-rdf-store-turso = { version = "=0.4.4", default-features = true }
-rdf-store-valkey = { version = "=0.4.4", default-features = true }
-rdf-store-virtuoso = { version = "=0.4.4", default-features = true }
-rdf-stream = { version = "=0.4.4", default-features = true }
-rdf-vocab = { version = "=0.4.4", default-features = true }
-rdf-writer = { version = "=0.4.4", default-features = true }
-rdf-writer-cottas = { version = "=0.4.4", default-features = true }
-rdf-writer-hdt = { version = "=0.4.4", default-features = true }
-rdf-writer-jelly = { version = "=0.4.4", default-features = true }
-rdf-writer-jsonld = { version = "=0.4.4", default-features = true }
-rdf-writer-nquads = { version = "=0.4.4", default-features = true }
-rdf-writer-ntriples = { version = "=0.4.4", default-features = true }
-rdf-writer-rdfxml = { version = "=0.4.4", default-features = true }
-rdf-writer-trig = { version = "=0.4.4", default-features = true }
-rdf-writer-turtle = { version = "=0.4.4", default-features = true }
-xsd = { version = "=0.4.4", default-features = true }
+# Each consuming crate explicitly forwards the features it needs.
+rdf = { package = "rdf_rs", version = "=0.4.4", default-features = false }
+rdf-borsh = { version = "=0.4.4", default-features = false }
+rdf-derive = { version = "=0.4.4", default-features = false }
+rdf-format = { version = "=0.4.4", default-features = false }
+rdf-hash = { version = "=0.4.4", default-features = false }
+rdf-id = { version = "=0.4.4", default-features = false }
+rdf-message = { version = "=0.4.4", default-features = false }
+rdf-model = { version = "=0.4.4", default-features = false }
+rdf-query = { version = "=0.4.4", default-features = false }
+rdf-reader = { version = "=0.4.4", default-features = false }
+rdf-reader-cottas = { version = "=0.4.4", default-features = false }
+rdf-reader-hdt = { version = "=0.4.4", default-features = false }
+rdf-reader-jelly = { version = "=0.4.4", default-features = false }
+rdf-reader-jsonld = { version = "=0.4.4", default-features = false }
+rdf-reader-nquads = { version = "=0.4.4", default-features = false }
+rdf-reader-ntriples = { version = "=0.4.4", default-features = false }
+rdf-reader-rdfxml = { version = "=0.4.4", default-features = false }
+rdf-reader-trig = { version = "=0.4.4", default-features = false }
+rdf-reader-turtle = { version = "=0.4.4", default-features = false }
+rdf-store = { version = "=0.4.4", default-features = false }
+rdf-store-idb = { version = "=0.4.4", default-features = false }
+rdf-store-mongo = { version = "=0.4.4", default-features = false }
+rdf-store-neo4j = { version = "=0.4.4", default-features = false }
+rdf-store-oxigraph = { version = "=0.4.4", default-features = false }
+rdf-store-postgres = { version = "=0.4.4", default-features = false }
+rdf-store-qlever = { version = "=0.4.4", default-features = false }
+rdf-store-sqlite = { version = "=0.4.4", default-features = false }
+rdf-store-turso = { version = "=0.4.4", default-features = false }
+rdf-store-valkey = { version = "=0.4.4", default-features = false }
+rdf-store-virtuoso = { version = "=0.4.4", default-features = false }
+rdf-stream = { version = "=0.4.4", default-features = false }
+rdf-vocab = { version = "=0.4.4", default-features = false }
+rdf-writer = { version = "=0.4.4", default-features = false }
+rdf-writer-cottas = { version = "=0.4.4", default-features = false }
+rdf-writer-hdt = { version = "=0.4.4", default-features = false }
+rdf-writer-jelly = { version = "=0.4.4", default-features = false }
+rdf-writer-jsonld = { version = "=0.4.4", default-features = false }
+rdf-writer-nquads = { version = "=0.4.4", default-features = false }
+rdf-writer-ntriples = { version = "=0.4.4", default-features = false }
+rdf-writer-rdfxml = { version = "=0.4.4", default-features = false }
+rdf-writer-trig = { version = "=0.4.4", default-features = false }
+rdf-writer-turtle = { version = "=0.4.4", default-features = false }
+xsd = { version = "=0.4.4", default-features = false }
 
 # Interoperability:
 borsh = { version = "1.6", default-features = false, features = ["derive"] }
@@ -88,7 +89,7 @@ json-ld = { version = "0.21", default-features = false }
 rdf-fusion = { version = "0.1", default-features = false }
 rudof_rdf = { version = "0.3.5", default-features = false }
 serde = { version = "1", default-features = false, features = ["derive"] }
-serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
+serde_json = { version = "1", default-features = false }
 
 # Interoperability with SPARQL.rs:
 sparql-store = { version = "0", default-features = false, features = ["alloc"] }
@@ -120,8 +121,8 @@ bytes = { version = "1.11", default-features = false }
 decorum = { version = "0.4", default-features = false }
 derive_more = { version = "2", default-features = false }
 float-ord = { version = "0.3", default-features = false }
-futures = "0.3"
-futures-util = "0.3"
+futures = { version = "0.3", default-features = false, features = ["async-await"] }
+futures-util = { version = "0.3", default-features = false, features = ["async-await"] }
 heapless = { version = "0.9", default-features = false }
 hex = { version = "0.4", default-features = false }
 itertools = { version = "0.15", default-features = false }
@@ -141,7 +142,7 @@ zeroize = { version = "1.8", default-features = false }
 # Development:
 aquamarine = { version = "0.6", default-features = false }
 instability = "0.3"
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1", default-features = false, features = ["rt"] }
 tokio-stream = { version = "0.1", default-features = false }
 tokio-util = { version = "0.7", default-features = false }
 

@@ -12,6 +12,21 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  feature-isolation:
+    name: Feature isolation (${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [core, interop, adapters, no-std]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install bare-metal target
+        if: matrix.mode == 'no-std'
+        run: rustup target add thumbv7em-none-eabihf
+      - name: Check feature isolation
+        run: python3 .config/check-features.py ${{ matrix.mode }}
   build-ubuntu:
     name: Build on Ubuntu
     runs-on: ubuntu-latest

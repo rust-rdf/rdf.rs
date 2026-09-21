@@ -3,6 +3,11 @@
 //! A Jelly file reader for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
+//! # Features
+//!
+//! This adapter is a scaffold. Runtime dependencies are enabled by `std`;
+//! `alloc` alone does not provide a reader implementation.
+//!
 //! # Examples
 //!
 //! ```rust

@@ -1,6 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{HeapTerm, Quad, QuadPattern, Term, Triple, TriplePattern};
+#[cfg(feature = "alloc")]
+use crate::HeapTerm;
+use crate::{Quad, QuadPattern, Term, Triple, TriplePattern};
 
 /// An RDF statement.
 ///
@@ -60,6 +62,7 @@ pub trait Statement {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl core::fmt::Debug for dyn Statement<Term = HeapTerm> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("Statement")

@@ -9,7 +9,14 @@
 //! use rdf_store_neo4j::{Neo4jStore, Neo4jTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API and driver require `std`. `alloc` alone does not expose a
+//! storage implementation. Driver options such as TLS also enable `std`.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

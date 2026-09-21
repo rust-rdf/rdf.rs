@@ -26,15 +26,15 @@ import = "rdf_store_qlever::{QleverStore, QleverTransaction}"
 default = ["all", "std"]
 all = ["libqlever"]
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-store/std", "futures/std", "dep:async-stream"]
 unstable = []
 
 # Features:
-libqlever = []
+libqlever = ["std"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 rdf-model.workspace = true
@@ -44,9 +44,13 @@ xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_qlever"
+required-features = ["std"]

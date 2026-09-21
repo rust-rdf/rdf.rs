@@ -26,30 +26,34 @@ import = "rdf_store_postgres::{PostgresStore, PostgresTransaction}"
 default = ["all", "std"]
 all = ["tokio"]
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-store/std", "futures/executor", "dep:async-stream", "dep:tokio-postgres", "tokio-postgres/runtime"]
 unstable = []
 
 # Features:
-tls = ["dep:tokio-postgres-rustls"]
-tokio = ["tokio-postgres/runtime"]
+tls = ["std", "dep:tokio-postgres-rustls"]
+tokio = ["std"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
 rdf-model.workspace = true
 rdf-store.workspace = true
 thiserror.workspace = true
-tokio-postgres = { version = "0.7", default-features = false }
+tokio-postgres = { version = "0.7", default-features = false, optional = true }
 tokio-postgres-rustls = { version = "0.14", default-features = false, optional = true }
 xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_postgres"
+required-features = ["std"]

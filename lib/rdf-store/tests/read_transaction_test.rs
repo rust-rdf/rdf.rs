@@ -4,7 +4,9 @@
 
 use futures::{FutureExt, Stream, StreamExt, TryStreamExt, future, pin_mut};
 use rdf_model::{HeapQuad, HeapQuadPattern, HeapTerm, SAMPLE_QUAD};
-use rdf_store::{HeapStore, ReadTransaction, Store, WriteTransaction};
+use rdf_store::ReadTransaction;
+#[cfg(feature = "std")]
+use rdf_store::{HeapStore, Store, WriteTransaction};
 use std::{
     cell::Cell,
     sync::{
@@ -346,6 +348,7 @@ fn cancelled_reads_release_pending_sources() {
     tx.assert_finished(0);
 }
 
+#[cfg(feature = "std")]
 #[tokio::test]
 async fn heap_store_defaults_observe_committed_statements_and_graphs() {
     let mut store = HeapStore::new();

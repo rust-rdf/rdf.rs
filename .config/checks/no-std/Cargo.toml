@@ -1,0 +1,23 @@
+[package]
+name = "rdf-no-std-check"
+version = "0.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[features]
+default = []
+alloc = ["rdf/alloc", "xsd/alloc", "dep:futures"]
+serde = ["alloc", "rdf/serde", "dep:serde_json", "serde_json/alloc"]
+hash = ["alloc", "rdf/blake3"]
+datetime = ["rdf/datetime", "xsd/datetime"]
+borsh = ["alloc", "rdf/borsh", "dep:rdf-borsh", "rdf-borsh/alloc", "dep:borsh"]
+
+[dependencies]
+rdf.workspace = true
+xsd.workspace = true
+futures = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+rdf-borsh = { workspace = true, optional = true }
+borsh = { workspace = true, optional = true }

@@ -29,38 +29,42 @@ import = "rdf_store_valkey::{ValkeyStore, ValkeyTransaction}"
 default = ["all", "std"]
 all = ["tokio"]
 alloc = ["heapless/alloc", "hex/alloc", "itertools/use_alloc", "rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-model/serde", "rdf-store/std", "rdf-hash/std", "rdf-hash/blake3", "xsd/serde", "futures/std", "dep:async-stream", "dep:fred", "dep:serde_json", "serde_json/preserve_order"]
 unstable = []
 
 # Features:
-tls = ["dep:rustls", "fred/enable-rustls"]
-tokio = []
-tracing = ["fred/partial-tracing"]
+tls = ["std", "dep:rustls", "fred/enable-rustls"]
+tokio = ["std"]
+tracing = ["std", "fred/partial-tracing"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
-fred = { version = "10.1", default-features = false, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
+fred = { version = "10.1", default-features = false, optional = true, features = ["i-std", "i-redis-json", "i-sets", "serde-json", "transactions"] }
 futures.workspace = true
 heapless.workspace = true
 hex.workspace = true
 itertools.workspace = true
 rdf-hash.workspace = true
-rdf-model = { workspace = true, features = ["serde"] }
+rdf-model.workspace = true
 rdf-store.workspace = true
-serde_json.workspace = true
+serde_json = { workspace = true, optional = true }
 thiserror.workspace = true
-xsd = { workspace = true, features = ["serde"] }
+xsd.workspace = true
 
 # Features:
 rustls = { version = "0.23", default-features = false, optional = true }
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_valkey"
+required-features = ["std"]

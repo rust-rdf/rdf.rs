@@ -1,6 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
+#[cfg(feature = "alloc")]
 use alloc::{borrow::Cow, vec, vec::Vec};
+#[cfg(feature = "alloc")]
 use dogma::traits::{Labeled, Named};
 
 pub const FORMATS: [(&'static str, Format); 14] = [
@@ -40,6 +42,7 @@ pub enum Format {
     YamlLd,
 }
 
+#[cfg(feature = "alloc")]
 impl Named for Format {
     fn name(&self) -> Cow<'_, str> {
         use Format::*;
@@ -62,10 +65,17 @@ impl Named for Format {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl Labeled for Format {
     fn label(&self) -> Cow<'_, str> {
+        Cow::Borrowed(self.label_str())
+    }
+}
+
+impl Format {
+    fn label_str(&self) -> &'static str {
         use Format::*;
-        Cow::Borrowed(match self {
+        match self {
             Cottas => "Cottas",
             Csvw => "CSVW",
             Hdt => "HDT",
@@ -80,7 +90,7 @@ impl Labeled for Format {
             TriX => "TriX",
             Turtle => "Turtle",
             YamlLd => "YAML-LD",
-        })
+        }
     }
 }
 
@@ -114,6 +124,8 @@ impl Format {
         }
     }
 
+    /// Returns the supported extensions as an allocated list (requires `alloc`).
+    #[cfg(feature = "alloc")]
     pub fn extensions(&self) -> Vec<&str> {
         use Format::*;
         match self {
@@ -134,7 +146,7 @@ impl Format {
 
 impl core::fmt::Display for Format {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.write_str(&self.label())
+        f.write_str(self.label_str())
     }
 }
 

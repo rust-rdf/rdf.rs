@@ -1,8 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{CowTerm, HeapTerm, StatementPattern, Term, TriplePattern};
+#[cfg(feature = "alloc")]
+use crate::{CowTerm, HeapTerm};
+use crate::{StatementPattern, Term, TriplePattern};
 
+#[cfg(feature = "alloc")]
 pub static EMPTY_COW_QUAD_PATTERN: QuadPattern<CowTerm> = QuadPattern::EMPTY;
+#[cfg(feature = "alloc")]
 pub static EMPTY_HEAP_QUAD_PATTERN: QuadPattern<HeapTerm> = QuadPattern::EMPTY;
 
 /// A quad statement pattern.

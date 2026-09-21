@@ -26,30 +26,34 @@ import = "rdf_store_oxigraph::{OxigraphStore, OxigraphTransaction}"
 default = ["all", "std"]
 all = ["rocksdb"]
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "ouroboros/std", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "dep:ouroboros", "ouroboros/std", "rdf-model/std", "rdf-store/std", "futures/std", "dep:async-stream", "dep:oxigraph", "dep:send_wrapper"]
 unstable = []
 
 # Features:
-rocksdb = ["oxigraph/rocksdb"]
+rocksdb = ["std", "oxigraph/rocksdb"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-ouroboros.workspace = true
-oxigraph.workspace = true
+ouroboros = { workspace = true, optional = true }
+oxigraph = { workspace = true, optional = true }
 rdf-model.workspace = true
 rdf-store.workspace = true
-send_wrapper.workspace = true
+send_wrapper = { workspace = true, optional = true }
 thiserror.workspace = true
 xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_oxigraph"
+required-features = ["std"]

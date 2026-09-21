@@ -17,29 +17,33 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["blake3"]
-alloc = ["heapless/alloc", "rdf-model/alloc"]
-std = ["alloc", "blake3?/std", "rdf-model/std"]
+alloc = ["heapless/alloc", "rdf-model/alloc", "serde?/alloc", "serde_json?/alloc"]
+std = ["alloc", "blake3?/std", "rdf-model/std", "serde?/std", "serde_json?/preserve_order"]
 unstable = []
 
 # Integrations:
-blake3 = ["dep:blake3"]
-serde = ["dep:serde", "dep:serde_json", "blake3/serde"]
-zeroize = ["dep:zeroize", "blake3/zeroize"]
+blake3 = ["alloc", "dep:blake3"]
+serde = ["alloc", "dep:serde", "dep:serde_json", "blake3?/serde"]
+zeroize = ["dep:zeroize", "blake3?/zeroize"]
 
 [dependencies]
 heapless.workspace = true
 rdf-model.workspace = true
 
 # Integrations:
-blake3 = { version = "1.8", optional = true }
+blake3 = { version = "1.8", default-features = false, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 zeroize = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "hash_terms"
+required-features = ["blake3"]

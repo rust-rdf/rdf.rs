@@ -9,7 +9,14 @@
 //! use rdf_store_turso::{TursoStore, TursoTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API and driver require `std`. `alloc` alone does not enable the
+//! driver or expose a storage implementation.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

@@ -29,21 +29,21 @@ import = "rdf_store_mongo::{MongoStore, MongoTransaction}"
 default = ["all", "std"]
 all = ["tls"]
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-model/bson", "rdf-model/serde", "rdf-store/std", "rdf-hash/std", "rdf-hash/blake3", "rdf-hash/serde", "futures/executor", "dep:async-stream", "dep:mongodb"]
 unstable = []
 
 # Features:
-tls = ["mongodb/rustls-tls"]
-tracing = ["mongodb/tracing-unstable"]
+tls = ["std", "mongodb/rustls-tls"]
+tracing = ["std", "mongodb/tracing-unstable"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-mongodb = { version = "3.7", default-features = false, features = ["bson-3", "compat-3-0-0", "dns-resolver"] }
-rdf-hash = { workspace = true, features = ["serde"] }
-rdf-model = { workspace = true, features = ["bson", "serde"] }
+mongodb = { version = "3.7", default-features = false, optional = true, features = ["bson-3", "compat-3-0-0", "dns-resolver"] }
+rdf-hash.workspace = true
+rdf-model.workspace = true
 rdf-store.workspace = true
 serde.workspace = true
 thiserror.workspace = true
@@ -51,9 +51,13 @@ xsd.workspace = true
 
 [dev-dependencies]
 #sparql-store.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "store_mongo"
+required-features = ["std"]

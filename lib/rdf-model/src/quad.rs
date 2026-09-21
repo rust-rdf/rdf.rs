@@ -1,8 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{
-    CowTerm, HeapTerm, QuadPattern, Statement, StatementPattern, Term, Triple, TriplePattern,
-};
+#[cfg(feature = "alloc")]
+use crate::{CowTerm, HeapTerm};
+use crate::{QuadPattern, Statement, StatementPattern, Term, Triple, TriplePattern};
 
 pub type QuadSlot = crate::StatementSlot;
 
@@ -153,12 +153,14 @@ impl<T: Term + Clone> Quad<T> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Triple<CowTerm<'_>>> for Quad<HeapTerm> {
     fn from(input: Triple<CowTerm<'_>>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into(), None)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Triple<CowTerm<'a>>> for Quad<HeapTerm> {
     fn from(input: &'a Triple<CowTerm<'a>>) -> Self {
         Self::new(
@@ -170,6 +172,7 @@ impl<'a> From<&'a Triple<CowTerm<'a>>> for Quad<HeapTerm> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Quad<CowTerm<'_>>> for Quad<HeapTerm> {
     fn from(input: Quad<CowTerm<'_>>) -> Self {
         Self::new(
@@ -181,6 +184,7 @@ impl From<Quad<CowTerm<'_>>> for Quad<HeapTerm> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
     fn from(input: &'a Quad<CowTerm<'a>>) -> Self {
         Self::new(
@@ -192,12 +196,14 @@ impl<'a> From<&'a Quad<CowTerm<'a>>> for Quad<HeapTerm> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<Triple<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: Triple<HeapTerm>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into(), None)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: &'a Triple<HeapTerm>) -> Self {
         Self::new(
@@ -209,12 +215,14 @@ impl<'a> From<&'a Triple<HeapTerm>> for Quad<CowTerm<'a>> {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<Quad<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: Quad<HeapTerm>) -> Self {
         Self::new(input.s.into(), input.p.into(), input.o.into(), None)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl<'a> From<&'a Quad<HeapTerm>> for Quad<CowTerm<'a>> {
     fn from(input: &'a Quad<HeapTerm>) -> Self {
         Self::new(

@@ -18,30 +18,41 @@ publish.workspace = true
 default = ["all", "std"]
 all = []
 alloc = [
+    "rdf-model/borsh",
     "rdf-model/alloc",
     "rdf-reader/alloc",
     "rdf-writer/alloc",
 ]
 std = [
     "alloc",
+    "dep:lz4_flex",
     "borsh/std",
     "rdf-model/std",
     "rdf-reader/std",
     "rdf-writer/std",
     "winnow/std",
+    "dep:winnow",
 ]
 unstable = []
 
 [dependencies]
 borsh.workspace = true
-lz4_flex = { version = "0.13", default-features = true }
+lz4_flex = { version = "0.13", default-features = true, optional = true }
 num-traits.workspace = true
 num-integer.workspace = true
-rdf-model = { workspace = true, features = ["borsh"] }
+rdf-model.workspace = true
 rdf-reader.workspace = true
 rdf-writer.workspace = true
-winnow = { version = "1.0", default-features = false, features = ["simd"] }
+winnow = { version = "1.0", default-features = false, optional = true, features = ["simd", "parser", "binary"] }
 
 [dev-dependencies]
 tempfile.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[[example]]
+name = "encode_rdfb"
+required-features = ["std"]
+
+[[example]]
+name = "decode_rdfb"
+required-features = ["std"]

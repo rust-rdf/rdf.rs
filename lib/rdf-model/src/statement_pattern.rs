@@ -8,6 +8,8 @@ use crate::{QuadPattern, Term, TriplePattern};
 pub trait StatementPattern {
     type Term: Term + Clone;
 
+    /// Matches lexical values against this pattern (requires `alloc`).
+    #[cfg(feature = "alloc")]
     fn matches(
         &self,
         subject: impl Term,

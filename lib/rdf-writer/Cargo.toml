@@ -18,16 +18,16 @@ publish.workspace = true
 default = ["all", "std"]
 all = ["serde"]
 alloc = ["rdf-format/alloc", "rdf-model/alloc"]
-std = ["alloc", "rdf-format/alloc", "rdf-model/std"]
+std = ["alloc", "rdf-format/std", "rdf-model/std"]
 unstable = []
 
 # Features:
 rdf-star = [] # @deprecated
 
 # Integrations:
-oxrdf = ["rdf-model/oxrdf", "dep:oxrdfio"]
-serde = ["rdf-model/serde"]
-sophia = ["rdf-model/sophia", "dep:sophia"]
+oxrdf = ["std", "rdf-model/oxrdf", "dep:oxrdfio"]
+serde = ["alloc", "rdf-model/serde"]
+sophia = ["std", "rdf-model/sophia", "dep:sophia"]
 
 [dependencies]
 rdf-format.workspace = true
@@ -38,7 +38,7 @@ oxrdfio = { workspace = true, optional = true }
 sophia = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 # Preview locally with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
 [package.metadata.docs.rs]

@@ -2,9 +2,21 @@
 
 //! XML Schema (XSD) datatypes for Rust.
 //!
+//! # Features
+//!
+//! Disable defaults for `no_std`. Numeric values and datatype identifiers are
+//! available without this crate's `alloc` feature; `alloc` enables owned strings
+//! and allocation-dependent helpers. `datetime` (also exposed as `jiff`) enables
+//! date/time values without requiring `std`. `serde` and `borsh` imply `alloc`;
+//! `bson`, `oxrdf`, and `rudof` require `std`. Defaults enable `all` and `std`.
+//! Dependency features are forwarded explicitly; enabling serialization does
+//! not implicitly enable date/time support.
+//!
 //! ```rust
 //! use xsd::{Type, Value};
-//! use xsd::primitive::{Boolean, Date, DateTime, Decimal, Double, Duration, Float, Time};
+//! use xsd::primitive::{Boolean, Decimal, Double, Duration, Float};
+//! # #[cfg(feature = "jiff")]
+//! use xsd::primitive::{Date, DateTime, Time};
 //! ```
 
 #![no_std]
@@ -94,5 +106,5 @@ mod value;
 pub use value::*;
 
 #[doc = include_str!("../README.md")]
-#[cfg(doctest)]
+#[cfg(all(doctest, feature = "alloc", feature = "jiff"))]
 pub struct ReadmeDoctests;

@@ -3,6 +3,10 @@
 //! A COTTAS file writer for RDF.rs, a Rust framework for RDF
 //! knowledge graphs.
 //!
+//! # Features
+//!
+//! Writer APIs require `std` and Tokio I/O. `alloc` alone does not enable I/O.
+//!
 //! # Examples
 //!
 //! ```rust,no_run
@@ -22,6 +26,7 @@
 //! See: <https://github.com/cottas-rdf>
 
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

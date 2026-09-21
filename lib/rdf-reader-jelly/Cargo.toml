@@ -26,11 +26,11 @@ import = "rdf_reader_jelly::*"
 default = ["all", "std"]
 all = []
 alloc = ["rdf-format/alloc", "rdf-model/alloc", "rdf-reader/alloc"]
-std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std"]
+std = ["alloc", "rdf-format/std", "rdf-model/std", "rdf-reader/std", "futures/std", "dep:async-stream", "dep:tokio"]
 unstable = []
 
 [dependencies]
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 futures.workspace = true
 prost = { version = "0.14", default-features = false }
 prost-types = { version = "0.14", default-features = false }
@@ -38,10 +38,10 @@ rdf-format.workspace = true
 rdf-model.workspace = true
 rdf-reader.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["io-util"] }
+tokio = { workspace = true, optional = true, features = ["io-util"] }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["fs"] }
+tokio = { workspace = true, features = ["fs", "rt-multi-thread", "macros"] }
 
 [build-dependencies]
 prost-build = "0.14"

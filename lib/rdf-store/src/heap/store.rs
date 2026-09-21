@@ -5,7 +5,7 @@ use alloc::sync::Arc;
 use rdf_model::HeapQuadSet;
 use tokio::sync::RwLock;
 
-/// An in-memory set of RDF quads, available with the `alloc` feature.
+/// An in-memory set of RDF quads, available with the `std` feature.
 ///
 /// Use the [`Store`] implementation on [`Arc<HeapStore>`] to create transactions.
 /// Reads observe current committed data plus their own staged changes, rather

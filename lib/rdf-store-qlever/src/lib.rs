@@ -9,7 +9,14 @@
 //! use rdf_store_qlever::{QleverStore, QleverTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API requires `std`. `alloc` alone does not expose a storage
+//! implementation. The `libqlever` selector also enables `std`.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]

@@ -26,23 +26,23 @@ import = "rdf_store_idb::{IdbStore, IdbTransaction}"
 default = ["all", "std"]
 all = []
 alloc = ["rdf-model/alloc", "rdf-store/alloc"]
-std = ["alloc", "rdf-model/std", "rdf-store/std"]
+std = ["alloc", "rdf-model/std", "rdf-store/std", "futures/std", "dep:async-stream", "dep:idb", "dep:send_wrapper", "dep:wasm-bindgen"]
 unstable = []
 
 # Features:
-tracing = []
+tracing = ["std"]
 
 [dependencies]
 aquamarine.workspace = true
-async-stream.workspace = true
+async-stream = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["debug"] }
 futures.workspace = true
-idb = { version = "0.6", default-features = false, features = ["futures"] }
+idb = { version = "0.6", default-features = false, optional = true, features = ["futures"] }
 rdf-model.workspace = true
 rdf-store.workspace = true
-send_wrapper.workspace = true
+send_wrapper = { workspace = true, optional = true }
 thiserror.workspace = true
-wasm-bindgen = { version = "0.2", default-features = false }
+wasm-bindgen = { version = "0.2", default-features = false, optional = true }
 xsd.workspace = true
 
 [dev-dependencies]

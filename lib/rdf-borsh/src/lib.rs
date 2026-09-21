@@ -2,6 +2,10 @@
 
 //! RDF.rs is a Rust framework for working with RDF knowledge graphs.
 //!
+//! Header and term-ID types are available without default features. `alloc`
+//! enables terms and datasets; compressed readers, writers, and parsers require
+//! `std`. This format crate is distinct from the model's `borsh` derive feature.
+//!
 //! ```rust
 //! # use rdf_borsh::*;
 //! //let reader = BorshReader::new(Box::new(std::io::stdin()));
@@ -12,9 +16,12 @@
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
+#[cfg(feature = "alloc")]
 mod borsh_dataset;
+#[cfg(feature = "alloc")]
 pub use borsh_dataset::*;
 
 mod borsh_header;
@@ -23,10 +30,14 @@ pub use borsh_header::*;
 mod borsh_quad;
 pub use borsh_quad::*;
 
+#[cfg(feature = "std")]
 mod borsh_reader;
+#[cfg(feature = "std")]
 pub use borsh_reader::*;
 
+#[cfg(feature = "alloc")]
 mod borsh_term;
+#[cfg(feature = "alloc")]
 pub use borsh_term::*;
 
 mod borsh_term_id;
@@ -35,11 +46,16 @@ pub use borsh_term_id::*;
 mod borsh_triple;
 pub use borsh_triple::*;
 
+#[cfg(feature = "std")]
 mod borsh_writer;
+#[cfg(feature = "std")]
 pub use borsh_writer::*;
 
+#[cfg(feature = "std")]
 mod parse;
+#[cfg(feature = "std")]
 pub use parse::parse_dataset;
+#[cfg(feature = "std")]
 pub(crate) use parse::*;
 
 #[cfg(test)]

@@ -9,7 +9,14 @@
 //! use rdf_store_virtuoso::{VirtuosoStore, VirtuosoTransaction};
 //! ```
 
+//!
+//! # Features
+//!
+//! The storage API requires `std` and the native ODBC driver manager. `alloc`
+//! alone does not enable ODBC or expose a storage implementation.
+
 #![no_std]
+#![cfg(feature = "std")]
 #![deny(unsafe_code)]
 #![allow(unused_imports)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
