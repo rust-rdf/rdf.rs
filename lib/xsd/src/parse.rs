@@ -23,8 +23,9 @@ use crate::{
 /// Returns [`ParseError::UnsupportedDatatype`] when no parser is available for
 /// the datatype, including unknown datatypes. String parsing requires `alloc`;
 /// date, time, dateTime, and duration parsing require `jiff` (enabled by `datetime`).
-/// Disabled capabilities return the same error. Failures from available parsers
-/// return [`ParseError::InvalidLiteral`].
+/// Disabled capabilities return the same error. Integer-family parser failures
+/// return [`ParseError::InvalidInteger`] with the requested datatype and underlying
+/// error. Other failures from available parsers return [`ParseError::InvalidLiteral`].
 ///
 /// ```
 /// let error = xsd::parse("AQI=", xsd::BASE64_BINARY).unwrap_err();
@@ -37,11 +38,26 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
     use crate::{DecimalType as D, PrimitiveType as P, Type::*};
     match datatype.into() {
         Decimal(D::Decimal) => parse_decimal(input).map_err(|_| ParseError::InvalidLiteral),
-        Decimal(D::Integer) => parse_integer(input).map_err(|_| ParseError::InvalidLiteral),
-        Decimal(D::Long) => parse_long(input).map_err(|_| ParseError::InvalidLiteral),
-        Decimal(D::Int) => parse_int(input).map_err(|_| ParseError::InvalidLiteral),
-        Decimal(D::Short) => parse_short(input).map_err(|_| ParseError::InvalidLiteral),
-        Decimal(D::Byte) => parse_byte(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Integer) => parse_integer(input).map_err(|source| ParseError::InvalidInteger {
+            datatype: D::Integer,
+            source,
+        }),
+        Decimal(D::Long) => parse_long(input).map_err(|source| ParseError::InvalidInteger {
+            datatype: D::Long,
+            source,
+        }),
+        Decimal(D::Int) => parse_int(input).map_err(|source| ParseError::InvalidInteger {
+            datatype: D::Int,
+            source,
+        }),
+        Decimal(D::Short) => parse_short(input).map_err(|source| ParseError::InvalidInteger {
+            datatype: D::Short,
+            source,
+        }),
+        Decimal(D::Byte) => parse_byte(input).map_err(|source| ParseError::InvalidInteger {
+            datatype: D::Byte,
+            source,
+        }),
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError::InvalidLiteral),

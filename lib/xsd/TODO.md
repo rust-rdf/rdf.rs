@@ -33,14 +33,19 @@ history. Reproduce the relevant finding against the current code before editing.
 
 **Observed behavior:**
 
-- `ParseError::InvalidLiteral` retains neither the datatype nor the underlying
-  parser's cause, so lexical and range failures are indistinguishable.
+- Boolean, decimal, floating-point, and temporal parser failures collapse to
+  `ParseError::InvalidLiteral`, losing the requested datatype and underlying cause.
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Add structured diagnostics for invalid lexical forms and range/precision
-  failures, preserving useful underlying causes where possible. Keep error types
-  usable without `std` or mandatory allocation.
+Keep diagnostic error types usable without `std` or mandatory allocation.
+
+- [ ] Retain the datatype and underlying cause for decimal parsing failures,
+  including range/precision causes supplied by the backend.
+- [ ] Retain the datatype and underlying cause for float/double parsing failures.
+- [ ] Add datatype-aware diagnostics for boolean parsing failures.
+- [ ] Retain the datatype and underlying cause for temporal parsing failures
+  when `jiff` is enabled.
 
 ## 3. Introduce XSD-aware temporal representations — high priority
 
