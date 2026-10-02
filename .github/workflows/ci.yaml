@@ -13,8 +13,10 @@ env:
 
 jobs:
   feature-isolation:
-    name: Feature isolation (${{ matrix.mode }})
+    name: MSRV feature isolation (${{ matrix.mode }})
     runs-on: ubuntu-latest
+    env:
+      RUSTUP_TOOLCHAIN: "1.97.0"
     strategy:
       fail-fast: false
       matrix:
