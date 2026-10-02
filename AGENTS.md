@@ -32,9 +32,9 @@ cargo clippy -p <package> --all-targets
 cargo fmt --all -- --check
 ```
 
-- Root CI runs `cargo build`, `cargo build --examples`, `cargo test`: only the 14 `default-members`. Select CLI, adapters, and `rdf-borsh` explicitly with `-p`; whole-workspace checks involve native/browser dependencies.
+- Root Cargo commands select only the 14 `default-members`. CI also selects CLI, adapters, and `rdf-borsh` explicitly, checks Rust 1.97.0, and runs formatting, Clippy, and rustdoc checks. Use `--locked` to reproduce CI; whole-workspace checks involve native/browser dependencies.
 - For feature changes, also check the affected package with `--no-default-features`, with `--no-default-features --features alloc`, and with relevant interop features. Report existing failures precisely.
-- Run `python3 .config/check-features.py` with each mode: `core`, `interop`, `adapters`, `no-std`. The last requires `rustup target add thumbv7em-none-eabihf` and builds a consuming crate without target `std`; host-only checks cannot prove this.
+- Run `python3 .config/check-features.py` with each mode: `core`, `interop`, `adapters`, `no-std`. Commands use `--locked`; select the MSRV with `RUSTUP_TOOLCHAIN=1.97.0`. Adapter checks include enabled implementations and need `wasm32-unknown-unknown`, libclang, and an ODBC driver manager. The `no-std` mode requires `rustup target add thumbv7em-none-eabihf` and builds a consuming crate without target `std`; host-only checks cannot prove this.
 - IndexedDB tests: `wasm-pack test --headless --chrome` from `lib/rdf-store-idb`.
 - Add focused regression tests for behavior fixes, including errors and RDF round trips. Avoid unrelated formatting or dependency churn.
 

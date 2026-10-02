@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- Raise the minimum supported Rust version to 1.97.
+- Check locked builds on the MSRV, enabled adapters, the CLI, formatting,
+  Clippy, and documentation in CI.
+
+### Fixed
+- Align `spareval`'s locked SHA-2 dependency with its other hash implementations.
+- Preserve the storage traits' `Send` bounds for IndexedDB handles and errors
+  when compiling the enabled adapter for browsers.
+
 ## 0.4.4 - 2026-07-02
 
 ## 0.4.3 - 2026-06-25

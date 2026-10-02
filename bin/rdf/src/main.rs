@@ -8,11 +8,11 @@ mod exit;
 
 use crate::exit::ExitCode;
 use clientele::{
+    StandardOptions,
     crates::{
         camino::Utf8PathBuf,
         clap::{Parser, Subcommand},
     },
-    StandardOptions,
 };
 
 /// RDF.rs Command-Line Interface (CLI)

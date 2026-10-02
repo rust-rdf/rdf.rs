@@ -2,7 +2,11 @@
 """Check packages separately so Cargo feature unification cannot hide leaks.
 
 Run from the repository: python3 .config/check-features.py core|interop|adapters|no-std
+All Cargo commands use --locked. Select a toolchain with RUSTUP_TOOLCHAIN.
 Install the bare-metal target first: rustup target add thumbv7em-none-eabihf
+The adapters mode also needs wasm32-unknown-unknown, libclang (RocksDB), and
+an ODBC driver manager. It checks enabled implementations as well as tiers
+that disable the drivers. Browser tests run separately through wasm-pack.
 The no-std consumer is compile-only; an application using alloc supplies its
 own allocator. Database and I/O adapter APIs require std even when their
 disabled-feature configurations compile.
@@ -30,7 +34,7 @@ def main():
     cargo = os.environ.get("CARGO", "cargo")
     network = ["--offline"] if args.offline else []
     metadata = json.loads(subprocess.check_output(
-        [cargo, "metadata", "--no-deps", "--format-version", "1", *network],
+        [cargo, "metadata", "--locked", "--no-deps", "--format-version", "1", *network],
         cwd=root,
         env=env,
     ))
@@ -38,7 +42,7 @@ def main():
     core = [p for p in metadata["packages"] if p["id"] in defaults or p["name"] == "rdf-borsh"]
 
     def check(package, features=None, target=None, all_targets=False):
-        command = [cargo, "check", "-p", package, "--all-targets" if all_targets else "--lib"]
+        command = [cargo, "check", "--locked", "-p", package, "--all-targets" if all_targets else "--lib"]
         if features is not None:
             command += ["--no-default-features"]
             if features:
@@ -54,9 +58,10 @@ def main():
             check(package["name"], all_targets=True)
             check(package["name"], "")
             check(package["name"], "alloc")
+        check("rdf-cli", all_targets=True)
     elif args.mode == "interop":
         for package in core:
-            for feature in ("serde", "borsh", "blake3", "zeroize", "oxrdf", "bson", "sophia"):
+            for feature in ("serde", "borsh", "blake3", "zeroize", "oxrdf", "bson", "json-ld", "rudof", "sophia"):
                 if feature in package["features"]:
                     check(package["name"], feature)
     elif args.mode == "adapters":
@@ -64,9 +69,9 @@ def main():
             if package["name"].startswith(("rdf-reader-", "rdf-writer-", "rdf-store-")):
                 check(package["name"], "")
                 check(package["name"], "alloc")
-                if package["name"].startswith(("rdf-reader-", "rdf-writer-")) and "oxrdf" in package["features"]:
-                    check(package["name"], all_targets=True)
-        # Exercise the std API with the native RocksDB backend switched off.
+                target = "wasm32-unknown-unknown" if package["name"] == "rdf-store-idb" else None
+                check(package["name"], target=target, all_targets=True)
+        # Also exercise the std API with the native RocksDB backend switched off.
         check("rdf-store-oxigraph", "std", all_targets=True)
     else:
         for features in ("", "alloc", "serde", "hash", "borsh", "datetime", "alloc,serde,hash,borsh,datetime"):

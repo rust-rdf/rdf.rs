@@ -3,7 +3,7 @@
 use core::{fmt::Debug, hash::Hash};
 use rdf_model::{HeapTerm, QuadPattern, Statement, StatementPattern, Term};
 
-/// A read-write (R/W) transaction on a [`Store`].
+/// A read-write (R/W) transaction on a [`Store`](crate::Store).
 ///
 /// # Semantics for implementors
 ///

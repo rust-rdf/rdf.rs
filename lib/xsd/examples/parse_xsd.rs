@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn core::error::Error>> {
 
     let _value: xsd::Value = "Hello, world!".into();
     let _value: xsd::Value = true.into();
-    let _value: xsd::Value = 3.1415.into();
+    let _value: xsd::Value = core::f64::consts::PI.into();
     let _value: xsd::Value = 42.into();
 
     Ok(()) // TODO

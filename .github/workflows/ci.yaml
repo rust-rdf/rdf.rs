@@ -10,8 +10,37 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUSTDOCFLAGS: "-D rustdoc::broken_intra_doc_links"
 
 jobs:
+  build:
+    name: Build (${{ matrix.os }}, Rust ${{ matrix.toolchain }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        toolchain: [stable]
+        include:
+          - os: ubuntu-latest
+            toolchain: "1.97.0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+      - name: Build all default-member targets
+        run: cargo build --locked --all-targets
+      - name: Run tests and doctests
+        run: cargo test --locked
+
   feature-isolation:
     name: MSRV feature isolation (${{ matrix.mode }})
     runs-on: ubuntu-latest
@@ -24,36 +53,116 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install MSRV
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.97.0"
+      - name: Install native build dependencies
+        if: matrix.mode == 'adapters'
+        run: sudo apt-get update && sudo apt-get install -y clang libclang-dev unixodbc-dev protobuf-compiler
       - name: Install bare-metal target
         if: matrix.mode == 'no-std'
         run: rustup target add thumbv7em-none-eabihf
+      - name: Install browser target
+        if: matrix.mode == 'adapters'
+        run: rustup target add wasm32-unknown-unknown
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: features-${{ matrix.mode }}
       - name: Check feature isolation
         run: python3 .config/check-features.py ${{ matrix.mode }}
-  build-ubuntu:
-    name: Build on Ubuntu
+
+  quality:
+    name: Formatting, Clippy, and rustdoc
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Show Cargo version
-        run: cargo --version
-      - name: Build
-        run: cargo build
-      - name: Build examples
-        run: cargo build --examples
-      - name: Run tests
-        run: cargo test
-  build-windows:
-    name: Build on Windows
-    runs-on: windows-latest
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Run Clippy
+        run: cargo clippy --locked --all-targets
+      - name: Check documentation
+        run: cargo doc --locked --no-deps
+
+  packages:
+    name: Packages (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: CLI and Borsh
+            packages: -p rdf-cli -p rdf-borsh
+          - name: Formats
+            packages: -p 'rdf-reader-*' -p 'rdf-writer-*'
+          - name: Stores
+            packages: >-
+              -p rdf-store-mongo -p rdf-store-neo4j -p rdf-store-postgres
+              -p rdf-store-qlever -p rdf-store-sqlite -p rdf-store-turso -p rdf-store-valkey
+          - name: Native stores
+            packages: -p rdf-store-oxigraph -p rdf-store-virtuoso
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Show Cargo version
-        run: cargo --version
-      - name: Build
-        run: cargo build
-      - name: Build examples
-        run: cargo build --examples
-      - name: Run tests
-        run: cargo test
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Install native build dependencies
+        if: matrix.name == 'Native stores'
+        run: sudo apt-get update && sudo apt-get install -y clang libclang-dev unixodbc-dev
+      - name: Install Protobuf compiler
+        if: matrix.name == 'Formats'
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: packages-${{ matrix.name }}
+      - name: Check enabled APIs and all targets
+        run: cargo check --locked --all-targets ${{ matrix.packages }}
+      - name: Run tests and doctests
+        run: cargo test --locked ${{ matrix.packages }}
+      - name: Run Clippy
+        run: cargo clippy --locked --all-targets ${{ matrix.packages }}
+      - name: Check documentation
+        run: cargo doc --locked --no-deps ${{ matrix.packages }}
+
+  indexeddb:
+    name: IndexedDB (Chrome)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: clippy
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: indexeddb
+      - name: Install Chrome and matching WebDriver
+        uses: browser-actions/setup-chrome@v1
+        with:
+          install-chromedriver: true
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --version 0.15.0 --locked
+      - name: Run browser tests
+        working-directory: lib/rdf-store-idb
+        env:
+          # wasm-bindgen-test treats any driver stderr at startup as a failure.
+          CHROMEDRIVER_ARGS: --log-level=SEVERE
+        run: wasm-pack test --headless --chrome -- --locked
+      - name: Run Clippy
+        run: cargo clippy --locked -p rdf-store-idb --all-targets --target wasm32-unknown-unknown
+      - name: Check documentation
+        run: cargo doc --locked -p rdf-store-idb --no-deps --target wasm32-unknown-unknown

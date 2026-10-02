@@ -10,11 +10,15 @@ use send_wrapper::SendWrapper;
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// A transaction for reading and writing statements in IndexedDB.
+///
+/// All operations and destruction must run on the browser thread that created
+/// the transaction. Thread-affinity guards preserve the storage traits' `Send`
+/// bounds and panic if a handle is accessed or dropped on another thread.
 #[derive(Debug)]
 pub struct IdbTransaction {
     writable: bool,
     tx: SendWrapper<idb::Transaction>,
-    objects: idb::ObjectStore,
+    objects: SendWrapper<idb::ObjectStore>,
 }
 
 // Static assertion that `IdbTransaction` is `Send`.
@@ -33,7 +37,7 @@ impl IdbTransaction {
                 idb::TransactionMode::ReadOnly
             },
         )?);
-        let objects = tx.object_store(&store.name)?;
+        let objects = SendWrapper::new(tx.object_store(&store.name)?);
         Ok(Self {
             writable,
             tx,
