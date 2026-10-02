@@ -50,6 +50,33 @@ fn string_dispatch_without_alloc_returns_an_error() {
 }
 
 #[test]
+#[cfg(not(feature = "alloc"))]
+fn string_parser_without_alloc_returns_an_error() {
+    for input in ["", "hello", " \tΚαλημέρα <&>\r\n"] {
+        let input = input.to_owned();
+        assert!(matches!(
+            xsd::parse_string(&input),
+            Err(ParseError::UnsupportedDatatype(datatype)) if datatype == xsd::STRING
+        ));
+    }
+}
+
+#[test]
+#[cfg(feature = "alloc")]
+fn string_parser_with_alloc_preserves_owned_lexical_content() {
+    for lexical in ["", "hello", " \tΚαλημέρα <&>\r\n"] {
+        let result: Result<_, core::convert::Infallible> = {
+            let input = lexical.to_owned();
+            xsd::parse_string(&input)
+        };
+        let value = result.unwrap();
+        assert_eq!(value.r#type(), xsd::STRING);
+        assert_eq!(value.to_string(), lexical);
+        assert_eq!(xsd::parse(value.to_string(), xsd::STRING).unwrap(), value);
+    }
+}
+
+#[test]
 fn invalid_literals_are_distinct_from_unsupported_datatypes() {
     for (input, datatype) in [("maybe", xsd::BOOLEAN), ("128", xsd::BYTE)] {
         let error = xsd::parse(input, datatype).unwrap_err();

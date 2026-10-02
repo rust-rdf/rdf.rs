@@ -6,6 +6,8 @@ use crate::{
     derived::{Byte, Int, Integer, Long, Short},
     primitive::{Boolean, Decimal, Double, Float},
 };
+
+#[cfg(feature = "alloc")]
 use core::convert::Infallible;
 
 #[cfg(feature = "jiff")]
@@ -109,16 +111,36 @@ pub fn parse_byte(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
 }
 
 /// Parses an input string containing an `xsd:string` literal.
+///
+/// With `alloc` enabled, copies the input verbatim into an owned string and
+/// returns an infallible result. Without `alloc`, the error type is [`ParseError`]
+/// and parsing returns [`ParseError::UnsupportedDatatype`] for [`crate::STRING`].
 #[cfg(feature = "alloc")]
 pub fn parse_string(input: impl AsRef<str>) -> Result<Value, Infallible> {
     use crate::primitive::String;
     input.as_ref().parse::<String>().map(Value::from)
 }
 
-#[cfg(not(feature = "alloc"))]
 /// Parses an input string containing an `xsd:string` literal.
-pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, Infallible> {
-    unimplemented!() // TODO
+///
+/// String parsing requires `alloc`. With that feature enabled, this function
+/// copies the input verbatim into an owned string and its error type is
+/// [`core::convert::Infallible`].
+///
+/// # Errors
+///
+/// Without `alloc`, always returns [`ParseError::UnsupportedDatatype`] for
+/// [`crate::STRING`], including for empty or static input.
+///
+/// ```
+/// assert!(matches!(
+///     xsd::parse_string("hello"),
+///     Err(xsd::ParseError::UnsupportedDatatype(datatype)) if datatype == xsd::STRING
+/// ));
+/// ```
+#[cfg(not(feature = "alloc"))]
+pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, ParseError> {
+    Err(ParseError::UnsupportedDatatype(crate::STRING))
 }
 
 /// Parses an input string containing an `xsd:boolean` literal.

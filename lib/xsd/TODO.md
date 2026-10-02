@@ -11,9 +11,9 @@ history. Reproduce the relevant finding against the current code before editing.
 - Use atomic commits: select one narrowly scoped subtask, include its regression
   tests and rustdoc, and verify it before moving on. The numbered sections are
   milestones, not instructions to implement an entire section in one change.
-- Start with **#2, allocation-free string parsing**. Prioritize panics and information
-  loss before expanding datatype coverage. Add tests alongside each fix; #8 is
-  also an ongoing concern.
+- Start with **#2, structured parsing diagnostics**. Prioritize panics and
+  information loss before expanding datatype coverage. Add tests alongside each
+  fix; #8 is also an ongoing concern.
 - Preserve `no_std`, allocation-free configurations, and optional interoperability
   boundaries. Defaults enable `all` and `std`; `all` enables `datetime` and
   `decimal`. `datetime` enables `jiff`. `serde` and `borsh` imply `alloc`; `bson`,
@@ -33,16 +33,11 @@ history. Reproduce the relevant finding against the current code before editing.
 
 **Observed behavior:**
 
-- Without `alloc`, directly calling `parse_string()` panics despite its
-  `Result<Value, Infallible>` signature.
 - `ParseError::InvalidLiteral` retains neither the datatype nor the underlying
   parser's cause, so lexical and range failures are indistinguishable.
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Give allocation-free string parsing an honest API: resolve its ownership
-  and lifetime requirements or expose a fallible unsupported path. Remove the
-  panic-only `Infallible` contract.
 - [ ] Add structured diagnostics for invalid lexical forms and range/precision
   failures, preserving useful underlying causes where possible. Keep error types
   usable without `std` or mandatory allocation.
