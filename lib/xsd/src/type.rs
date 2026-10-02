@@ -1,9 +1,8 @@
 // This is free and unencumbered software released into the public domain.
 
 use crate::{DecimalType, DecimalValue, PrimitiveType, PrimitiveValue};
-use core::str::FromStr;
+use core::{fmt, str::FromStr};
 use phf::phf_map;
-use strum_macros::Display;
 
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
@@ -13,8 +12,11 @@ use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 /// Currently supports the primitive datatypes and the derived `xsd:decimal`
 /// datatypes.
 ///
+/// [`Display`](core::fmt::Display) writes the datatype's local name, or the
+/// stored name or IRI for [`Type::Other`].
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
-#[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "borsh",
     derive(borsh::BorshSerialize, borsh::BorshDeserialize)
@@ -50,9 +52,19 @@ impl Type {
         }
     }
 
+    /// Returns the datatype IRI. Requires the `alloc` feature.
+    ///
+    /// Local names are expanded in the XSD namespace. Stored names containing
+    /// `:` are treated as absolute IRIs and returned unchanged, without validation
+    /// or prefix resolution.
     #[cfg(feature = "alloc")]
     pub fn iri_string(&self) -> Cow<'_, str> {
-        Cow::Owned(format!("{}{}", crate::BASE_URI, self))
+        let name = self.name();
+        if name.contains(':') {
+            Cow::Borrowed(name)
+        } else {
+            Cow::Owned(format!("{}{}", crate::BASE_URI, name))
+        }
     }
 
     pub fn base_type(&self) -> Option<Type> {
@@ -72,6 +84,12 @@ impl Type {
             Primitive(_) => Vec::new(),
             Other(_) => Vec::new(),
         }
+    }
+}
+
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.name())
     }
 }
 

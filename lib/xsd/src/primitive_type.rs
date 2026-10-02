@@ -8,6 +8,9 @@ use ::alloc::{borrow::Cow, format, string::String};
 
 /// The XSD primitive datatype hierarchy.
 ///
+/// [`Display`](core::fmt::Display) writes the datatype's local name, or the
+/// stored name or IRI for [`PrimitiveType::Other`].
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(
     AsRefStr, Clone, Debug, Default, Display, EnumString, Eq, Hash, Ord, PartialEq, PartialOrd,
@@ -91,11 +94,12 @@ pub enum PrimitiveType {
     #[strum(to_string = "QName")]
     QName,
 
-    #[strum(to_string = "{0}")]
+    #[strum(transparent)]
     #[strum(default)]
     #[cfg(feature = "alloc")]
     Other(String),
     #[cfg(not(feature = "alloc"))]
+    #[strum(transparent)]
     Other(&'static str),
 }
 
@@ -150,9 +154,19 @@ impl PrimitiveType {
         }
     }
 
+    /// Returns the datatype IRI. Requires the `alloc` feature.
+    ///
+    /// Local names are expanded in the XSD namespace. Stored names containing
+    /// `:` are treated as absolute IRIs and returned unchanged, without validation
+    /// or prefix resolution.
     #[cfg(feature = "alloc")]
     pub fn iri_string(&self) -> Cow<'_, str> {
-        Cow::Owned(format!("{}{}", crate::BASE_URI, self))
+        let name = self.name();
+        if name.contains(':') {
+            Cow::Borrowed(name)
+        } else {
+            Cow::Owned(format!("{}{}", crate::BASE_URI, name))
+        }
     }
 }
 

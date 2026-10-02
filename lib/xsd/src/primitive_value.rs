@@ -5,21 +5,26 @@ use crate::{
     PrimitiveType,
     primitive::{Decimal, Double, Float},
 };
+use core::fmt;
 
 #[cfg(feature = "jiff")]
 use crate::primitive::{Date, DateTime, Duration, Time};
 
 #[cfg(feature = "alloc")]
-use strum_macros::Display;
+use ::alloc::{borrow::Cow, string::String, vec::Vec};
 
-#[cfg(feature = "alloc")]
-use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
+#[cfg(any(feature = "serde", feature = "bson"))]
+use ::alloc::format;
 
 /// Value representation for XSD primitive datatypes.
 ///
+/// [`Display`](core::fmt::Display) writes lexical content without a datatype
+/// label. Partial calendar fields are zero-padded; binary values use uppercase
+/// hexadecimal or padded Base64. Formatting does not validate stored fields or
+/// preserve the original spelling of a parsed literal.
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "alloc", derive(Display))]
 // #[cfg_attr(
 //     feature = "borsh",
 //     derive(borsh::BorshSerialize, borsh::BorshDeserialize) // FIXME: SignedDuration
@@ -28,87 +33,150 @@ use ::alloc::{borrow::Cow, format, string::String, vec::Vec};
 pub enum PrimitiveValue {
     /// See: <https://www.w3.org/TR/xmlschema-2/#string>
     #[cfg(feature = "alloc")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(String),
     #[cfg(not(feature = "alloc"))]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     String(&'static str),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#boolean>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Boolean(Boolean),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#decimal>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Decimal(Decimal),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#float>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Float(Float),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#double>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Double(Double),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#duration>
     #[cfg(feature = "jiff")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Duration(Duration),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#dateTime>
     #[cfg(feature = "jiff")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     DateTime(DateTime),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#time>
     #[cfg(feature = "jiff")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Time(Time),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#date>
     #[cfg(feature = "jiff")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     Date(Date),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
-    //#[cfg_attr(feature = "alloc", strum(to_string = "{0.0}-{0.1}"))]
     GYearMonth(GYearMonth),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#gYear>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GYear(GYear),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
-    //#[cfg_attr(feature = "alloc", strum(to_string = "{0}-{1}"))]
     GMonthDay(GMonthDay),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#gDay>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GDay(GDay),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#gMonth>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     GMonth(GMonth),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#hexBinary>
     #[cfg(feature = "alloc")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "HexBinary"))]
     HexBinary(Vec<u8>),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#base64Binary>
     #[cfg(feature = "alloc")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "Base64Binary"))]
     Base64Binary(Vec<u8>),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#anyURI>
     #[cfg(feature = "alloc")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
     AnyUri(String),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#QName>
     #[cfg(feature = "alloc")]
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}:{1}"))]
     QName(String, String),
+}
+
+impl fmt::Display for PrimitiveValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use PrimitiveValue::*;
+        match self {
+            String(s) => f.write_str(s),
+            Boolean(b) => b.fmt(f),
+            Decimal(d) => d.fmt(f),
+            Float(n) => n.fmt(f),
+            Double(n) => n.fmt(f),
+            #[cfg(feature = "jiff")]
+            Duration(d) => d.fmt(f),
+            #[cfg(feature = "jiff")]
+            DateTime(d) => d.fmt(f),
+            #[cfg(feature = "jiff")]
+            Time(t) => t.fmt(f),
+            #[cfg(feature = "jiff")]
+            Date(d) => d.fmt(f),
+            GYearMonth((y, m)) => {
+                fmt_year(*y, f)?;
+                write!(f, "-{m:02}")
+            },
+            GYear(y) => fmt_year(*y, f),
+            GMonthDay((m, d)) => write!(f, "--{m:02}-{d:02}"),
+            GDay(d) => write!(f, "---{d:02}"),
+            GMonth(m) => write!(f, "--{m:02}"),
+            #[cfg(feature = "alloc")]
+            HexBinary(bytes) => {
+                for byte in bytes {
+                    write!(f, "{byte:02X}")?;
+                }
+                Ok(())
+            },
+            #[cfg(feature = "alloc")]
+            Base64Binary(bytes) => fmt_base64(bytes, f),
+            #[cfg(feature = "alloc")]
+            AnyUri(uri) => f.write_str(uri),
+            #[cfg(feature = "alloc")]
+            QName(prefix, local) => {
+                if !prefix.is_empty() {
+                    write!(f, "{prefix}:")?;
+                }
+                f.write_str(local)
+            },
+        }
+    }
+}
+
+fn fmt_year(year: GYear, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    if year < 0 {
+        write!(f, "-{:04}", year.unsigned_abs())
+    } else {
+        write!(f, "{year:04}")
+    }
+}
+
+#[cfg(feature = "alloc")]
+fn fmt_base64(bytes: &[u8], f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    for chunk in bytes.chunks(3) {
+        let a = chunk[0];
+        let b = chunk.get(1).copied().unwrap_or(0);
+        let c = chunk.get(2).copied().unwrap_or(0);
+        write!(
+            f,
+            "{}{}{}{}",
+            ALPHABET[(a >> 2) as usize] as char,
+            ALPHABET[(((a & 3) << 4) | (b >> 4)) as usize] as char,
+            if chunk.len() > 1 {
+                ALPHABET[(((b & 15) << 2) | (c >> 6)) as usize] as char
+            } else {
+                '='
+            },
+            if chunk.len() > 2 {
+                ALPHABET[(c & 63) as usize] as char
+            } else {
+                '='
+            },
+        )?;
+    }
+    Ok(())
 }
 
 impl PrimitiveValue {

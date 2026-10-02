@@ -7,10 +7,10 @@ use crate::{
 };
 use strum_macros::Display;
 
-#[cfg(feature = "alloc")]
-use ::alloc::format;
-
 /// Value representation for `xsd:decimal` datatypes.
+///
+/// [`Display`](core::fmt::Display) writes the contained number without a datatype
+/// label, including when the `alloc` feature is disabled.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -21,27 +21,27 @@ use ::alloc::format;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DecimalValue {
     /// See: <https://www.w3.org/TR/xmlschema-2/#decimal>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Decimal(Decimal),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#integer>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Integer(Integer),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#long>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Long(Long),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#int>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Int(Int),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#short>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Short(Short),
 
     /// See: <https://www.w3.org/TR/xmlschema-2/#byte>
-    #[cfg_attr(feature = "alloc", strum(to_string = "{0}"))]
+    #[strum(transparent)]
     Byte(Byte),
 }
 

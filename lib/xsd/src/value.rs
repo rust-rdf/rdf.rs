@@ -17,6 +17,9 @@ use ::alloc::{borrow::Cow, string::String};
 /// Currently supports the primitive datatypes and the derived `xsd:decimal`
 /// datatypes.
 ///
+/// [`Display`](core::fmt::Display) delegates to the contained value's lexical
+/// formatting. It does not preserve the original spelling of a parsed literal.
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-dataValues>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // #[cfg_attr(
@@ -25,8 +28,10 @@ use ::alloc::{borrow::Cow, string::String};
 // )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Value {
+    #[strum(transparent)]
     Primitive(PrimitiveValue),
 
+    #[strum(transparent)]
     Decimal(DecimalValue),
 }
 
