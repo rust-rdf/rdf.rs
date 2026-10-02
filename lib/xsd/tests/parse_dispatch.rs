@@ -133,6 +133,36 @@ fn integer_errors_preserve_datatype_and_source() {
 }
 
 #[test]
+fn decimal_errors_preserve_datatype_and_source() {
+    use core::error::Error;
+
+    for datatype in [xsd::DECIMAL, Type::from(PrimitiveType::Decimal)] {
+        for input in [
+            "",
+            "not-a-decimal",
+            "79228162514264337593543950336",
+            "-79228162514264337593543950336",
+        ] {
+            let expected = xsd::parse_decimal(input).unwrap_err();
+            let error = xsd::parse(input, &datatype).unwrap_err();
+            assert!(matches!(
+                &error,
+                ParseError::InvalidDecimal { datatype: actual, .. } if actual == &datatype
+            ));
+            let source = error
+                .source()
+                .and_then(|source| source.downcast_ref::<xsd::ParseDecimalError>())
+                .expect("decimal parse errors must retain their cause");
+            assert_eq!(format!("{source:?}"), format!("{expected:?}"));
+            assert_eq!(source.to_string(), expected.to_string());
+            let message = error.to_string();
+            assert!(message.contains(datatype.curie()));
+            assert!(message.contains(&source.to_string()));
+        }
+    }
+}
+
+#[test]
 fn unsupported_error_identifies_the_datatype() {
     let error = xsd::parse("--12", xsd::G_MONTH).unwrap_err();
     assert_eq!(error.to_string(), "unsupported datatype: xsd:gMonth");

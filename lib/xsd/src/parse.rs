@@ -24,7 +24,8 @@ use crate::{
 /// the datatype, including unknown datatypes. String parsing requires `alloc`;
 /// date, time, dateTime, and duration parsing require `jiff` (enabled by `datetime`).
 /// Disabled capabilities return the same error. Integer-family parser failures
-/// return [`ParseError::InvalidInteger`] with the requested datatype and underlying
+/// return [`ParseError::InvalidInteger`]; decimal failures return
+/// [`ParseError::InvalidDecimal`]. Both retain the requested datatype and underlying
 /// error. Other failures from available parsers return [`ParseError::InvalidLiteral`].
 ///
 /// ```
@@ -37,7 +38,9 @@ use crate::{
 pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value, ParseError> {
     use crate::{DecimalType as D, PrimitiveType as P, Type::*};
     match datatype.into() {
-        Decimal(D::Decimal) => parse_decimal(input).map_err(|_| ParseError::InvalidLiteral),
+        datatype @ (Decimal(D::Decimal) | Primitive(P::Decimal)) => {
+            parse_decimal(input).map_err(|source| ParseError::InvalidDecimal { datatype, source })
+        },
         Decimal(D::Integer) => parse_integer(input).map_err(|source| ParseError::InvalidInteger {
             datatype: D::Integer,
             source,
@@ -61,7 +64,6 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError::InvalidLiteral),
-        Primitive(P::Decimal) => parse_decimal(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Float) => parse_float(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Double) => parse_double(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]

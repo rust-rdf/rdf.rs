@@ -57,6 +57,25 @@ pub enum ParseError {
         source: ParseIntegerError,
     },
 
+    /// An `xsd:decimal` parser failed.
+    ///
+    /// The backend error is retained, including any range or precision failure
+    /// it reports, and is also exposed through [`core::error::Error::source`].
+    ///
+    /// ```
+    /// let error = xsd::parse("not-a-decimal", xsd::DECIMAL).unwrap_err();
+    /// assert!(matches!(
+    ///     error,
+    ///     xsd::ParseError::InvalidDecimal { datatype, .. } if datatype == xsd::DECIMAL
+    /// ));
+    /// ```
+    InvalidDecimal {
+        /// The requested datatype, preserving its [`Type`] representation.
+        datatype: Type,
+        /// The original decimal backend error.
+        source: ParseDecimalError,
+    },
+
     /// No parser is available for this datatype in the enabled feature set.
     ///
     /// Includes unknown datatypes and datatypes whose required feature is disabled.
@@ -70,6 +89,9 @@ impl core::fmt::Display for ParseError {
             Self::InvalidInteger { datatype, source } => {
                 write!(f, "invalid {} literal: {source}", datatype.curie())
             },
+            Self::InvalidDecimal { datatype, source } => {
+                write!(f, "invalid {} literal: {source}", datatype.curie())
+            },
             Self::UnsupportedDatatype(datatype) => {
                 write!(f, "unsupported datatype: {}", datatype.curie())
             },
@@ -81,9 +103,14 @@ impl core::error::Error for ParseError {
     fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
         match self {
             Self::InvalidInteger { source, .. } => Some(source),
+            Self::InvalidDecimal { source, .. } => Some(source),
             _ => None,
         }
     }
 }
 
+/// An error reported by the backend when parsing an `xsd:decimal` literal.
+///
+/// Preserves the backend's diagnostics for malformed input and any reported
+/// representation limits.
 pub type ParseDecimalError = valuand::DecimalError;
