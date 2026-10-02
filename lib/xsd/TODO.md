@@ -33,14 +33,13 @@ history. Reproduce the relevant finding against the current code before editing.
 
 **Observed behavior:**
 
-- Boolean, floating-point, and temporal parser failures collapse to
-  `ParseError::InvalidLiteral`, losing the requested datatype and underlying cause.
+- Boolean and temporal parser failures collapse to `ParseError::InvalidLiteral`,
+  losing the requested datatype and underlying cause.
 
 **Subtasks and acceptance criteria:**
 
 Keep diagnostic error types usable without `std` or mandatory allocation.
 
-- [ ] Retain the datatype and underlying cause for float/double parsing failures.
 - [ ] Add datatype-aware diagnostics for boolean parsing failures.
 - [ ] Retain the datatype and underlying cause for temporal parsing failures
   when `jiff` is enabled.

@@ -25,8 +25,10 @@ use crate::{
 /// date, time, dateTime, and duration parsing require `jiff` (enabled by `datetime`).
 /// Disabled capabilities return the same error. Integer-family parser failures
 /// return [`ParseError::InvalidInteger`]; decimal failures return
-/// [`ParseError::InvalidDecimal`]. Both retain the requested datatype and underlying
-/// error. Other failures from available parsers return [`ParseError::InvalidLiteral`].
+/// [`ParseError::InvalidDecimal`]; float/double failures return
+/// [`ParseError::InvalidFloat`]. These numeric errors retain the requested datatype
+/// and underlying cause. Other failures from available parsers return
+/// [`ParseError::InvalidLiteral`].
 ///
 /// ```
 /// let error = xsd::parse("AQI=", xsd::BASE64_BINARY).unwrap_err();
@@ -64,8 +66,14 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError::InvalidLiteral),
-        Primitive(P::Float) => parse_float(input).map_err(|_| ParseError::InvalidLiteral),
-        Primitive(P::Double) => parse_double(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Float) => parse_float(input).map_err(|source| ParseError::InvalidFloat {
+            datatype: P::Float,
+            source,
+        }),
+        Primitive(P::Double) => parse_double(input).map_err(|source| ParseError::InvalidFloat {
+            datatype: P::Double,
+            source,
+        }),
         #[cfg(feature = "jiff")]
         Primitive(P::Duration) => parse_duration(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]

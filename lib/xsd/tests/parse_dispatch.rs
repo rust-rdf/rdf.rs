@@ -78,11 +78,9 @@ fn string_parser_with_alloc_preserves_owned_lexical_content() {
 
 #[test]
 fn invalid_literals_are_distinct_from_unsupported_datatypes() {
-    for (input, datatype) in [("maybe", xsd::BOOLEAN), ("not-a-number", xsd::DOUBLE)] {
-        let error = xsd::parse(input, datatype).unwrap_err();
-        assert!(matches!(error, ParseError::InvalidLiteral));
-        assert_eq!(error.to_string(), "invalid XSD literal");
-    }
+    let error = xsd::parse("maybe", xsd::BOOLEAN).unwrap_err();
+    assert!(matches!(error, ParseError::InvalidLiteral));
+    assert_eq!(error.to_string(), "invalid XSD literal");
     assert!(matches!(
         xsd::parse_boolean("maybe"),
         Err(ParseError::InvalidLiteral)
@@ -155,6 +153,34 @@ fn decimal_errors_preserve_datatype_and_source() {
                 .expect("decimal parse errors must retain their cause");
             assert_eq!(format!("{source:?}"), format!("{expected:?}"));
             assert_eq!(source.to_string(), expected.to_string());
+            let message = error.to_string();
+            assert!(message.contains(datatype.curie()));
+            assert!(message.contains(&source.to_string()));
+        }
+    }
+}
+
+#[test]
+fn floating_point_errors_preserve_datatype_and_source() {
+    use core::error::Error;
+
+    for datatype in [PrimitiveType::Float, PrimitiveType::Double] {
+        for input in ["", "not-a-number", "1e+", "1.2.3"] {
+            let expected = if datatype == PrimitiveType::Float {
+                xsd::parse_float(input).unwrap_err()
+            } else {
+                xsd::parse_double(input).unwrap_err()
+            };
+            let error = xsd::parse(input, datatype.clone()).unwrap_err();
+            assert!(matches!(
+                &error,
+                ParseError::InvalidFloat { datatype: actual, .. } if actual == &datatype
+            ));
+            let source = error
+                .source()
+                .and_then(|source| source.downcast_ref::<xsd::ParseFloatError>())
+                .expect("floating-point parse errors must retain their cause");
+            assert_eq!(source, &expected);
             let message = error.to_string();
             assert!(message.contains(datatype.curie()));
             assert!(message.contains(&source.to_string()));

@@ -13,6 +13,8 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("not-an-integer", Datatype::from(xsd::INT)),
         ("+00128", Datatype::from(xsd::BYTE)),
         ("not-a-decimal", Datatype::from(xsd::DECIMAL)),
+        ("not-a-float", Datatype::from(xsd::FLOAT)),
+        ("1e+", Datatype::from(xsd::DOUBLE)),
         (
             "79228162514264337593543950336",
             Datatype::from(xsd::DECIMAL),

@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use crate::{DecimalType, Type};
+use crate::{DecimalType, PrimitiveType, Type};
 
 /// An error encountered when parsing an `xsd:boolean` literal.
 pub type ParseBooleanError = ParseError;
@@ -76,6 +76,25 @@ pub enum ParseError {
         source: ParseDecimalError,
     },
 
+    /// An `xsd:float` or `xsd:double` parser failed.
+    ///
+    /// Retains the requested floating-point datatype and the original parser
+    /// error, also exposed through [`core::error::Error::source`].
+    ///
+    /// ```
+    /// let error = xsd::parse("1e+", xsd::DOUBLE).unwrap_err();
+    /// assert!(matches!(
+    ///     error,
+    ///     xsd::ParseError::InvalidFloat { datatype: xsd::PrimitiveType::Double, .. }
+    /// ));
+    /// ```
+    InvalidFloat {
+        /// The requested datatype: [`PrimitiveType::Float`] or [`PrimitiveType::Double`].
+        datatype: PrimitiveType,
+        /// The original parser error; [`ParseDoubleError`] uses the same underlying type.
+        source: ParseFloatError,
+    },
+
     /// No parser is available for this datatype in the enabled feature set.
     ///
     /// Includes unknown datatypes and datatypes whose required feature is disabled.
@@ -92,6 +111,9 @@ impl core::fmt::Display for ParseError {
             Self::InvalidDecimal { datatype, source } => {
                 write!(f, "invalid {} literal: {source}", datatype.curie())
             },
+            Self::InvalidFloat { datatype, source } => {
+                write!(f, "invalid {} literal: {source}", datatype.curie())
+            },
             Self::UnsupportedDatatype(datatype) => {
                 write!(f, "unsupported datatype: {}", datatype.curie())
             },
@@ -104,6 +126,7 @@ impl core::error::Error for ParseError {
         match self {
             Self::InvalidInteger { source, .. } => Some(source),
             Self::InvalidDecimal { source, .. } => Some(source),
+            Self::InvalidFloat { source, .. } => Some(source),
             _ => None,
         }
     }
