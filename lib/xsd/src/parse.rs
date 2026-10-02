@@ -232,7 +232,31 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 }
 
 /// Parses an input string containing an `xsd:date` literal.
+///
+/// Requires `jiff` (enabled by `datetime`). Inputs containing a time component
+/// are rejected instead of being truncated to their date component.
+///
+/// # Errors
+///
+/// Returns an error when the input contains a time component or cannot be
+/// parsed by the underlying civil-date parser.
+///
+/// ```
+/// assert!(xsd::parse_date("2026-12-31T12:34:56").is_err());
+/// assert_eq!(xsd::parse_date("2024-02-29").unwrap().to_string(), "2024-02-29");
+/// ```
 #[cfg(feature = "jiff")]
 pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
-    input.as_ref().parse::<Date>().map(Value::from)
+    let input = input.as_ref();
+    if jiff::fmt::temporal::DateTimeParser::new()
+        .parse_pieces(input)?
+        .time()
+        .is_some()
+    {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date literals must not contain a time component"
+        )));
+    }
+    // Preserve the civil-date parser's other checks, including offset handling.
+    input.parse::<Date>().map(Value::from)
 }

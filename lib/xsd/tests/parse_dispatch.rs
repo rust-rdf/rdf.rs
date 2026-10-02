@@ -207,6 +207,40 @@ fn floating_point_errors_preserve_datatype_and_source() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn date_parsers_reject_time_components() {
+    for input in [
+        "2026-12-31T00:00:00",
+        "2026-12-31T12:34:56",
+        "2026-12-31t12:34:56",
+        "2026-12-31 12:34:56",
+        "2026-12-31T12:34:56.125+02:00",
+        "2026-12-31T12:34:56Z",
+    ] {
+        let message = "xsd:date literals must not contain a time component";
+        assert_eq!(xsd::parse_date(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Date);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn date_parsers_accept_calendar_dates() {
+    for input in ["0001-01-01", "2024-02-29", "2026-12-31", "9999-12-31"] {
+        let value = xsd::parse_date(input).unwrap();
+        assert_eq!(value.r#type(), xsd::DATE);
+        assert_eq!(value.to_string(), input);
+        assert_eq!(xsd::parse(input, xsd::DATE).unwrap(), value);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn temporal_errors_preserve_datatype_and_source() {
     use core::error::Error;
 

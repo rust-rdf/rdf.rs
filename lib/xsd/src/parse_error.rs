@@ -27,7 +27,7 @@ pub type ParseDateTimeError = jiff::Error;
 #[cfg(feature = "jiff")]
 pub type ParseDurationError = jiff::Error;
 
-/// A temporal backend error exposed through [`core::error::Error`].
+/// A temporal parsing error exposed through [`core::error::Error`].
 ///
 /// Requires `jiff`. Retains the native error in its tuple field and provides the
 /// standard error trait across feature configurations, including `no_std`.
@@ -35,7 +35,7 @@ pub type ParseDurationError = jiff::Error;
 #[cfg(feature = "jiff")]
 #[derive(Debug)]
 pub struct ParseTemporalError(
-    /// The original Jiff parser error.
+    /// The underlying temporal parsing error, represented as a Jiff error.
     pub jiff::Error,
 );
 
