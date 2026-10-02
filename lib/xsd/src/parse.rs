@@ -223,6 +223,8 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 ///
 /// Requires `jiff` (enabled by `datetime`). The date and time components must
 /// be separated by uppercase ASCII `T`; lowercase `t` and space are rejected.
+/// The time must begin with two-digit hours, minutes, and seconds separated by
+/// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Numeric timezone offsets must be between `-14:00` and `+14:00`, inclusive.
 /// The returned civil value currently does not retain accepted timezone offsets.
 ///
@@ -230,13 +232,15 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 ///
 /// Returns an error when the input cannot be parsed by the underlying
 /// civil-dateTime parser, does not use the required uppercase `T` separator,
-/// or has a numeric timezone offset outside the XSD range.
+/// omits the required `hh:mm:ss` clock fields, or has a numeric timezone offset
+/// outside the XSD range.
 ///
 /// ```
 /// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
 /// assert_eq!(value.to_string(), "2026-12-31T12:34:56");
 /// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
+/// assert!(xsd::parse_datetime("2026-12-31T12:34").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56+14:00").is_ok());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56+14:01").is_err());
 /// ```
@@ -247,10 +251,19 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     // Jiff accepts T, t, or space here; XSD only permits uppercase T.
     let separator = input
         .bytes()
-        .find(|byte| matches!(byte, b'T' | b't' | b' '));
-    if separator != Some(b'T') {
+        .position(|byte| matches!(byte, b'T' | b't' | b' '));
+    let Some(separator) = separator.filter(|&index| input.as_bytes()[index] == b'T') else {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:dateTime literals require an uppercase T separator"
+        )));
+    };
+    // Jiff validates the digits and ranges; require all three clock fields.
+    if !matches!(
+        &input.as_bytes()[separator + 1..],
+        [_, _, b':', _, _, b':', _, _, ..]
+    ) {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime literals require hours, minutes, and seconds (hh:mm:ss)"
         )));
     }
     if jiff::fmt::temporal::DateTimeParser::new()

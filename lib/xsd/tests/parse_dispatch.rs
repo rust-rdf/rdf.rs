@@ -207,6 +207,28 @@ fn floating_point_errors_preserve_datatype_and_source() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_require_complete_clock_fields() {
+    for input in [
+        "2026-12-31T12:34",
+        "2026-12-31T00",
+        "2026-12-31T123456",
+        "2024-02-29T12:34+02:00",
+        "2026-12-31T12:34[Etc/UTC]",
+    ] {
+        let message = "xsd:dateTime literals require hours, minutes, and seconds (hh:mm:ss)";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_require_uppercase_t_separator() {
     for input in [
         "2026-12-31 12:34:56",
