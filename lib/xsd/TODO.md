@@ -52,9 +52,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Validate XSD offset bounds for `Date` and `Time` and make lossy Jiff conversions
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
-  validation, date components, fractional seconds, and `dateTime` second bounds
-  without leap-second clamping. Define supported year and fractional precision
-  ranges; report unsupported values explicitly.
+  validation, date components, and fractional seconds. Define supported year
+  and fractional precision ranges; report unsupported values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Test mixed components,
   negative durations, zero, and conversion limits.
