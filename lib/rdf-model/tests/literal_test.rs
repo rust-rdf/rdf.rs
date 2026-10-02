@@ -28,6 +28,8 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("2026-12-31T12:34:56-15:00", Datatype::from(xsd::DATE_TIME)),
         ("2026-12-31T12:34:56+14:01", Datatype::from(xsd::DATE_TIME)),
         ("25:00:00", Datatype::from(xsd::TIME)),
+        ("12:34:56,125", Datatype::from(xsd::TIME)),
+        ("12:34:56,125+02:00", Datatype::from(xsd::TIME)),
         ("12:34", Datatype::from(xsd::TIME)),
         ("12:34+02:00", Datatype::from(xsd::TIME)),
         ("123456", Datatype::from(xsd::TIME)),

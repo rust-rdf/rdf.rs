@@ -309,6 +309,22 @@ fn datetime_parsers_accept_in_range_offsets() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_reject_comma_fractional_seconds() {
+    for input in ["12:34:56,125", "00:00:00,000000001", "12:34:56,125+02:00"] {
+        let message = "xsd:time fractional seconds require a period separator";
+        assert_eq!(xsd::parse_time(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Time);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_require_complete_clock_fields() {
     for input in [
         "12:34",
