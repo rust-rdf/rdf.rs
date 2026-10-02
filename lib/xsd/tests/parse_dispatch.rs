@@ -246,6 +246,51 @@ fn datetime_parsers_accept_uppercase_t_separator() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_require_complete_clock_fields() {
+    for input in [
+        "12:34",
+        "00:00",
+        "23:59",
+        "12",
+        "1234",
+        "123456",
+        "12:34+02:00",
+        "12:34-02:00",
+        "12:34[Etc/UTC]",
+        "2026-12-31T12:34:56",
+    ] {
+        let message = "xsd:time literals require hours, minutes, and seconds (hh:mm:ss)";
+        assert_eq!(xsd::parse_time(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Time);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn time_parsers_accept_complete_clock_fields() {
+    for input in [
+        "00:00:00",
+        "12:34:00",
+        "12:34:56",
+        "12:34:56.125",
+        "00:00:00.000000001",
+        "23:59:59.123456789",
+    ] {
+        let value = xsd::parse_time(input).unwrap();
+        assert_eq!(value.r#type(), xsd::TIME);
+        assert_eq!(value.to_string(), input);
+        assert_eq!(xsd::parse(input, xsd::TIME).unwrap(), value);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn date_parsers_reject_time_components() {
     for input in [
         "2026-12-31T00:00:00",

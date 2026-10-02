@@ -252,9 +252,32 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 }
 
 /// Parses an input string containing an `xsd:time` literal.
+///
+/// Requires `jiff` (enabled by `datetime`). Inputs must begin with two-digit
+/// hours, minutes, and seconds separated by colons (`hh:mm:ss`). Seconds may
+/// include a fractional part; omitted clock fields are not filled in with zero.
+///
+/// # Errors
+///
+/// Returns an error when the input cannot be parsed by the underlying civil-time
+/// parser or does not begin with the required `hh:mm:ss` clock fields.
+///
+/// ```
+/// assert!(xsd::parse_time("12:34").is_err());
+/// assert_eq!(xsd::parse_time("12:34:00").unwrap().to_string(), "12:34:00");
+/// assert_eq!(xsd::parse_time("12:34:56.125").unwrap().to_string(), "12:34:56.125");
+/// ```
 #[cfg(feature = "jiff")]
 pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
-    input.as_ref().parse::<Time>().map(Value::from)
+    let input = input.as_ref();
+    let time = input.parse::<Time>()?;
+    // Jiff validates the digits and ranges; require all three colon-separated fields.
+    if !matches!(input.as_bytes(), [_, _, b':', _, _, b':', _, _, ..]) {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:time literals require hours, minutes, and seconds (hh:mm:ss)"
+        )));
+    }
+    Ok(Value::from(time))
 }
 
 /// Parses an input string containing an `xsd:date` literal.

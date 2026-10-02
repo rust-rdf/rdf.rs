@@ -43,7 +43,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56-15:00` | Accepted; invalid XSD offset discarded |
 | `xsd::TIME` | `12:34:56+02:00` | Accepted; offset discarded |
-| `xsd::TIME` | `12:34` | Accepted despite missing seconds |
 | `xsd::TIME` | `24:00:00` | Rejected despite valid XSD end-of-day notation |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
 
