@@ -13,6 +13,7 @@ Rust 2024 workspace; declared MSRV 1.97. Work within this repository; do not ins
 
 ## Implementation
 
+- For XSD enhancements, read [lib/xsd/TODO.md](lib/xsd/TODO.md). Work in atomic, narrowly scoped changes and update the relevant backlog item after verification.
 - Read the target crate's `Cargo.toml` and `src/lib.rs` first. Confirm module declarations/re-exports: a file or feature name does not imply a working API. Many crates, examples, and methods are scaffolds.
 - Shared versions/dependencies and local `[patch.crates-io]` entries live in root `Cargo.toml`. Follow workspace inheritance and existing module/re-export conventions.
 - Do not add unsafe Rust. Internal dependencies disable defaults: forward required features explicitly. Preserve `no_std`, `alloc`/`std` gates and optional interop boundaries. Heap storage and Tokio I/O require `std`; transaction traits require `alloc`.
