@@ -220,9 +220,35 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 }
 
 /// Parses an input string containing an `xsd:dateTime` literal.
+///
+/// Requires `jiff` (enabled by `datetime`). The date and time components must
+/// be separated by uppercase ASCII `T`; lowercase `t` and space are rejected.
+///
+/// # Errors
+///
+/// Returns an error when the input cannot be parsed by the underlying
+/// civil-dateTime parser or does not use the required uppercase `T` separator.
+///
+/// ```
+/// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
+/// assert_eq!(value.to_string(), "2026-12-31T12:34:56");
+/// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
+/// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
+/// ```
 #[cfg(feature = "jiff")]
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
-    input.as_ref().parse::<DateTime>().map(Value::from)
+    let input = input.as_ref();
+    let datetime = input.parse::<DateTime>()?;
+    // Jiff accepts T, t, or space here; XSD only permits uppercase T.
+    let separator = input
+        .bytes()
+        .find(|byte| matches!(byte, b'T' | b't' | b' '));
+    if separator != Some(b'T') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime literals require an uppercase T separator"
+        )));
+    }
+    Ok(Value::from(datetime))
 }
 
 /// Parses an input string containing an `xsd:time` literal.

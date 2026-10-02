@@ -207,6 +207,45 @@ fn floating_point_errors_preserve_datatype_and_source() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_require_uppercase_t_separator() {
+    for input in [
+        "2026-12-31 12:34:56",
+        "2026-12-31t12:34:56",
+        "2024-02-29 00:00:00.125+02:00",
+        "2026-12-31t12:34:56.125-02:00",
+        "2026-12-31 12:34:56[Etc/UTC]",
+        "2026-12-31t12:34:56[Etc/UTC]",
+    ] {
+        let message = "xsd:dateTime literals require an uppercase T separator";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn datetime_parsers_accept_uppercase_t_separator() {
+    for input in [
+        "0001-01-01T00:00:00",
+        "2024-02-29T00:00:00.125",
+        "2026-12-31T12:34:56",
+        "9999-12-31T23:59:59.123456789",
+    ] {
+        let value = xsd::parse_datetime(input).unwrap();
+        assert_eq!(value.r#type(), xsd::DATE_TIME);
+        assert_eq!(value.to_string(), input);
+        assert_eq!(xsd::parse(input, xsd::DATE_TIME).unwrap(), value);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn date_parsers_reject_time_components() {
     for input in [
         "2026-12-31T00:00:00",
