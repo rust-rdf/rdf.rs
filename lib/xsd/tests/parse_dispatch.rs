@@ -484,6 +484,28 @@ fn time_parsers_accept_complete_clock_fields() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn date_parsers_reject_bracketed_annotations() {
+    for input in [
+        "2026-12-31[Europe/Paris]",
+        "2026-12-31[!Europe/Paris]",
+        "2026-12-31[+02:00]",
+        "2024-02-29[u-ca=iso8601]",
+        "2026-12-31[Europe/Paris][u-ca=iso8601]",
+    ] {
+        let message = "xsd:date literals must not contain bracketed annotations";
+        assert_eq!(xsd::parse_date(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Date);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn date_parsers_reject_time_components() {
     for input in [
         "2026-12-31T00:00:00",

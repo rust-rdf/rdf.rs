@@ -364,14 +364,17 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 ///
 /// Requires `jiff` (enabled by `datetime`). Inputs containing a time component
 /// are rejected instead of being truncated to their date component.
+/// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
+/// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
 /// # Errors
 ///
-/// Returns an error when the input contains a time component or cannot be
-/// parsed by the underlying civil-date parser.
+/// Returns an error when the input contains a time component, contains bracketed
+/// annotations, or cannot be parsed by the underlying civil-date parser.
 ///
 /// ```
 /// assert!(xsd::parse_date("2026-12-31T12:34:56").is_err());
+/// assert!(xsd::parse_date("2026-12-31[Europe/Paris]").is_err());
 /// assert_eq!(xsd::parse_date("2024-02-29").unwrap().to_string(), "2024-02-29");
 /// ```
 #[cfg(feature = "jiff")]
@@ -387,5 +390,12 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         )));
     }
     // Preserve the civil-date parser's other checks, including offset handling.
-    input.parse::<Date>().map(Value::from)
+    let date = input.parse::<Date>()?;
+    // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
+    if input.as_bytes().contains(&b'[') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date literals must not contain bracketed annotations"
+        )));
+    }
+    Ok(Value::from(date))
 }
