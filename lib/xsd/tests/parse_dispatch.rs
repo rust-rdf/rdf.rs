@@ -335,6 +335,41 @@ fn datetime_parsers_accept_uppercase_t_separator() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_require_xsd_numeric_offset_syntax() {
+    for offset in [
+        "+02",
+        "-02",
+        "+0200",
+        "-0200",
+        "+02:00:00",
+        "-02:00:01",
+        "+02:00:00.5",
+        "-02:00:00,5",
+        "+14",
+        "-1400",
+        "+14:00:00.000000001",
+        "-14:00:00.000000001",
+    ] {
+        for datetime in ["2026-12-31T12:34:56", "2024-02-29T12:34:56.125"] {
+            let input = format!("{datetime}{offset}");
+            let message = "xsd:dateTime numeric timezone offsets require +hh:mm or -hh:mm";
+            assert_eq!(
+                xsd::parse_datetime(&input).unwrap_err().to_string(),
+                message
+            );
+            let ParseError::InvalidTemporal { datatype, source } =
+                xsd::parse(&input, xsd::DATE_TIME).unwrap_err()
+            else {
+                panic!("expected a temporal parse error for {input}");
+            };
+            assert_eq!(datatype, PrimitiveType::DateTime);
+            assert_eq!(source.to_string(), message);
+        }
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_reject_out_of_range_offsets() {
     for input in [
         "2026-12-31T12:34:56-15:00",
