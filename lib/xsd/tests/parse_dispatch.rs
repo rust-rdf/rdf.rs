@@ -373,6 +373,28 @@ fn time_parsers_require_complete_clock_fields() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_reject_leap_seconds() {
+    for input in [
+        "23:59:60",
+        "12:34:60",
+        "23:59:60.125",
+        "23:59:60+02:00",
+        "23:59:60-02:00",
+    ] {
+        let message = "xsd:time seconds must be less than 60";
+        assert_eq!(xsd::parse_time(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Time);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_accept_complete_clock_fields() {
     for input in [
         "00:00:00",
@@ -381,6 +403,7 @@ fn time_parsers_accept_complete_clock_fields() {
         "12:34:56.125",
         "00:00:00.000000001",
         "23:59:59.123456789",
+        "23:59:59.999999999",
     ] {
         let value = xsd::parse_time(input).unwrap();
         assert_eq!(value.r#type(), xsd::TIME);

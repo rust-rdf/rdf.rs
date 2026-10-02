@@ -291,16 +291,19 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// hours, minutes, and seconds separated by colons (`hh:mm:ss`). Seconds may
 /// include a fractional part; omitted clock fields are not filled in with zero.
 /// Fractional seconds use a period separator; a comma is rejected.
+/// Seconds must be less than 60; leap seconds are rejected rather than clamped
+/// to 59 by the underlying parser.
 ///
 /// # Errors
 ///
 /// Returns an error when the input cannot be parsed by the underlying civil-time
-/// parser, does not begin with the required `hh:mm:ss` clock fields, or uses a
-/// comma to separate fractional seconds.
+/// parser, does not begin with the required `hh:mm:ss` clock fields, uses a
+/// comma to separate fractional seconds, or specifies a leap second.
 ///
 /// ```
 /// assert!(xsd::parse_time("12:34").is_err());
 /// assert!(xsd::parse_time("12:34:56,125").is_err());
+/// assert!(xsd::parse_time("23:59:60").is_err());
 /// assert_eq!(xsd::parse_time("12:34:00").unwrap().to_string(), "12:34:00");
 /// assert_eq!(xsd::parse_time("12:34:56.125").unwrap().to_string(), "12:34:56.125");
 /// ```
@@ -317,6 +320,12 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     if input.as_bytes().get(8) == Some(&b',') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:time fractional seconds require a period separator"
+        )));
+    }
+    // Jiff accepts leap seconds and clamps them to 59, losing the input value.
+    if &input.as_bytes()[6..8] == b"60" {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:time seconds must be less than 60"
         )));
     }
     Ok(Value::from(time))
