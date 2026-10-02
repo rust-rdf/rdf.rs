@@ -376,6 +376,36 @@ fn datetime_parsers_accept_in_range_offsets() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_require_xsd_numeric_offset_syntax() {
+    for offset in [
+        "+02",
+        "-02",
+        "+0200",
+        "-0200",
+        "+02:00:00",
+        "-02:00:01",
+        "+02:00:00.5",
+        "-02:00:00,5",
+        "+14",
+        "-1400",
+    ] {
+        for time in ["12:34:56", "12:34:56.125"] {
+            let input = format!("{time}{offset}");
+            let message = "xsd:time numeric timezone offsets require +hh:mm or -hh:mm";
+            assert_eq!(xsd::parse_time(&input).unwrap_err().to_string(), message);
+            let ParseError::InvalidTemporal { datatype, source } =
+                xsd::parse(&input, xsd::TIME).unwrap_err()
+            else {
+                panic!("expected a temporal parse error for {input}");
+            };
+            assert_eq!(datatype, PrimitiveType::Time);
+            assert_eq!(source.to_string(), message);
+        }
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_reject_out_of_range_offsets() {
     for input in [
         "12:34:56-15:00",
