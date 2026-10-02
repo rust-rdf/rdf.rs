@@ -49,7 +49,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 - [ ] Model optional timezone offsets and distinguish an absent timezone from
   UTC. Preserve the represented value through parsing, formatting, and conversion.
-  Validate XSD offset bounds for `Date` and `Time` and make lossy Jiff conversions
+  Validate XSD offset bounds for `Date` and make lossy Jiff conversions
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
   validation, date components, and fractional seconds. Define supported year

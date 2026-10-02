@@ -376,6 +376,50 @@ fn datetime_parsers_accept_in_range_offsets() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_reject_out_of_range_offsets() {
+    for input in [
+        "12:34:56-15:00",
+        "12:34:56+15:00",
+        "12:34:56-14:01",
+        "00:00:00.125+14:01",
+        "12:34:56-23:59",
+        "12:34:56+23:59",
+        "12:34:56-14:00:01",
+        "12:34:56+14:00:01",
+        "12:34:56-14:00:00.000000001",
+        "12:34:56+14:00:00.000000001",
+        "12:34:56+15",
+        "12:34:56-1500",
+    ] {
+        let message = "xsd:time timezone offsets must be between -14:00 and +14:00";
+        assert_eq!(xsd::parse_time(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Time);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn time_parsers_accept_in_range_offsets() {
+    for offset in [
+        "-14:00", "+14:00", "-13:59", "+13:59", "-00:00", "+00:00", "+02:00",
+    ] {
+        for time in ["00:00:00", "12:34:56.125", "23:59:59.999999999"] {
+            let input = format!("{time}{offset}");
+            let value = xsd::parse_time(&input).unwrap();
+            assert_eq!(value.r#type(), xsd::TIME);
+            assert_eq!(xsd::parse(&input, xsd::TIME).unwrap(), value);
+        }
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_reject_bracketed_annotations() {
     for input in [
         "12:34:56[Europe/Paris]",
