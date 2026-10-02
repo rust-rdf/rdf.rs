@@ -15,30 +15,46 @@ use crate::{
 };
 
 /// Parses an input string containing an XSD literal.
+///
+/// # Errors
+///
+/// Returns [`ParseError::UnsupportedDatatype`] when no parser is available for
+/// the datatype, including unknown datatypes. String parsing requires `alloc`;
+/// date, time, dateTime, and duration parsing require `jiff` (enabled by `datetime`).
+/// Disabled capabilities return the same error. Failures from available parsers
+/// return [`ParseError::InvalidLiteral`].
+///
+/// ```
+/// let error = xsd::parse("AQI=", xsd::BASE64_BINARY).unwrap_err();
+/// assert!(matches!(
+///     error,
+///     xsd::ParseError::UnsupportedDatatype(datatype) if datatype == xsd::BASE64_BINARY
+/// ));
+/// ```
 pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value, ParseError> {
     use crate::{DecimalType as D, PrimitiveType as P, Type::*};
     match datatype.into() {
-        Decimal(D::Decimal) => parse_decimal(input).map_err(|_| ParseError),
-        Decimal(D::Integer) => parse_integer(input).map_err(|_| ParseError),
-        Decimal(D::Long) => parse_long(input).map_err(|_| ParseError),
-        Decimal(D::Int) => parse_int(input).map_err(|_| ParseError),
-        Decimal(D::Short) => parse_short(input).map_err(|_| ParseError),
-        Decimal(D::Byte) => parse_byte(input).map_err(|_| ParseError),
-        Primitive(P::String) => parse_string(input).map_err(|_| ParseError),
-        Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError),
-        Primitive(P::Decimal) => parse_decimal(input).map_err(|_| ParseError),
-        Primitive(P::Float) => parse_float(input).map_err(|_| ParseError),
-        Primitive(P::Double) => parse_double(input).map_err(|_| ParseError),
+        Decimal(D::Decimal) => parse_decimal(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Integer) => parse_integer(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Long) => parse_long(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Int) => parse_int(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Short) => parse_short(input).map_err(|_| ParseError::InvalidLiteral),
+        Decimal(D::Byte) => parse_byte(input).map_err(|_| ParseError::InvalidLiteral),
+        #[cfg(feature = "alloc")]
+        Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Decimal) => parse_decimal(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Float) => parse_float(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Double) => parse_double(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]
-        Primitive(P::Duration) => parse_duration(input).map_err(|_| ParseError),
+        Primitive(P::Duration) => parse_duration(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]
-        Primitive(P::DateTime) => parse_datetime(input).map_err(|_| ParseError),
+        Primitive(P::DateTime) => parse_datetime(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]
-        Primitive(P::Time) => parse_time(input).map_err(|_| ParseError),
+        Primitive(P::Time) => parse_time(input).map_err(|_| ParseError::InvalidLiteral),
         #[cfg(feature = "jiff")]
-        Primitive(P::Date) => parse_date(input).map_err(|_| ParseError),
-        Primitive(_) => todo!(),      // TODO
-        Other(_) => unimplemented!(), // TODO
+        Primitive(P::Date) => parse_date(input).map_err(|_| ParseError::InvalidLiteral),
+        datatype => Err(ParseError::UnsupportedDatatype(datatype)),
     }
 }
 
@@ -106,12 +122,16 @@ pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, Infallible> {
 }
 
 /// Parses an input string containing an `xsd:boolean` literal.
+///
+/// # Errors
+///
+/// Returns [`ParseError::InvalidLiteral`] when the literal cannot be parsed.
 pub fn parse_boolean(input: impl AsRef<str>) -> Result<Value, ParseBooleanError> {
     input
         .as_ref()
         .parse::<Boolean>()
         .map(Value::from)
-        .map_err(|_| ParseError)
+        .map_err(|_| ParseError::InvalidLiteral)
 }
 
 /// Parses an input string containing an `xsd:float` literal.

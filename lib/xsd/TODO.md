@@ -11,7 +11,7 @@ history. Reproduce the relevant finding against the current code before editing.
 - Use atomic commits: select one narrowly scoped subtask, include its regression
   tests and rustdoc, and verify it before moving on. The numbered sections are
   milestones, not instructions to implement an entire section in one change.
-- Start with **#2, fallible parser dispatch**. Prioritize panics and information
+- Start with **#2, allocation-free string parsing**. Prioritize panics and information
   loss before expanding datatype coverage. Add tests alongside each fix; #8 is
   also an ongoing concern.
 - Preserve `no_std`, allocation-free configurations, and optional interoperability
@@ -33,32 +33,19 @@ history. Reproduce the relevant finding against the current code before editing.
 
 **Observed behavior:**
 
-- `xsd::parse("--12", xsd::G_MONTH)` and
-  `xsd::parse("AQI=", xsd::BASE64_BINARY)` panic. All five `g*` datatypes,
-  both binary datatypes, `anyURI`, and `QName` reach an unimplemented branch.
-- `xsd::parse("42", xsd::Type::from("urn:example:datatype"))` panics.
-  Unrecognized XSD names such as `unsignedInt` take the same `Other` branch.
-- With `jiff` disabled, date/time datatype dispatch also panics.
-- Without `alloc`, `parse_string()` always panics despite its
+- Without `alloc`, directly calling `parse_string()` panics despite its
   `Result<Value, Infallible>` signature.
-- The unit struct `ParseError` reports only `"parse error"`; dispatch discards
-  errors from the underlying parsers.
+- `ParseError::InvalidLiteral` retains neither the datatype nor the underlying
+  parser's cause, so lexical and range failures are indistinguishable.
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Replace the dispatcher's unsupported/custom/disabled datatype panic paths
-  with meaningful errors. Test each dispatch category and disabled-feature
-  behavior. Unsupported input must not produce a fabricated value.
-- [ ] Add structured diagnostics for invalid lexical forms and range/precision
-  failures, preserving useful underlying causes where possible. Keep error types
-  usable without `std` or mandatory allocation. Account for callers that currently
-  construct the unit value `ParseError` directly.
 - [ ] Give allocation-free string parsing an honest API: resolve its ownership
   and lifetime requirements or expose a fallible unsupported path. Remove the
   panic-only `Infallible` contract.
-- [ ] Verify the RDF fallback: `HeapTerm::from((String, Datatype))` must retain
-  the original lexical form and datatype as a `TypedLiteral` when XSD parsing
-  fails. Its current fallback handles `Err`, but cannot recover from a panic.
+- [ ] Add structured diagnostics for invalid lexical forms and range/precision
+  failures, preserving useful underlying causes where possible. Keep error types
+  usable without `std` or mandatory allocation.
 
 ## 3. Introduce XSD-aware temporal representations — high priority
 
@@ -228,7 +215,7 @@ Implement one datatype or tightly related family per change, in this order:
 For each addition, require datatype lookup/constants, value representation,
 validation, parsing, formatting, hierarchy information, feature behavior, and
 positive/negative round-trip tests. Check serialization compatibility when
-extending enums. Keep unsupported cases on the fallible path established by #2.
+extending enums. Unsupported cases must return meaningful errors.
 
 ## 8. Extend behavioral tests and document capability boundaries
 

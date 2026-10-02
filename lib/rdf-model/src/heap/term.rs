@@ -5,7 +5,7 @@ use alloc::{
     borrow::Cow,
     string::{String, ToString},
 };
-use xsd::{DecimalValue, ParseError, PrimitiveValue, Value, primitive::Boolean};
+use xsd::{DecimalValue, PrimitiveValue, Value, primitive::Boolean};
 
 type Language = String; // TODO
 
@@ -274,11 +274,14 @@ impl From<(String, Language)> for HeapTerm {
     }
 }
 
+/// Parses supported XSD literals, retaining the original lexical form and datatype
+/// as a [`HeapTerm::TypedLiteral`] when parsing fails or is unsupported.
+/// Requires the `alloc` feature.
 impl From<(String, Datatype)> for HeapTerm {
     fn from((literal, datatype): (String, Datatype)) -> Self {
         let result = match &datatype {
             Datatype::Xsd(t) => xsd::parse(&literal, t),
-            _ => Err(ParseError),
+            _ => return Self::TypedLiteral(literal, datatype),
         };
         match result {
             Ok(value) => Self::TypedValue(value),
