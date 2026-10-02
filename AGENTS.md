@@ -1,6 +1,6 @@
 # Working in RDF.rs
 
-Rust 2024 workspace; declared MSRV 1.85. Work within this repository; do not inspect parent directories. Preserve unrelated user changes.
+Rust 2024 workspace; declared MSRV 1.97. Work within this repository; do not inspect parent directories. Preserve unrelated user changes.
 
 ## Map
 

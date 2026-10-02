@@ -44,17 +44,18 @@ task :default => %w[README.md] +
   READER_CRATES.map { |c| "lib/#{c}/README.md" } +
   WRITER_CRATES.map { |c| "lib/#{c}/README.md" } +
   STORE_CRATES.map { |c| "lib/#{c}/README.md" }
-file 'README.md' => %w[.config/codegen/README.md.liquid], &codegen
+file 'README.md' => %w[.config/codegen/README.md.liquid Cargo.toml Rakefile], &codegen
 
 CRATES.each do |crate_name|
   package = Package.new(crate_name)
   crate_codegen = codegen(package: package.to_h)
-  file "lib/#{package.name}/README.md" => %W[.config/codegen/rdf-#{package.kind}/README.md.liquid], &crate_codegen
+  file "lib/#{package.name}/README.md" => %W[.config/codegen/rdf-#{package.kind}/README.md.liquid #{package.path}/Cargo.toml Cargo.toml Rakefile], &crate_codegen
 end
 
 CONTEXT = {
   project: {
     title: "RDF.rs",
+    rust_version: Lvr::Rust::Manifest.load('Cargo.toml').to_h.dig(:workspace, :package, :'rust-version'),
   },
   github: {
     repository: {

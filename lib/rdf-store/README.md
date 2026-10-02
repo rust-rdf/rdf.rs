@@ -1,7 +1,7 @@
 # RDF.rs: Heap Store
 
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://unlicense.org)
-[![Compatibility](https://img.shields.io/badge/rust-1.85%2B-blue)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
+[![Compatibility](https://img.shields.io/badge/rust-1.97%2B-blue)](https://releases.rs/docs/1.97.0/)
 [![Package](https://img.shields.io/crates/v/rdf-store)](https://crates.io/crates/rdf-store)
 [![Documentation](https://docs.rs/rdf-store/badge.svg)](https://docs.rs/rdf-store)
 
@@ -33,7 +33,7 @@ An in-memory storage adapter for **[RDF.rs]** knowledge graphs.
 
 ## 🛠️ Prerequisites
 
-- [Rust] 1.85+ (2024 edition)
+- [Rust] 1.97+ (2024 edition)
 
 ## ⬇️ Installation
 
