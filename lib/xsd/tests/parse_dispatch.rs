@@ -246,6 +246,47 @@ fn datetime_parsers_accept_uppercase_t_separator() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_reject_out_of_range_offsets() {
+    for input in [
+        "2026-12-31T12:34:56-15:00",
+        "2026-12-31T12:34:56+15:00",
+        "2026-12-31T12:34:56-14:01",
+        "2024-02-29T00:00:00.125+14:01",
+        "2026-12-31T12:34:56-23:59",
+        "2026-12-31T12:34:56+23:59",
+        "2026-12-31T12:34:56-14:00:01",
+        "2026-12-31T12:34:56+14:00:01",
+        "2026-12-31T12:34:56+15",
+        "2026-12-31T12:34:56-1500",
+        "2026-12-31T12:34:56-15:00[Etc/UTC]",
+    ] {
+        let message = "xsd:dateTime timezone offsets must be between -14:00 and +14:00";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn datetime_parsers_accept_in_range_offsets() {
+    for offset in [
+        "-14:00", "+14:00", "-13:59", "+13:59", "-00:00", "+00:00", "+02:00",
+    ] {
+        let input = format!("2024-02-29T12:34:56.125{offset}");
+        let value = xsd::parse_datetime(&input).unwrap();
+        assert_eq!(value.r#type(), xsd::DATE_TIME);
+        assert_eq!(xsd::parse(&input, xsd::DATE_TIME).unwrap(), value);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_require_complete_clock_fields() {
     for input in [
         "12:34",

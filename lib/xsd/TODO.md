@@ -41,7 +41,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
 | --- | --- | --- |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
-| `xsd::DATE_TIME` | `2026-12-31T12:34:56-15:00` | Accepted; invalid XSD offset discarded |
 | `xsd::TIME` | `12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::TIME` | `24:00:00` | Rejected despite valid XSD end-of-day notation |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
@@ -50,7 +49,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 - [ ] Model optional timezone offsets and distinguish an absent timezone from
   UTC. Preserve the represented value through parsing, formatting, and conversion.
-  Validate XSD offset bounds and make lossy Jiff conversions explicit/fallible.
+  Validate XSD offset bounds for `Date` and `Time` and make lossy Jiff conversions
+  explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
   validation, required components, and fractional seconds. Define supported year
   and fractional precision ranges; report unsupported values explicitly.
