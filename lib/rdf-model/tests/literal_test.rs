@@ -17,6 +17,10 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("1e+", Datatype::from(xsd::DOUBLE)),
         ("TRUE", Datatype::from(xsd::BOOLEAN)),
         ("2", Datatype::from(xsd::BOOLEAN)),
+        ("2026-02-29", Datatype::from(xsd::DATE)),
+        ("2026-12-31T25:00:00", Datatype::from(xsd::DATE_TIME)),
+        ("25:00:00", Datatype::from(xsd::TIME)),
+        ("not-a-duration", Datatype::from(xsd::DURATION)),
         (
             "79228162514264337593543950336",
             Datatype::from(xsd::DECIMAL),

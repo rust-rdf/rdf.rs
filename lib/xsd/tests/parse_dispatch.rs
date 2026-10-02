@@ -206,6 +206,49 @@ fn floating_point_errors_preserve_datatype_and_source() {
 }
 
 #[test]
+#[cfg(feature = "jiff")]
+fn temporal_errors_preserve_datatype_and_source() {
+    use core::error::Error;
+
+    for (datatype, inputs) in [
+        (PrimitiveType::Date, ["", "not-a-date", "2026-02-29"]),
+        (
+            PrimitiveType::DateTime,
+            ["", "not-a-datetime", "2026-12-31T25:00:00"],
+        ),
+        (PrimitiveType::Time, ["", "not-a-time", "25:00:00"]),
+        (
+            PrimitiveType::Duration,
+            ["", "not-a-duration", "PT999999999999999999999999999999S"],
+        ),
+    ] {
+        for input in inputs {
+            let expected = match &datatype {
+                PrimitiveType::Date => xsd::parse_date(input).unwrap_err(),
+                PrimitiveType::DateTime => xsd::parse_datetime(input).unwrap_err(),
+                PrimitiveType::Time => xsd::parse_time(input).unwrap_err(),
+                PrimitiveType::Duration => xsd::parse_duration(input).unwrap_err(),
+                _ => unreachable!(),
+            };
+            let error = xsd::parse(input, datatype.clone()).unwrap_err();
+            assert!(matches!(
+                &error,
+                ParseError::InvalidTemporal { datatype: actual, .. } if actual == &datatype
+            ));
+            let source = error
+                .source()
+                .and_then(|source| source.downcast_ref::<xsd::ParseTemporalError>())
+                .expect("temporal parse errors must retain their cause");
+            assert_eq!(format!("{:?}", source.0), format!("{expected:?}"));
+            assert_eq!(source.to_string(), expected.to_string());
+            let message = error.to_string();
+            assert!(message.contains(datatype.curie()));
+            assert!(message.contains(&source.to_string()));
+        }
+    }
+}
+
+#[test]
 fn unsupported_error_identifies_the_datatype() {
     let error = xsd::parse("--12", xsd::G_MONTH).unwrap_err();
     assert_eq!(error.to_string(), "unsupported datatype: xsd:gMonth");

@@ -12,7 +12,7 @@ use core::convert::Infallible;
 
 #[cfg(feature = "jiff")]
 use crate::{
-    ParseDateTimeError, ParseDurationError,
+    ParseDateTimeError, ParseDurationError, ParseTemporalError,
     primitive::{Date, DateTime, Duration, Time},
 };
 
@@ -28,7 +28,10 @@ use crate::{
 /// [`ParseError::InvalidDecimal`]; float/double failures return
 /// [`ParseError::InvalidFloat`]. These numeric errors retain the requested datatype
 /// and underlying cause. Boolean failures return [`ParseError::InvalidBoolean`].
-/// Other failures from available parsers return [`ParseError::InvalidLiteral`].
+#[cfg_attr(
+    feature = "jiff",
+    doc = "Temporal failures return [`ParseError::InvalidTemporal`], retaining the requested datatype and original Jiff error."
+)]
 ///
 /// ```
 /// let error = xsd::parse("AQI=", xsd::BASE64_BINARY).unwrap_err();
@@ -75,13 +78,29 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
             source,
         }),
         #[cfg(feature = "jiff")]
-        Primitive(P::Duration) => parse_duration(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Duration) => {
+            parse_duration(input).map_err(|source| ParseError::InvalidTemporal {
+                datatype: P::Duration,
+                source: ParseTemporalError(source),
+            })
+        },
         #[cfg(feature = "jiff")]
-        Primitive(P::DateTime) => parse_datetime(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::DateTime) => {
+            parse_datetime(input).map_err(|source| ParseError::InvalidTemporal {
+                datatype: P::DateTime,
+                source: ParseTemporalError(source),
+            })
+        },
         #[cfg(feature = "jiff")]
-        Primitive(P::Time) => parse_time(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Time) => parse_time(input).map_err(|source| ParseError::InvalidTemporal {
+            datatype: P::Time,
+            source: ParseTemporalError(source),
+        }),
         #[cfg(feature = "jiff")]
-        Primitive(P::Date) => parse_date(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Date) => parse_date(input).map_err(|source| ParseError::InvalidTemporal {
+            datatype: P::Date,
+            source: ParseTemporalError(source),
+        }),
         datatype => Err(ParseError::UnsupportedDatatype(datatype)),
     }
 }

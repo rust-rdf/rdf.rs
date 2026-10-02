@@ -11,7 +11,7 @@ history. Reproduce the relevant finding against the current code before editing.
 - Use atomic commits: select one narrowly scoped subtask, include its regression
   tests and rustdoc, and verify it before moving on. The numbered sections are
   milestones, not instructions to implement an entire section in one change.
-- Start with **#2, structured parsing diagnostics**. Prioritize panics and
+- Start with **#3, temporal representations**. Prioritize panics and
   information loss before expanding datatype coverage. Add tests alongside each
   fix; #8 is also an ongoing concern.
 - Preserve `no_std`, allocation-free configurations, and optional interoperability
@@ -24,24 +24,6 @@ history. Reproduce the relevant finding against the current code before editing.
   the necessary version transition.
 - Remove a subtask and its resolved findings after verifying its behavior, tests,
   and documentation. Keep only outstanding work and follow-ups in this file.
-
-## 2. Make parsing reliably fallible — highest priority
-
-**Entry points:** [src/parse.rs](src/parse.rs),
-[src/parse_error.rs](src/parse_error.rs), and the typed-literal conversion in
-[rdf-model/src/heap/term.rs](../rdf-model/src/heap/term.rs).
-
-**Observed behavior:**
-
-- Temporal parser failures collapse to `ParseError::InvalidLiteral`, losing the
-  requested datatype and underlying cause.
-
-**Subtasks and acceptance criteria:**
-
-Keep diagnostic error types usable without `std` or mandatory allocation.
-
-- [ ] Retain the datatype and underlying cause for temporal parsing failures
-  when `jiff` is enabled.
 
 ## 3. Introduce XSD-aware temporal representations — high priority
 

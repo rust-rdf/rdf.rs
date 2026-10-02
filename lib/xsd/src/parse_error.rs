@@ -27,6 +27,28 @@ pub type ParseDateTimeError = jiff::Error;
 #[cfg(feature = "jiff")]
 pub type ParseDurationError = jiff::Error;
 
+/// A temporal backend error exposed through [`core::error::Error`].
+///
+/// Requires `jiff`. Retains the native error in its tuple field and provides the
+/// standard error trait across feature configurations, including `no_std`.
+/// Wrapping adds no allocation.
+#[cfg(feature = "jiff")]
+#[derive(Debug)]
+pub struct ParseTemporalError(
+    /// The original Jiff parser error.
+    pub jiff::Error,
+);
+
+#[cfg(feature = "jiff")]
+impl core::fmt::Display for ParseTemporalError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::fmt::Display::fmt(&self.0, f)
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl core::error::Error for ParseTemporalError {}
+
 /// An error encountered when parsing an XSD literal.
 ///
 /// Distinguishes an unsupported datatype from a failure in an available parser.
@@ -111,6 +133,27 @@ pub enum ParseError {
         source: ParseFloatError,
     },
 
+    /// An `xsd:date`, `dateTime`, `time`, or `duration` parser failed.
+    ///
+    /// Requires `jiff`. Retains the requested datatype and original Jiff error.
+    /// [`core::error::Error::source`] exposes the [`ParseTemporalError`] wrapper;
+    /// its tuple field provides access to the native Jiff error.
+    ///
+    /// ```
+    /// let error = xsd::parse("2026-02-29", xsd::DATE).unwrap_err();
+    /// assert!(matches!(
+    ///     error,
+    ///     xsd::ParseError::InvalidTemporal { datatype: xsd::PrimitiveType::Date, .. }
+    /// ));
+    /// ```
+    #[cfg(feature = "jiff")]
+    InvalidTemporal {
+        /// The requested date, dateTime, time, or duration datatype.
+        datatype: PrimitiveType,
+        /// The original parser error adapted for standard error chaining.
+        source: ParseTemporalError,
+    },
+
     /// No parser is available for this datatype in the enabled feature set.
     ///
     /// Includes unknown datatypes and datatypes whose required feature is disabled.
@@ -133,6 +176,10 @@ impl core::fmt::Display for ParseError {
             Self::InvalidFloat { datatype, source } => {
                 write!(f, "invalid {} literal: {source}", datatype.curie())
             },
+            #[cfg(feature = "jiff")]
+            Self::InvalidTemporal { datatype, source } => {
+                write!(f, "invalid {} literal: {source}", datatype.curie())
+            },
             Self::UnsupportedDatatype(datatype) => {
                 write!(f, "unsupported datatype: {}", datatype.curie())
             },
@@ -146,6 +193,8 @@ impl core::error::Error for ParseError {
             Self::InvalidInteger { source, .. } => Some(source),
             Self::InvalidDecimal { source, .. } => Some(source),
             Self::InvalidFloat { source, .. } => Some(source),
+            #[cfg(feature = "jiff")]
+            Self::InvalidTemporal { source, .. } => Some(source),
             _ => None,
         }
     }
