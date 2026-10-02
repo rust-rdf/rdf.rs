@@ -207,6 +207,29 @@ fn floating_point_errors_preserve_datatype_and_source() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_reject_bracketed_annotations() {
+    for input in [
+        "2026-12-31T12:34:56[Europe/Paris]",
+        "2026-12-31T12:34:56[!Europe/Paris]",
+        "2026-12-31T12:34:56[+02:00]",
+        "2024-02-29T12:34:56.125+02:00[Europe/Paris]",
+        "2026-12-31T12:34:56[u-ca=iso8601]",
+        "2026-12-31T12:34:56[Europe/Paris][u-ca=iso8601]",
+    ] {
+        let message = "xsd:dateTime literals must not contain bracketed annotations";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_reject_leap_seconds() {
     for input in [
         "2026-12-31T23:59:60",

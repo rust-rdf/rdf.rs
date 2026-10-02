@@ -230,14 +230,16 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// to 59 by the underlying parser.
 /// Numeric timezone offsets must be between `-14:00` and `+14:00`, inclusive.
 /// The returned civil value currently does not retain accepted timezone offsets.
+/// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
+/// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
 /// # Errors
 ///
 /// Returns an error when the input cannot be parsed by the underlying
 /// civil-dateTime parser, does not use the required uppercase `T` separator,
 /// omits the required `hh:mm:ss` clock fields, uses a comma to separate fractional
-/// seconds, specifies a leap second, or has a numeric timezone offset outside
-/// the XSD range.
+/// seconds, specifies a leap second, has a numeric timezone offset outside
+/// the XSD range, or contains bracketed annotations.
 ///
 /// ```
 /// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
@@ -249,6 +251,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// assert!(xsd::parse_datetime("2026-12-31T23:59:60").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56+14:00").is_ok());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56+14:01").is_err());
+/// assert!(xsd::parse_datetime("2026-12-31T12:34:56[Europe/Paris]").is_err());
 /// ```
 #[cfg(feature = "jiff")]
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
@@ -290,6 +293,12 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:dateTime timezone offsets must be between -14:00 and +14:00"
+        )));
+    }
+    // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
+    if input.as_bytes().contains(&b'[') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime literals must not contain bracketed annotations"
         )));
     }
     Ok(Value::from(datetime))
