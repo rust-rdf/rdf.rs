@@ -402,17 +402,21 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 ///
 /// Requires `jiff` (enabled by `datetime`). Inputs containing a time component
 /// are rejected instead of being truncated to their date component.
+/// Year, month, and day must be separated by hyphens; compact dates such as
+/// `20261231` are rejected.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
 /// # Errors
 ///
 /// Returns an error when the input contains a time component, contains bracketed
-/// annotations, or cannot be parsed by the underlying civil-date parser.
+/// annotations, omits the required date-component hyphens, or cannot be parsed
+/// by the underlying civil-date parser.
 ///
 /// ```
 /// assert!(xsd::parse_date("2026-12-31T12:34:56").is_err());
 /// assert!(xsd::parse_date("2026-12-31[Europe/Paris]").is_err());
+/// assert!(xsd::parse_date("20261231").is_err());
 /// assert_eq!(xsd::parse_date("2024-02-29").unwrap().to_string(), "2024-02-29");
 /// ```
 #[cfg(feature = "jiff")]
@@ -433,6 +437,16 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     if input.as_bytes().contains(&b'[') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:date literals must not contain bracketed annotations"
+        )));
+    }
+    // Jiff validates field widths and ranges; XSD requires both date separators.
+    let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
+    if !unsigned
+        .split_once('-')
+        .is_some_and(|(_, rest)| matches!(rest.as_bytes(), [_, _, b'-', _, _, ..]))
+    {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date literals require hyphen-separated year, month, and day"
         )));
     }
     Ok(Value::from(date))

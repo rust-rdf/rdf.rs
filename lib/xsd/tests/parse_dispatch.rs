@@ -593,6 +593,29 @@ fn time_parsers_accept_complete_clock_fields() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn date_parsers_require_hyphenated_components() {
+    for input in [
+        "00010101",
+        "20240229",
+        "20261231",
+        "99991231",
+        "+0020261231",
+        "-0000011231",
+    ] {
+        let message = "xsd:date literals require hyphen-separated year, month, and day";
+        assert_eq!(xsd::parse_date(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Date);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn date_parsers_reject_bracketed_annotations() {
     for input in [
         "2026-12-31[Europe/Paris]",
