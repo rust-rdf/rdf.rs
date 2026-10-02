@@ -15,6 +15,8 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("not-a-decimal", Datatype::from(xsd::DECIMAL)),
         ("not-a-float", Datatype::from(xsd::FLOAT)),
         ("1e+", Datatype::from(xsd::DOUBLE)),
+        ("TRUE", Datatype::from(xsd::BOOLEAN)),
+        ("2", Datatype::from(xsd::BOOLEAN)),
         (
             "79228162514264337593543950336",
             Datatype::from(xsd::DECIMAL),

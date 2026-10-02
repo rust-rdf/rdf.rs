@@ -27,8 +27,8 @@ use crate::{
 /// return [`ParseError::InvalidInteger`]; decimal failures return
 /// [`ParseError::InvalidDecimal`]; float/double failures return
 /// [`ParseError::InvalidFloat`]. These numeric errors retain the requested datatype
-/// and underlying cause. Other failures from available parsers return
-/// [`ParseError::InvalidLiteral`].
+/// and underlying cause. Boolean failures return [`ParseError::InvalidBoolean`].
+/// Other failures from available parsers return [`ParseError::InvalidLiteral`].
 ///
 /// ```
 /// let error = xsd::parse("AQI=", xsd::BASE64_BINARY).unwrap_err();
@@ -65,7 +65,7 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
         }),
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
-        Primitive(P::Boolean) => parse_boolean(input).map_err(|_| ParseError::InvalidLiteral),
+        Primitive(P::Boolean) => parse_boolean(input),
         Primitive(P::Float) => parse_float(input).map_err(|source| ParseError::InvalidFloat {
             datatype: P::Float,
             source,
@@ -171,15 +171,17 @@ pub fn parse_string(_input: impl AsRef<str>) -> Result<Value, ParseError> {
 
 /// Parses an input string containing an `xsd:boolean` literal.
 ///
+/// Accepts the exact lexical forms `true`, `false`, `1`, and `0`.
+///
 /// # Errors
 ///
-/// Returns [`ParseError::InvalidLiteral`] when the literal cannot be parsed.
+/// Returns [`ParseError::InvalidBoolean`] when the literal cannot be parsed.
 pub fn parse_boolean(input: impl AsRef<str>) -> Result<Value, ParseBooleanError> {
     input
         .as_ref()
         .parse::<Boolean>()
         .map(Value::from)
-        .map_err(|_| ParseError::InvalidLiteral)
+        .map_err(|_| ParseError::InvalidBoolean)
 }
 
 /// Parses an input string containing an `xsd:float` literal.

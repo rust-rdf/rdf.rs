@@ -77,14 +77,31 @@ fn string_parser_with_alloc_preserves_owned_lexical_content() {
 }
 
 #[test]
-fn invalid_literals_are_distinct_from_unsupported_datatypes() {
-    let error = xsd::parse("maybe", xsd::BOOLEAN).unwrap_err();
-    assert!(matches!(error, ParseError::InvalidLiteral));
-    assert_eq!(error.to_string(), "invalid XSD literal");
-    assert!(matches!(
-        xsd::parse_boolean("maybe"),
-        Err(ParseError::InvalidLiteral)
-    ));
+fn boolean_errors_identify_the_datatype() {
+    use core::error::Error;
+
+    for input in ["", "maybe", "TRUE", "2", " true "] {
+        for error in [
+            xsd::parse_boolean(input).unwrap_err(),
+            xsd::parse(input, xsd::BOOLEAN).unwrap_err(),
+        ] {
+            assert!(matches!(error, ParseError::InvalidBoolean));
+            assert_eq!(
+                error.to_string(),
+                "invalid xsd:boolean literal: expected true, false, 1, or 0"
+            );
+            assert!(error.source().is_none());
+        }
+    }
+}
+
+#[test]
+fn boolean_parsers_accept_all_four_lexical_forms() {
+    for (input, expected) in [("true", true), ("false", false), ("1", true), ("0", false)] {
+        let expected = xsd::Value::from(expected);
+        assert_eq!(xsd::parse_boolean(input).unwrap(), expected);
+        assert_eq!(xsd::parse(input, xsd::BOOLEAN).unwrap(), expected);
+    }
 }
 
 #[test]

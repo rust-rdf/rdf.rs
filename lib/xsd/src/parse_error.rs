@@ -3,6 +3,8 @@
 use crate::{DecimalType, PrimitiveType, Type};
 
 /// An error encountered when parsing an `xsd:boolean` literal.
+///
+/// [`crate::parse_boolean`] reports [`ParseError::InvalidBoolean`] through this alias.
 pub type ParseBooleanError = ParseError;
 
 /// An error encountered when parsing an `xsd:double` literal.
@@ -36,6 +38,20 @@ pub enum ParseError {
     ///
     /// The underlying parser's cause is not retained.
     InvalidLiteral,
+
+    /// A literal could not be parsed as `xsd:boolean`.
+    ///
+    /// The accepted spellings are `true`, `false`, `1`, and `0`. The boolean
+    /// backend supplies no underlying cause, so [`core::error::Error::source`]
+    /// returns `None`.
+    ///
+    /// ```
+    /// assert!(matches!(
+    ///     xsd::parse_boolean("yes"),
+    ///     Err(xsd::ParseError::InvalidBoolean)
+    /// ));
+    /// ```
+    InvalidBoolean,
 
     /// An `xsd:integer`, `long`, `int`, `short`, or `byte` parser failed.
     ///
@@ -105,6 +121,9 @@ impl core::fmt::Display for ParseError {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             Self::InvalidLiteral => f.write_str("invalid XSD literal"),
+            Self::InvalidBoolean => {
+                f.write_str("invalid xsd:boolean literal: expected true, false, 1, or 0")
+            },
             Self::InvalidInteger { datatype, source } => {
                 write!(f, "invalid {} literal: {source}", datatype.curie())
             },
