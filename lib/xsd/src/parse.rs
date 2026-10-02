@@ -312,17 +312,21 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// Fractional seconds use a period separator; a comma is rejected.
 /// Seconds must be less than 60; leap seconds are rejected rather than clamped
 /// to 59 by the underlying parser.
+/// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
+/// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
 /// # Errors
 ///
 /// Returns an error when the input cannot be parsed by the underlying civil-time
 /// parser, does not begin with the required `hh:mm:ss` clock fields, uses a
-/// comma to separate fractional seconds, or specifies a leap second.
+/// comma to separate fractional seconds, specifies a leap second, or contains
+/// bracketed annotations.
 ///
 /// ```
 /// assert!(xsd::parse_time("12:34").is_err());
 /// assert!(xsd::parse_time("12:34:56,125").is_err());
 /// assert!(xsd::parse_time("23:59:60").is_err());
+/// assert!(xsd::parse_time("12:34:56[Europe/Paris]").is_err());
 /// assert_eq!(xsd::parse_time("12:34:00").unwrap().to_string(), "12:34:00");
 /// assert_eq!(xsd::parse_time("12:34:56.125").unwrap().to_string(), "12:34:56.125");
 /// ```
@@ -345,6 +349,12 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     if &input.as_bytes()[6..8] == b"60" {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:time seconds must be less than 60"
+        )));
+    }
+    // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
+    if input.as_bytes().contains(&b'[') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:time literals must not contain bracketed annotations"
         )));
     }
     Ok(Value::from(time))
