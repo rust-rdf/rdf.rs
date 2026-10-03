@@ -52,9 +52,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
-  adding timezone-aware representations. These two partial-calendar parsers
-  currently reject timezone suffixes rather than discarding them.
-  Connect the validated `GYearMonth` timezone field to parsing and verify Serde,
+  adding timezone-aware representations. The `gYear` parser currently rejects
+  timezone suffixes rather than discarding them.
+  Verify `GYearMonth` Serde,
   Borsh, JSON, BSON, differential, RDF, comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority

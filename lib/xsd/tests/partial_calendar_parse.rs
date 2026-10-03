@@ -136,7 +136,7 @@ fn year_months_round_trip_at_year_boundaries() {
 
 #[test]
 fn year_months_reject_invalid_fields_and_timezone_loss() {
-    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange};
     for (input, cause) in [
         ("2026-00", OutOfRange),
         ("2026-13", OutOfRange),
@@ -150,9 +150,9 @@ fn year_months_reject_invalid_fields_and_timezone_loss() {
         ("2026-01-01", InvalidLexical),
         ("2026-０1", InvalidLexical),
         ("2026-01 ", InvalidLexical),
-        ("2026-01Z", UnsupportedTimezone),
-        ("-0001-01-14:00", UnsupportedTimezone),
-        ("0000-01+00:00", UnsupportedTimezone),
+        ("2026-01z", InvalidLexical),
+        ("-0001-01-14:01", InvalidLexical),
+        ("0000-01+00:60", InvalidLexical),
         ("2026-01+14:01", InvalidLexical),
     ] {
         assert_eq!(

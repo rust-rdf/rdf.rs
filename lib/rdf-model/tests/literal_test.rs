@@ -12,7 +12,7 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("---01+14:01", Datatype::from(xsd::G_DAY)),
         ("--02-30+01:00", Datatype::from(xsd::G_MONTH_DAY)),
         ("0000Z", Datatype::from(xsd::G_YEAR)),
-        ("-0001-01-14:00", Datatype::from(xsd::G_YEAR_MONTH)),
+        ("-0001-01-14:01", Datatype::from(xsd::G_YEAR_MONTH)),
         ("00ff", Datatype::from(xsd::HEX_BINARY)),
         ("+0042", Datatype::from(xsd::Type::from("unsignedInt"))),
         ("not-an-integer", Datatype::from(xsd::INT)),
@@ -82,6 +82,7 @@ fn partial_calendar_literals_preserve_datatype_and_lexical_content() {
         ("--02-29+01:00", xsd::G_MONTH_DAY),
         ("0000", xsd::G_YEAR),
         ("-2147483648-12", xsd::G_YEAR_MONTH),
+        ("-0001-01-14:00", xsd::G_YEAR_MONTH),
     ] {
         let term = HeapTerm::from((lexical.to_owned(), Datatype::from(datatype.clone())));
         assert_eq!(
