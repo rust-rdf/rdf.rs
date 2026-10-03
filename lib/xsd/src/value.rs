@@ -301,6 +301,13 @@ impl From<DateTime> for Value {
 }
 
 #[cfg(feature = "jiff")]
+impl From<jiff::civil::DateTime> for Value {
+    fn from(input: jiff::civil::DateTime) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
+#[cfg(feature = "jiff")]
 impl From<Time> for Value {
     fn from(input: Time) -> Self {
         Self::Primitive(input.into())

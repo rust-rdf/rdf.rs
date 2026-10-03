@@ -5,7 +5,7 @@ use core::fmt;
 /// Offsets range from `-14:00` through `+14:00`. This allocation-free type is
 /// available without date/time features. Use `Option<TimezoneOffset>` to
 /// distinguish an absent timezone (`None`) from UTC (`Some(Self::UTC)`).
-/// `primitive::Date` and `primitive::Time` store this type
+/// `primitive::Date`, `primitive::Time`, and `primitive::DateTime` store this type
 /// when date/time features are enabled.
 ///
 /// Equality, ordering, and hashing use the signed minute count. Formatting

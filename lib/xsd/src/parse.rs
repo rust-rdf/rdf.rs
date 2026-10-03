@@ -533,7 +533,7 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     // validity is identical for a year and its negation.
     let negative_year = input.starts_with('-') && input.as_bytes().get(5) == Some(&b'-');
     let civil_input = if negative_year { &input[1..] } else { input };
-    let mut datetime = civil_input.parse::<DateTime>()?;
+    let mut datetime = DateTime::from(civil_input.parse::<jiff::civil::DateTime>()?);
     if negative_year {
         if datetime.year() == 0 {
             return Err(jiff::Error::from_args(format_args!(

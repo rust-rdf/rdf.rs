@@ -55,12 +55,12 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     Duration(Duration),
 
-    /// A civil date and time, available with `jiff` (enabled by `datetime`).
+    /// An XSD date-time with an optional timezone, available with `jiff` (enabled by `datetime`).
     ///
     /// `Display` uses the date formatting of [`Self::Date`], followed by `T`
     /// and `hh:mm:ss` with fractional seconds when nonzero. Fractional seconds
-    /// retain nanosecond precision and omit trailing zeros. No timezone is
-    /// represented, and the stored year number is preserved without an era adjustment.
+    /// retain nanosecond precision and omit trailing zeros. The optional timezone
+    /// is appended once, and the stored year number is preserved without an era adjustment.
     /// Explicit JSON (`serde`) and BSON (`bson`) conversions emit this same
     /// XSD lexical string, preserving nanoseconds and negative-year formatting.
     /// They carry no datatype identifier and do not use BSON's millisecond
@@ -189,10 +189,7 @@ impl fmt::Display for PrimitiveValue {
             #[cfg(feature = "jiff")]
             Duration(d) => d.fmt(f),
             #[cfg(feature = "jiff")]
-            DateTime(d) => {
-                Date(d.date().into()).fmt(f)?;
-                write!(f, "T{}", d.time())
-            },
+            DateTime(d) => d.fmt(f),
             #[cfg(feature = "jiff")]
             Time(t) => t.fmt(f),
             #[cfg(feature = "jiff")]
@@ -610,6 +607,13 @@ impl From<jiff::SignedDuration> for PrimitiveValue {
 #[cfg(feature = "jiff")]
 impl From<jiff::civil::DateTime> for PrimitiveValue {
     fn from(input: jiff::civil::DateTime) -> Self {
+        Self::DateTime(input.into())
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl From<DateTime> for PrimitiveValue {
+    fn from(input: DateTime) -> Self {
         Self::DateTime(input)
     }
 }
