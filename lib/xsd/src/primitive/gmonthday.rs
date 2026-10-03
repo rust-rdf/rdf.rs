@@ -20,6 +20,14 @@ use core::fmt;
 /// offset, and enclosing enum tags, but not original lexical spelling. Invalid
 /// combinations such as February 30 are rejected even inside value wrappers.
 ///
+/// With `borsh`, the type-local version-1 encoding is a version byte `1`, a
+/// `u8` month, a `u8` day, then `Option<TimezoneOffset>`: tag `0` for absent,
+/// or tag `1` followed by little-endian `i16` minutes. This is 4 or 6 bytes with
+/// no datatype tag. It replaces the raw alias's two-byte encoding; decode legacy
+/// data as `(u8, u8)` and validate with [`Self::new`] before re-encoding.
+/// Decoding rejects unknown versions, impossible calendar combinations, invalid
+/// option tags, and out-of-range offsets.
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
@@ -96,5 +104,30 @@ impl<'de> serde::Deserialize<'de> for GMonthDay {
         Self::new(fields.month, fields.day)
             .map(|value| value.with_timezone(fields.timezone))
             .ok_or_else(|| serde::de::Error::custom("invalid XSD month/day combination"))
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshSerialize for GMonthDay {
+    fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+        borsh::BorshSerialize::serialize(&(1u8, self.month, self.day, self.timezone), writer)
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshDeserialize for GMonthDay {
+    fn deserialize_reader<R: borsh::io::Read>(reader: &mut R) -> Result<Self, borsh::io::Error> {
+        use borsh::io::{Error, ErrorKind};
+        if u8::deserialize_reader(reader)? != 1 {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "unsupported XSD gMonthDay encoding version",
+            ));
+        }
+        let (month, day, timezone) =
+            <(u8, u8, Option<TimezoneOffset>)>::deserialize_reader(reader)?;
+        Self::new(month, day)
+            .map(|value| value.with_timezone(timezone))
+            .ok_or_else(|| Error::new(ErrorKind::InvalidData, "invalid XSD month/day combination"))
     }
 }
