@@ -1,5 +1,35 @@
 use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 
+/// Parses a timezone-free `xsd:gMonthDay` literal (`--mm-dd`).
+///
+/// Validates the two-digit ASCII fields against the Gregorian month lengths,
+/// allowing February 29 because no year is specified. Requires both hyphens
+/// before the month and one between the fields. Does not trim whitespace.
+/// Available without allocation or date/time features.
+///
+/// # Errors
+///
+/// Returns [`ParseCalendarError::InvalidLexical`] for malformed input,
+/// [`ParseCalendarError::OutOfRange`] for impossible month/day combinations, or
+/// [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+///
+/// ```
+/// assert_eq!(xsd::parse_g_month_day("--02-29").unwrap().to_string(), "--02-29");
+/// assert!(xsd::parse_g_month_day("--04-31").is_err());
+/// ```
+pub fn parse_g_month_day(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
+    let input = input.as_ref();
+    let bytes = input.as_bytes();
+    if !bytes.starts_with(b"--") || bytes.get(4) != Some(&b'-') {
+        return Err(ParseCalendarError::InvalidLexical);
+    }
+    let month = two_digits(bytes.get(2..4))?;
+    let day = two_digits(bytes.get(5..7))?;
+    let value = PrimitiveValue::g_month_day(month, day).ok_or(ParseCalendarError::OutOfRange)?;
+    require_no_timezone(input.get(7..))?;
+    Ok(value.into())
+}
+
 /// Parses a timezone-free `xsd:gDay` literal (`---dd`).
 ///
 /// Requires exactly two ASCII digits in `01..=31`. No month is implied, so

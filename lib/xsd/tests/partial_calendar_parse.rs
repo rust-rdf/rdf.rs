@@ -61,3 +61,37 @@ fn days_round_trip_and_reject_invalid_fields() {
         );
     }
 }
+
+#[test]
+fn month_days_round_trip_and_validate_calendar_combinations() {
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    for (month, last_day) in (1..=12).zip([31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]) {
+        for day in 0..=32 {
+            let lexical = format!("--{month:02}-{day:02}");
+            if day == 0 || day > last_day {
+                assert_eq!(xsd::parse_g_month_day(&lexical).unwrap_err(), OutOfRange);
+            } else {
+                let value = xsd::parse_g_month_day(&lexical).unwrap();
+                assert_eq!(value.to_string(), lexical);
+                assert_eq!(value.r#type(), xsd::G_MONTH_DAY);
+                assert_eq!(xsd::parse(&lexical, xsd::G_MONTH_DAY).unwrap(), value);
+            }
+        }
+    }
+    for (input, cause) in [
+        ("--00-01", OutOfRange),
+        ("--13-01", OutOfRange),
+        ("--1-01", InvalidLexical),
+        ("--0101", InvalidLexical),
+        ("--01-01 ", InvalidLexical),
+        ("--01-１", InvalidLexical),
+        ("--01-01+15:00", InvalidLexical),
+        ("--02-29Z", UnsupportedTimezone),
+        ("--01-01-00:00", UnsupportedTimezone),
+    ] {
+        assert_eq!(xsd::parse_g_month_day(input).unwrap_err(), cause, "{input}");
+        assert!(
+            matches!(xsd::parse(input, xsd::G_MONTH_DAY), Err(xsd::ParseError::InvalidCalendar { datatype: xsd::PrimitiveType::GMonthDay, source }) if source == cause)
+        );
+    }
+}
