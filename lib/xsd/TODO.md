@@ -53,7 +53,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
   validation, date components, and fractional seconds. Enforce numeric timezone
-  offset syntax for `Date`.
+  offset syntax for `Date`. Reject zero-padded years longer than four digits in
+  `DateTime`. Align negative-year parsing and formatting with XSD year syntax.
   Define supported year and fractional precision ranges; report unsupported
   values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.

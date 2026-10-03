@@ -637,6 +637,22 @@ fn time_parsers_accept_complete_clock_fields() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn date_parsers_reject_zero_padded_extended_years() {
+    for input in ["-002026-12-31", "-000001-01-01", "-009999-12-31"] {
+        let message = "xsd:date years longer than four digits must not begin with zero";
+        assert_eq!(xsd::parse_date(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::Date);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn date_parsers_reject_positive_year_signs() {
     for input in ["+002026-12-31", "+000001-01-01", "+009999-12-31"] {
         let message = "xsd:date years must not have a leading plus sign";

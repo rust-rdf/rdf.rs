@@ -428,6 +428,7 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 /// Year, month, and day must be separated by hyphens; compact dates such as
 /// `20261231` are rejected.
 /// Years must not have a leading plus sign.
+/// Years longer than four digits must not begin with zero (excluding the sign).
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
@@ -435,13 +436,15 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 ///
 /// Returns an error when the input contains a time component, contains bracketed
 /// annotations, omits the required date-component hyphens, uses a leading plus
-/// sign on the year, or cannot be parsed by the underlying civil-date parser.
+/// sign on the year, has a year longer than four digits beginning with zero, or
+/// cannot be parsed by the underlying civil-date parser.
 ///
 /// ```
 /// assert!(xsd::parse_date("2026-12-31T12:34:56").is_err());
 /// assert!(xsd::parse_date("2026-12-31[Europe/Paris]").is_err());
 /// assert!(xsd::parse_date("20261231").is_err());
 /// assert!(xsd::parse_date("+002026-12-31").is_err());
+/// assert!(xsd::parse_date("-002026-12-31").is_err());
 /// assert_eq!(xsd::parse_date("2024-02-29").unwrap().to_string(), "2024-02-29");
 /// ```
 #[cfg(feature = "jiff")]
@@ -477,6 +480,14 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     if input.starts_with('+') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:date years must not have a leading plus sign"
+        )));
+    }
+    if unsigned
+        .split_once('-')
+        .is_some_and(|(year, _)| year.len() > 4 && year.starts_with('0'))
+    {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date years longer than four digits must not begin with zero"
         )));
     }
     Ok(Value::from(date))
