@@ -52,7 +52,7 @@ pub fn parse_g_year(input: impl AsRef<str>) -> Result<Value, ParseCalendarError>
     Ok(PrimitiveValue::GYear(year).into())
 }
 
-fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError> {
+pub(crate) fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError> {
     let negative = input.starts_with('-');
     let unsigned = input.strip_prefix('-').unwrap_or(input);
     let digits = unsigned.bytes().take_while(u8::is_ascii_digit).count();

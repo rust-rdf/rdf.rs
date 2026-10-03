@@ -517,6 +517,11 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
         && is_timezone_free_end_of_day(time)
         && let Value::Primitive(crate::PrimitiveValue::Date(date)) = parse_date(date)?
     {
+        if date.timezone().is_some() {
+            return Err(jiff::Error::from_args(format_args!(
+                "xsd:dateTime timezone must follow the time component"
+            )));
+        }
         let next = date.civil().tomorrow()?;
         return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0).map(Value::from);
     }
@@ -758,7 +763,7 @@ fn is_timezone_free_end_of_day(input: &str) -> bool {
 /// `20261231` are rejected.
 /// Years must not have a leading plus sign.
 /// Years longer than four digits must not begin with zero (excluding the sign).
-/// Four-digit negative years (`-0001` through `-9999`) are accepted for dates
+/// Four-digit negative years (`-0001` through `-9999`) are accepted with or
 /// without a timezone. The signed year is preserved in the returned value and
 /// its XSD formatting without applying a historical-era adjustment.
 /// Supported years are `-9999` through `9999`. Year `0000` denotes the year
@@ -766,6 +771,9 @@ fn is_timezone_free_end_of_day(input: &str) -> bool {
 /// The proleptic Gregorian leap-year rule applies to signed years, including
 /// zero: divisible by 4, except centuries not divisible by 400. Invalid dates
 /// and years outside the supported range return errors rather than being clamped.
+/// An optional `Z`, `+hh:mm`, or `-hh:mm` timezone is retained, with bounds
+/// `-14:00..=+14:00`. Absent timezones remain distinct from UTC. Whitespace is
+/// not trimmed. Zero offsets format as `Z`, without retaining their spelling.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
@@ -774,7 +782,7 @@ fn is_timezone_free_end_of_day(input: &str) -> bool {
 /// Returns an error when the input contains a time component, contains bracketed
 /// annotations, omits the required date-component hyphens, uses a leading plus
 /// sign on the year, has a year longer than four digits beginning with zero, or
-/// cannot be parsed by the underlying civil-date parser.
+/// has invalid calendar fields, or has an invalid or out-of-range timezone.
 ///
 /// ```
 /// assert!(xsd::parse_date("2026-12-31T12:34:56").is_err());
@@ -791,42 +799,23 @@ fn is_timezone_free_end_of_day(input: &str) -> bool {
 #[cfg(feature = "jiff")]
 pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
-    // Jiff requires six digits for negative years. Adapt four-digit XSD years
-    // on the stack, keeping the original input for the lexical checks below.
-    let mut normalized = [b'0'; 13];
-    let civil_input = if input.len() == 11 && input.starts_with('-') && input.as_bytes()[5] == b'-'
-    {
-        normalized[0] = b'-';
-        normalized[3..].copy_from_slice(&input.as_bytes()[1..]);
-        core::str::from_utf8(&normalized).map_err(|error| {
-            jiff::Error::from_args(format_args!("invalid xsd:date encoding: {error}"))
-        })?
-    } else {
-        input
-    };
-    if jiff::fmt::temporal::DateTimeParser::new()
-        .parse_pieces(civil_input)?
-        .time()
-        .is_some()
-    {
-        return Err(jiff::Error::from_args(format_args!(
-            "xsd:date literals must not contain a time component"
-        )));
-    }
-    // Preserve the civil-date parser's other checks, including offset handling.
-    let date = Date::from(civil_input.parse::<jiff::civil::Date>()?);
-    // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
-    if input.as_bytes().contains(&b'[') {
+    if input.contains('[') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:date literals must not contain bracketed annotations"
         )));
     }
-    // Jiff validates field widths and ranges; XSD requires both date separators.
+    if input.contains(['T', 't', ' ']) {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date literals must not contain a time component"
+        )));
+    }
     let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
-    if !unsigned
-        .split_once('-')
-        .is_some_and(|(_, rest)| matches!(rest.as_bytes(), [_, _, b'-', _, _, ..]))
-    {
+    let Some((year_digits, fields)) = unsigned.split_once('-') else {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date literals require hyphen-separated year, month, and day"
+        )));
+    };
+    if !matches!(fields.as_bytes(), [_, _, b'-', _, _, ..]) {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:date literals require hyphen-separated year, month, and day"
         )));
@@ -836,13 +825,38 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
             "xsd:date years must not have a leading plus sign"
         )));
     }
-    if unsigned
-        .split_once('-')
-        .is_some_and(|(year, _)| year.len() > 4 && year.starts_with('0'))
-    {
+    if year_digits.len() > 4 && year_digits.starts_with('0') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:date years longer than four digits must not begin with zero"
         )));
     }
-    Ok(Value::from(date))
+    let (year, rest) = crate::parse_calendar::year_prefix(input)
+        .map_err(|error| jiff::Error::from_args(format_args!("invalid xsd:date year: {error}")))?;
+    let year = i16::try_from(year).map_err(|_| {
+        jiff::Error::from_args(format_args!("xsd:date year is outside -9999..=9999"))
+    })?;
+    let [b'-', m1, m2, b'-', d1, d2, ..] = rest.as_bytes() else {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date requires hyphen-separated year, month, and day"
+        )));
+    };
+    if ![m1, m2, d1, d2].iter().all(|byte| byte.is_ascii_digit()) {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:date month and day require two ASCII digits"
+        )));
+    }
+    let month = ((m1 - b'0') * 10 + m2 - b'0') as i8;
+    let day = ((d1 - b'0') * 10 + d2 - b'0') as i8;
+    let timezone = if rest.len() == 6 {
+        None
+    } else {
+        Some(
+            rest[6..]
+                .parse::<crate::TimezoneOffset>()
+                .map_err(|error| {
+                    jiff::Error::from_args(format_args!("invalid xsd:date timezone: {error}"))
+                })?,
+        )
+    };
+    Date::new(year, month, day).map(|date| date.with_timezone(timezone).into())
 }

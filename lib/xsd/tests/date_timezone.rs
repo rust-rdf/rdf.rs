@@ -3,6 +3,67 @@
 use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::Date};
 
 #[test]
+fn date_parser_preserves_offsets_and_signed_years() {
+    for year in ["-9999", "-0001", "0000", "0001", "9999"] {
+        for suffix in ["", "Z", "+00:00", "-00:00", "+14:00", "-14:00", "+05:45"] {
+            let input = format!("{year}-02-28{suffix}");
+            let value = xsd::parse(&input, xsd::DATE).unwrap();
+            let Value::Primitive(PrimitiveValue::Date(date)) = value.clone() else {
+                panic!("wrong datatype");
+            };
+            let offset = if suffix.is_empty() {
+                None
+            } else {
+                Some(suffix.parse().unwrap())
+            };
+            assert_eq!(date.timezone(), offset);
+            assert_eq!(xsd::parse_date(value.to_string()).unwrap(), value);
+        }
+    }
+}
+
+#[test]
+fn date_parser_rejects_invalid_offsets_and_lexical_forms() {
+    assert!(xsd::parse_datetime("2026-01-02ZT24:00:00").is_err());
+    assert!(xsd::parse_datetime("2026-01-02+02:00T24:00:00").is_err());
+    for input in [
+        "2026-01-02+14:01",
+        "2026-01-02-14:01",
+        "2026-01-02+15:00",
+        "2026-01-02+01:60",
+        "2026-01-02+02",
+        "2026-01-02+0200",
+        "2026-01-02+02:00:00",
+        "2026-01-02z",
+        "2026-01-02Z ",
+        " 2026-01-02",
+        "2026-01-02Zjunk",
+        "2026-01-02[UTC]",
+        "-0000-01-02Z",
+        "+2026-01-02Z",
+        "02026-01-02Z",
+        "2026-+1-02Z",
+        "2026-01-+2Z",
+        "2026-01-🦀",
+        "2026-02-29Z",
+        "2026-01-02T00:00:00Z",
+        "10000-01-02Z",
+    ] {
+        assert!(xsd::parse_date(input).is_err(), "{input}");
+        assert!(
+            matches!(
+                xsd::parse(input, xsd::DATE),
+                Err(xsd::ParseError::InvalidTemporal {
+                    datatype: xsd::PrimitiveType::Date,
+                    ..
+                })
+            ),
+            "{input}"
+        );
+    }
+}
+
+#[test]
 fn date_retains_optional_timezone() {
     for year in [-9999, -1, 0, 1, 9999] {
         let civil = Date::new(year, 2, 28).unwrap();

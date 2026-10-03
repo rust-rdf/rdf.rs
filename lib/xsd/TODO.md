@@ -32,8 +32,7 @@ history. Reproduce the relevant finding against the current code before editing.
 [src/parse.rs](src/parse.rs) and [src/primitive_value.rs](src/primitive_value.rs).
 
 `DateTime` and `Time` directly alias Jiff civil types, which cannot retain
-timezone offsets. `Date` stores an optional offset, but its parser still needs
-timezone support. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
+timezone offsets. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
 it, the exported alias is the unsigned `core::time::Duration`.
 
 **Observed with default features, using `xsd::parse`:**
@@ -42,7 +41,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
 | --- | --- | --- |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
-| `xsd::DATE` | `2026-12-31+02:00` | Rejected |
 | `xsd::TIME` | `12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::TIME` | `24:00:00+02:00` | Rejected despite valid XSD end-of-day notation |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
@@ -54,12 +52,10 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Integrate `Option<TimezoneOffset>` into `DateTime` and `Time`; the validated offset
   type provides checked construction, strict lexical parsing, and formatting.
   Preserve its validated Serde/Borsh minute-count encodings when embedding offsets.
-  Validate XSD offset bounds for `Date` and make lossy civil-value conversions
+  Make lossy civil-value conversions
   explicit/fallible, building on the exact `TimezoneOffset`/Jiff offset conversions.
 - [ ] Enforce temporal lexical grammars for timezone-bearing values, including
-  end-of-day notation for `DateTime` and `Time`. Enforce numeric timezone
-  offset syntax for `Date`; cover negative `Date` years when adding timezone
-  support.
+  end-of-day notation for `DateTime` and `Time`.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,

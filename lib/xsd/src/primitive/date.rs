@@ -15,6 +15,7 @@ mod value {
     /// Equality, ordering, and hashing are structural, not XSD instant comparison:
     /// an absent timezone differs from UTC. Formatting uses XSD year spelling
     /// and retains the offset, normalizing explicit zero offsets to `Z`.
+    /// Use [`crate::parse_date`] to parse XSD lexical forms.
     ///
     /// This replaces the Jiff alias. Use [`Self::civil`] to explicitly discard
     /// the offset. With `serde`, the new representation is a struct with `civil`
