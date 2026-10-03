@@ -352,6 +352,7 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 /// Requires `jiff` (enabled by `datetime`). Duration designators must be
 /// uppercase ASCII; friendly and clock-style backend spellings are rejected.
 /// Only a leading minus sign is allowed; a leading plus sign is rejected.
+/// Fractional components require a period separator; commas are rejected.
 ///
 /// # Errors
 ///
@@ -367,6 +368,11 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
         )));
     }
     let unsigned = input.strip_prefix('-').unwrap_or(input);
+    if input.contains(',') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:duration fractions require a period separator"
+        )));
+    }
     if !unsigned.starts_with('P') || input.bytes().any(|byte| byte.is_ascii_lowercase()) {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:duration requires uppercase duration designators"
