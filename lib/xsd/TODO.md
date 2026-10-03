@@ -42,10 +42,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Complete temporal conversion and serialization boundaries.
-  Preserve validated Serde/Borsh minute-count encodings when embedding offsets.
-  Provide checked instant conversion that rejects absent timezones and reports
-  target-range limits, building on exact `TimezoneOffset`/Jiff offset conversions.
+- [ ] Complete temporal Borsh serialization for `Date`, `Time`, and `DateTime`.
+  Preserve the validated offset's minute-count encoding when embedding offsets,
+  distinguish absence from UTC, and reject invalid calendar/clock fields on decoding.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,

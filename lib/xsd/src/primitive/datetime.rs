@@ -97,6 +97,35 @@ mod value {
             self.civil
         }
 
+        /// Converts an explicitly timezoned value to a Jiff instant.
+        ///
+        /// Applies the stored offset exactly, preserving nanoseconds. The result
+        /// carries neither the original civil fields nor their offset; retain the
+        /// offset separately if those must be recovered. Requires only `jiff`,
+        /// without allocation, a timezone database, or a system timezone.
+        ///
+        /// # Errors
+        ///
+        /// Returns a Jiff error when the timezone is absent (never assumes UTC),
+        /// or when the resulting instant exceeds Jiff's timestamp range, which
+        /// is narrower than its civil date-time range near the extreme years.
+        ///
+        /// ```
+        /// use xsd::{primitive::DateTime, TimezoneOffset};
+        /// let local = DateTime::new(2026, 1, 2, 1, 0, 0, 1).unwrap();
+        /// assert!(local.to_timestamp().is_err());
+        /// let local = local.with_timezone(TimezoneOffset::from_minutes(120));
+        /// assert_eq!(local.to_timestamp().unwrap().to_string(), "2026-01-01T23:00:00.000000001Z");
+        /// ```
+        pub fn to_timestamp(self) -> Result<jiff::Timestamp, jiff::Error> {
+            let offset = self.timezone.ok_or_else(|| {
+                jiff::Error::from_args(format_args!(
+                    "converting an XSD date-time to an instant requires an explicit timezone"
+                ))
+            })?;
+            jiff::tz::Offset::from(offset).to_timestamp(self.civil)
+        }
+
         /// Returns the date component, retaining the optional timezone.
         pub fn date(self) -> Date {
             Date::from(self.civil.date()).with_timezone(self.timezone)
@@ -168,6 +197,16 @@ mod value {
             } else {
                 Ok(value.civil)
             }
+        }
+    }
+
+    impl TryFrom<DateTime> for jiff::Timestamp {
+        type Error = jiff::Error;
+
+        /// Applies the explicit offset using [`DateTime::to_timestamp`], rejecting
+        /// absent timezones and instants outside Jiff's supported range.
+        fn try_from(value: DateTime) -> Result<Self, Self::Error> {
+            value.to_timestamp()
         }
     }
 }
