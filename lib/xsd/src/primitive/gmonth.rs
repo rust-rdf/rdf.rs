@@ -8,6 +8,20 @@ use core::fmt;
 /// Available without allocation or date/time features. Formatting writes `--mm`
 /// followed by the optional offset, using `Z` for UTC. Equality, ordering, and
 /// hashing are structural. An absent timezone is distinct from explicit UTC.
+/// `Ord` compares the month first, then the optional signed minute count, with
+/// absence before any present offset. This total order is for Rust collections,
+/// not XSD temporal value comparison: it performs no timezone normalization and
+/// does not express uncertainty from an absent timezone. `Eq` and `Hash` use
+/// the same fields. No XSD semantic comparison operation is provided yet.
+///
+/// ```
+/// use xsd::{primitive::GMonth, TimezoneOffset};
+/// let january = GMonth::new(1).unwrap();
+/// let utc = january.with_timezone(Some(TimezoneOffset::UTC));
+/// assert_ne!(january, utc);
+/// assert!(january < utc); // structural ordering only
+/// ```
+///
 /// This replaces the raw `u8` alias: use [`Self::new`] for checked construction
 /// and [`Self::month`] to retrieve the field.
 /// Parsing follows XSD 1.1 `--mm` syntax; legacy trailing hyphens (`--mm--`)
