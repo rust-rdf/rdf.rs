@@ -54,7 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. These two partial-calendar parsers
   currently reject timezone suffixes rather than discarding them.
-  Verify `GMonthDay` differential, RDF,
+  Verify `GMonthDay` RDF,
   comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
@@ -174,7 +174,8 @@ rustdoc, and [Cargo.toml](Cargo.toml).
 - [ ] Add table-driven valid/invalid lexical cases as each parser is corrected,
   including precision, overflow, timezone, and unsupported-operation regressions.
 - [ ] Add property/differential tests where useful against an independent XSD
-  implementation for datatypes beyond `Date`, `Time`, `DateTime`, `GMonth`, and `GDay`, using optional `oxsdatatypes`.
+  implementation for datatypes beyond `Date`, `Time`, `DateTime`, `GMonth`,
+  `GDay`, and `GMonthDay`, using optional `oxsdatatypes`.
   Use the chosen W3C semantics
   as the authority when implementations disagree.
 - [ ] Exercise runtime behavior under reduced feature sets, not just compilation.

@@ -11,6 +11,12 @@ use core::fmt;
 /// `Z` for UTC. Equality, ordering, and hashing are structural; absence differs
 /// from explicit UTC. This replaces the raw `(u8, u8)` alias: use [`Self::new`]
 /// for checked construction and [`Self::month`] and [`Self::day`] for the fields.
+/// Parsing follows XSD 1.1 `--mm-dd` syntax, with exactly two ASCII digits per
+/// field. Use [`crate::parse_g_month_day`] to parse the optional timezone;
+/// whitespace is not trimmed. February 29 is valid with any supported offset.
+/// This follows [XSD 1.1 §3.3.12](https://www.w3.org/TR/xmlschema11-2/#gMonthDay),
+/// even though the optional differential-test reference `oxsdatatypes` 0.2.3
+/// rejects February 29.
 ///
 /// With `serde`, the representation is a struct with `month`, `day`, and
 /// `timezone` (optional signed minutes), replacing the former two-element tuple.
