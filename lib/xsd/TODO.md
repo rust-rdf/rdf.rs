@@ -115,7 +115,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 - `serde`: parsing `9007199254740993` as `xsd::INTEGER` and calling `into_json()`
   yields `9007199254740992.0`. Decimal conversion also loses precision via `f64`.
 - `serde`: converting parsed `INF` or `NaN` to JSON panics. Converting
-  `PrimitiveValue::HexBinary` or `Base64Binary` reaches `todo!()`.
+  `PrimitiveValue::Base64Binary` reaches `todo!()`.
 - `bson`: for `DecimalValue::Integer(9007199254740993_i128.into())`,
   `.into_bson()` preserves an `Int64`, while `bson::Bson::from(value)` produces
   a rounded `Double`.
@@ -131,7 +131,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Make BSON method and trait conversion routes agree for each value and
   handle Decimal128 representation failures without `unwrap()` panics.
-- [ ] Complete binary JSON conversion using the existing lexical encodings.
+- [ ] Complete Base64 binary JSON conversion using the existing lexical encoding.
   Align date, dateTime, partial-calendar, and QName JSON/BSON string output with the
   `Display` implementation; those methods still contain independent, incomplete
   formatting. Preserve the existing BSON binary representation.

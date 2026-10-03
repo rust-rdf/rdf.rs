@@ -107,6 +107,14 @@ pub enum PrimitiveValue {
     /// See: <https://www.w3.org/TR/xmlschema-2/#gMonth>
     GMonth(GMonth),
 
+    /// Binary data formatted as uppercase hexadecimal, two digits per byte.
+    ///
+    /// Explicit JSON conversion (`serde`) uses the same lexical string as
+    /// `Display`, including an empty string for empty data. BSON conversion
+    /// (`bson`) preserves the bytes as generic binary data. Neither encoding
+    /// carries the XSD datatype identifier. Derived Serde serialization is a
+    /// separate, enum-based representation.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#hexBinary>
     #[cfg(feature = "alloc")]
     HexBinary(Vec<u8>),
@@ -276,7 +284,7 @@ impl PrimitiveValue {
             GDay(d) => Value::String(d.to_string()),
             GMonth(m) => Value::String(m.to_string()),
             #[cfg(feature = "alloc")]
-            HexBinary(_b) => Value::String(todo!()), // FIXME
+            value @ HexBinary(_) => Value::String(value.to_string()),
             #[cfg(feature = "alloc")]
             Base64Binary(_b) => Value::String(todo!()), // FIXME
             #[cfg(feature = "alloc")]
