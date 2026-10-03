@@ -318,6 +318,28 @@ fn datetime_parsers_require_uppercase_t_separator() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_require_date_separators() {
+    for input in [
+        "20261231T12:34:56",
+        "20240229T00:00:00.125",
+        "20261231T12:34:56+02:00",
+        "20261231T12:34:56-02:00",
+        "-0020261231T12:34:56",
+    ] {
+        let message = "xsd:dateTime literals require hyphen-separated year, month, and day";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_accept_uppercase_t_separator() {
     for input in [
         "0001-01-01T00:00:00",

@@ -223,6 +223,8 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 ///
 /// Requires `jiff` (enabled by `datetime`). The date and time components must
 /// be separated by uppercase ASCII `T`; lowercase `t` and space are rejected.
+/// Year, month, and day must be separated by hyphens; compact dates such as
+/// `20261231T12:34:56` are rejected.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Fractional seconds use a period separator; a comma is rejected.
@@ -238,6 +240,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 ///
 /// Returns an error when the input cannot be parsed by the underlying
 /// civil-dateTime parser, does not use the required uppercase `T` separator,
+/// omits the required date-component hyphens,
 /// omits the required `hh:mm:ss` clock fields, uses a comma to separate fractional
 /// seconds, specifies a leap second, contains bracketed annotations, or has a
 /// numeric timezone offset with invalid XSD syntax or a value outside the XSD range.
@@ -247,6 +250,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// assert_eq!(value.to_string(), "2026-12-31T12:34:56");
 /// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
+/// assert!(xsd::parse_datetime("20261231T12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56,125").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T23:59:60").is_err());
@@ -270,6 +274,18 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
             "xsd:dateTime literals require an uppercase T separator"
         )));
     };
+    // Jiff validates field widths and ranges; XSD requires both date separators.
+    let date = input[..separator]
+        .strip_prefix(['+', '-'])
+        .unwrap_or(&input[..separator]);
+    if !date
+        .split_once('-')
+        .is_some_and(|(_, rest)| matches!(rest.as_bytes(), [_, _, b'-', _, _]))
+    {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime literals require hyphen-separated year, month, and day"
+        )));
+    }
     // Jiff validates the digits and ranges; require all three clock fields.
     if !matches!(
         &input.as_bytes()[separator + 1..],
