@@ -119,6 +119,14 @@ pub enum PrimitiveValue {
     #[cfg(feature = "alloc")]
     HexBinary(Vec<u8>),
 
+    /// Binary data formatted as padded Base64 using the standard `+/` alphabet.
+    ///
+    /// Explicit JSON conversion (`serde`) uses the same lexical string as
+    /// `Display`, without whitespace and with an empty string for empty data.
+    /// BSON conversion (`bson`) preserves the bytes as generic binary data.
+    /// Neither encoding carries the XSD datatype identifier. Derived Serde
+    /// serialization is a separate, enum-based representation.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#base64Binary>
     #[cfg(feature = "alloc")]
     Base64Binary(Vec<u8>),
@@ -286,7 +294,7 @@ impl PrimitiveValue {
             #[cfg(feature = "alloc")]
             value @ HexBinary(_) => Value::String(value.to_string()),
             #[cfg(feature = "alloc")]
-            Base64Binary(_b) => Value::String(todo!()), // FIXME
+            value @ Base64Binary(_) => Value::String(value.to_string()),
             #[cfg(feature = "alloc")]
             AnyUri(u) => Value::String(u),
             #[cfg(feature = "alloc")]

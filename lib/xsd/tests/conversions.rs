@@ -42,3 +42,35 @@ fn hex_binary_bson_preserves_bytes() {
     assert_eq!(bson::Bson::from(value.clone()), expected);
     assert_eq!(Value::from(value).into_bson(), expected);
 }
+
+#[test]
+#[cfg(feature = "serde")]
+fn base64_binary_json_uses_padded_lexical_encoding() {
+    for (bytes, lexical) in [
+        (&b""[..], ""),
+        (&b"f"[..], "Zg=="),
+        (&b"fo"[..], "Zm8="),
+        (&b"foo"[..], "Zm9v"),
+        (&b"foobar"[..], "Zm9vYmFy"),
+        (&[0, 251, 255][..], "APv/"),
+        (&[251, 255][..], "+/8="),
+    ] {
+        assert_json_string(PrimitiveValue::Base64Binary(bytes.to_vec()), lexical);
+    }
+}
+
+#[test]
+#[cfg(feature = "bson")]
+fn base64_binary_bson_preserves_bytes() {
+    for bytes in [vec![], vec![0], vec![0, 251, 255]] {
+        let value = PrimitiveValue::Base64Binary(bytes.clone());
+        let expected = bson::Bson::Binary(bson::Binary {
+            bytes,
+            subtype: bson::spec::BinarySubtype::Generic,
+        });
+        assert_eq!(value.clone().into_bson(), expected);
+        assert_eq!(value.to_bson(), Some(expected.clone()));
+        assert_eq!(bson::Bson::from(value.clone()), expected);
+        assert_eq!(Value::from(value).into_bson(), expected);
+    }
+}
