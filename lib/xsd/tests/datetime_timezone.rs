@@ -3,6 +3,27 @@
 use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::DateTime};
 
 #[test]
+fn civil_datetime_conversion_rejects_every_explicit_offset() {
+    for year in [-9999, 0, 9999] {
+        let civil = jiff::civil::DateTime::new(year, 12, 31, 23, 59, 59, 999_999_999).unwrap();
+        let value = DateTime::from(civil);
+        assert_eq!(jiff::civil::DateTime::try_from(value).unwrap(), civil);
+        assert_eq!(Value::from(civil), Value::from(value));
+        assert_eq!(PrimitiveValue::from(civil), PrimitiveValue::from(value));
+        for minutes in -840..=840 {
+            let offset = TimezoneOffset::from_minutes(minutes).unwrap();
+            let value = value.with_timezone(Some(offset));
+            assert_eq!(
+                jiff::civil::DateTime::try_from(value),
+                Err(xsd::TimezoneLossError)
+            );
+            assert_eq!(value.civil(), civil);
+            assert_eq!(value.timezone(), Some(offset));
+        }
+    }
+}
+
+#[test]
 fn datetime_parser_preserves_offsets_and_end_of_day() {
     for (date, next) in [
         ("2024-02-29", "2024-03-01"),
