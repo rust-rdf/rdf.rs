@@ -517,7 +517,7 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
         && is_timezone_free_end_of_day(time)
         && let Value::Primitive(crate::PrimitiveValue::Date(date)) = parse_date(date)?
     {
-        let next = date.tomorrow()?;
+        let next = date.civil().tomorrow()?;
         return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0).map(Value::from);
     }
     if let Some((_, clock)) = input.split_once('T') {
@@ -814,7 +814,7 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         )));
     }
     // Preserve the civil-date parser's other checks, including offset handling.
-    let date = civil_input.parse::<Date>()?;
+    let date = Date::from(civil_input.parse::<jiff::civil::Date>()?);
     // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
     if input.as_bytes().contains(&b'[') {
         return Err(jiff::Error::from_args(format_args!(

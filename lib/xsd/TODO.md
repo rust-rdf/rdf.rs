@@ -31,8 +31,9 @@ history. Reproduce the relevant finding against the current code before editing.
 `datetime.rs`, `time.rs`, `duration.rs`, and the `g*.rs` files;
 [src/parse.rs](src/parse.rs) and [src/primitive_value.rs](src/primitive_value.rs).
 
-`Date`, `DateTime`, and `Time` directly alias Jiff civil types, which cannot retain
-timezone offsets. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
+`DateTime` and `Time` directly alias Jiff civil types, which cannot retain
+timezone offsets. `Date` stores an optional offset, but its parser still needs
+timezone support. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
 it, the exported alias is the unsigned `core::time::Duration`.
 
 **Observed with default features, using `xsd::parse`:**
@@ -50,7 +51,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 - [ ] Model optional timezone offsets and distinguish an absent timezone from
   UTC. Preserve the represented value through parsing, formatting, and conversion.
-  Integrate `Option<TimezoneOffset>` into temporal values; the validated offset
+  Integrate `Option<TimezoneOffset>` into `DateTime` and `Time`; the validated offset
   type provides checked construction, strict lexical parsing, and formatting.
   Preserve its validated Serde/Borsh minute-count encodings when embedding offsets.
   Validate XSD offset bounds for `Date` and make lossy civil-value conversions

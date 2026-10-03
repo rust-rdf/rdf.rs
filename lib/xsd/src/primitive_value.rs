@@ -82,11 +82,12 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     Time(Time),
 
-    /// A civil date, available with `jiff` (enabled by `datetime`).
+    /// An XSD date with an optional timezone, available with `jiff` (enabled by `datetime`).
     ///
     /// `Display` writes `yyyy-mm-dd`, with a minus sign before the four-digit
     /// year for negative years. It preserves the stored year number without
-    /// applying a historical-era adjustment. No timezone is represented.
+    /// applying a historical-era adjustment. A present timezone is appended,
+    /// using `Z` for UTC and signed `hh:mm` otherwise.
     /// Explicit JSON (`serde`) and BSON (`bson`) conversions emit this same
     /// XSD lexical string, without a datatype identifier. They do not use BSON's
     /// timestamp representation. Derived Serde serialization is separate.
@@ -185,16 +186,13 @@ impl fmt::Display for PrimitiveValue {
             Duration(d) => d.fmt(f),
             #[cfg(feature = "jiff")]
             DateTime(d) => {
-                Date(d.date()).fmt(f)?;
+                Date(d.date().into()).fmt(f)?;
                 write!(f, "T{}", d.time())
             },
             #[cfg(feature = "jiff")]
             Time(t) => t.fmt(f),
             #[cfg(feature = "jiff")]
-            Date(d) => {
-                fmt_year(d.year().into(), f)?;
-                write!(f, "-{:02}-{:02}", d.month(), d.day())
-            },
+            Date(d) => d.fmt(f),
             GYearMonth((y, m)) => {
                 fmt_year(*y, f)?;
                 write!(f, "-{m:02}")
@@ -622,6 +620,13 @@ impl From<jiff::civil::Time> for PrimitiveValue {
 #[cfg(feature = "jiff")]
 impl From<jiff::civil::Date> for PrimitiveValue {
     fn from(input: jiff::civil::Date) -> Self {
+        Self::Date(input.into())
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl From<Date> for PrimitiveValue {
+    fn from(input: Date) -> Self {
         Self::Date(input)
     }
 }

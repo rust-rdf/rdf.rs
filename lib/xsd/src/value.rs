@@ -314,6 +314,13 @@ impl From<Date> for Value {
     }
 }
 
+#[cfg(feature = "jiff")]
+impl From<jiff::civil::Date> for Value {
+    fn from(input: jiff::civil::Date) -> Self {
+        Self::Primitive(input.into())
+    }
+}
+
 #[cfg(feature = "serde")]
 impl From<Value> for serde_json::Value {
     fn from(input: Value) -> Self {
