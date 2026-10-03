@@ -28,6 +28,15 @@
 //! Applications integrating with Sophia must provide their own term conversion,
 //! retaining RDF lexical forms and datatype identifiers outside parsed values.
 //!
+//! ## JSON-LD interoperability
+//!
+//! The `json-ld` feature is currently an empty compatibility placeholder. It
+//! enables no dependencies, JSON-LD processing, or conversion APIs, and does not
+//! enable `alloc`, `std`, or `serde`. Explicit JSON conversion methods on values
+//! require the separate `serde` feature. Those methods produce JSON values,
+//! not JSON-LD value objects carrying `@value` and `@type`; they do not provide
+//! JSON-LD expansion, compaction, or RDF datatype-preserving round trips.
+//!
 //! ## Borsh interoperability
 //!
 //! The `borsh` feature enables `BorshSerialize` and `BorshDeserialize` for

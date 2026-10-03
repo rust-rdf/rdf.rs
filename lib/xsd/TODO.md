@@ -203,9 +203,9 @@ rustdoc, and [Cargo.toml](Cargo.toml).
   feature requirements, and datatype-identifier lookup conventions. Explain the
   difference between original lexical form, value representation, and canonical
   lexical form. Use runnable examples in rustdoc.
-- [ ] Reconcile interoperability claims with implemented APIs. `json-ld` is an empty
-  feature in this crate; `rudof` enables a dependency but exposes no dedicated
-  conversion API here. Implement or document each boundary in separate changes.
+- [ ] Reconcile `rudof` interoperability claims with implemented APIs: the feature
+  enables a dependency but exposes no dedicated conversion API here. Implement
+  or document this boundary.
 
 ## Verification for implementation work
 
