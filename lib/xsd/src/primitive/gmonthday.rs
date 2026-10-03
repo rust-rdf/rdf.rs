@@ -5,6 +5,11 @@ use core::fmt;
 
 /// A validated XSD 1.1 `gMonthDay` with an optional timezone.
 ///
+/// Construction, parsing, and formatting require neither `alloc` nor `jiff`.
+/// Formatting can target a fixed-capacity `core::fmt::Write` buffer; writer
+/// errors are propagated. Serde and Borsh support each require only their own
+/// feature, which implies `alloc` but does not enable date/time support.
+///
 /// Available without allocation or date/time features. Month/day combinations
 /// follow Gregorian month lengths, allowing February 29 because no year is
 /// specified. Formatting writes `--mm-dd` followed by the optional offset, using
