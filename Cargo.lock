@@ -1015,15 +1015,15 @@ checksum = "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486"
 
 [[package]]
 name = "clientele"
-version = "0.3.14"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e09e0aa4144276eaccd215dbc6b0421527415582cea835d878ce0912459adc1"
+checksum = "c1db8ca4eb83fe648d4513976c9cb0e40bd9f26ec951de4ce292755266578556"
 dependencies = [
  "argfile",
  "camino",
  "clap",
  "dirs",
- "dogma 0.1.11",
+ "dogma 0.3.0",
  "dotenvy",
  "duration-str",
  "error-stack",
