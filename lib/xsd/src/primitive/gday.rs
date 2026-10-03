@@ -11,6 +11,9 @@ use core::fmt;
 /// hashing are structural; absence differs from explicit UTC.
 /// This replaces the raw `u8` alias: use [`Self::new`] for checked construction
 /// and [`Self::day`] to retrieve the field.
+/// Parsing follows XSD 1.1 `---dd` syntax, with exactly two ASCII day digits.
+/// Use [`crate::parse_g_day`] to parse the optional timezone; whitespace is not
+/// trimmed. Day 31 remains valid with any supported offset.
 ///
 /// With `serde`, the representation is a struct with `day` (an integer) and
 /// `timezone` (optional signed minutes), replacing the former bare integer.
