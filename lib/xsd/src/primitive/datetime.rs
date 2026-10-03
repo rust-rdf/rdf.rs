@@ -27,6 +27,11 @@ mod value {
     /// date-time string) and `timezone` (optional signed minutes), replacing the
     /// former bare string. Decoding validates offset bounds and requires exactly
     /// the canonical civil spelling, rejecting embedded offsets and annotations.
+    /// Explicit JSON/BSON conversion on [`crate::Value`] instead emits an XSD
+    /// lexical string retaining the calendar, nanoseconds, and optional offset,
+    /// without a datatype tag. Parse that string with [`crate::DATE_TIME`] to
+    /// recover the represented value. Neither encoding recovers original spelling
+    /// such as hour 24, fractional trailing zeros, or signed zero offsets.
     ///
     /// ```
     /// use xsd::{primitive::DateTime, TimezoneOffset};

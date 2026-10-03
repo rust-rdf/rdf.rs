@@ -102,7 +102,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   unsupported target values. Test large integers, high-precision decimals,
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Document the distinction between derived Serde serialization and explicit
-  JSON/BSON conversion for the remaining datatypes beyond `Date` and `Time`.
+  JSON/BSON conversion for the remaining datatypes beyond `Date`, `Time`, and `DateTime`.
   Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.
 
