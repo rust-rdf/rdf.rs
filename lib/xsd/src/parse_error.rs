@@ -135,8 +135,8 @@ pub enum ParseError {
 
     /// An `xsd:decimal` parser failed.
     ///
-    /// The backend error is retained, including any range or precision failure
-    /// it reports, and is also exposed through [`core::error::Error::source`].
+    /// The lexical or backend error is retained and is also exposed through
+    /// [`core::error::Error::source`].
     ///
     /// ```
     /// let error = xsd::parse("not-a-decimal", xsd::DECIMAL).unwrap_err();
@@ -148,7 +148,7 @@ pub enum ParseError {
     InvalidDecimal {
         /// The requested datatype, preserving its [`Type`] representation.
         datatype: Type,
-        /// The original decimal backend error.
+        /// The lexical validation or numeric backend error.
         source: ParseDecimalError,
     },
 
@@ -238,8 +238,42 @@ impl core::error::Error for ParseError {
     }
 }
 
-/// An error reported by the backend when parsing an `xsd:decimal` literal.
+/// An error encountered when parsing an `xsd:decimal` literal.
 ///
-/// Preserves the backend's diagnostics for malformed input and any reported
-/// representation limits.
-pub type ParseDecimalError = valuand::DecimalError;
+/// Replaces the backend error alias with separate lexical and conversion errors.
+/// Requires neither allocation nor `std`.
+#[derive(Debug)]
+#[non_exhaustive]
+pub enum ParseDecimalError {
+    /// The input does not match the XSD decimal lexical grammar.
+    InvalidLexical,
+    /// The numeric backend could not convert the input.
+    Backend(
+        /// The original backend diagnostic, including reported range failures.
+        valuand::DecimalError,
+    ),
+}
+
+impl core::fmt::Display for ParseDecimalError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidLexical => f.write_str("invalid XSD decimal lexical form"),
+            Self::Backend(source) => source.fmt(f),
+        }
+    }
+}
+
+impl core::error::Error for ParseDecimalError {
+    fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
+        match self {
+            Self::InvalidLexical => None,
+            Self::Backend(source) => Some(source),
+        }
+    }
+}
+
+impl From<valuand::DecimalError> for ParseDecimalError {
+    fn from(source: valuand::DecimalError) -> Self {
+        Self::Backend(source)
+    }
+}

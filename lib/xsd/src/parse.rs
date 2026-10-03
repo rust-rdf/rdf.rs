@@ -106,8 +106,27 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
 }
 
 /// Parses an input string containing an `xsd:decimal` literal.
+///
+/// Accepts an optional sign and ASCII digits with at most one decimal point;
+/// at least one digit is required. Exponents and whitespace are rejected.
+/// XML Schema whitespace preprocessing is the caller's responsibility.
+/// The numeric backend determines representable range and precision and may
+/// round values with excess precision.
+///
+/// # Errors
+///
+/// Returns [`ParseDecimalError::InvalidLexical`] for non-XSD spellings, or
+/// [`ParseDecimalError::Backend`] when numeric conversion fails.
 pub fn parse_decimal(input: impl AsRef<str>) -> Result<Value, ParseDecimalError> {
-    input.as_ref().parse::<Decimal>().map(Value::from)
+    let input = input.as_ref();
+    let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
+    if !is_decimal_significand(unsigned) {
+        return Err(ParseDecimalError::InvalidLexical);
+    }
+    input
+        .parse::<Decimal>()
+        .map(Value::from)
+        .map_err(Into::into)
 }
 
 /// Parses an input string containing an `xsd:integer` literal.
@@ -246,6 +265,10 @@ fn is_xsd_floating_point(input: &str) -> bool {
     } else {
         unsigned
     };
+    is_decimal_significand(significand)
+}
+
+fn is_decimal_significand(significand: &str) -> bool {
     if let Some((integer, fraction)) = significand.split_once('.') {
         !(integer.is_empty() && fraction.is_empty())
             && integer.bytes().all(|byte| byte.is_ascii_digit())

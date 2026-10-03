@@ -75,8 +75,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 **Observed with default features:**
 
-- `xsd::parse("1e2", xsd::DECIMAL)` accepts exponent notation, which is outside
-  the XSD decimal lexical grammar.
 - Parsing decimal `0.123456789012345678901234567890123456789` succeeds but rounds
   it to `0.1234567890123456789012345679`.
 - Parsing integer `340282366920938463463374607431768211456` fails because of the
@@ -91,8 +89,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   version-sensitive rules such as year zero and NaN comparison. Distinguish XML
   Schema whitespace preprocessing from RDF lexical-form handling rather than
   unconditionally trimming every datatype.
-- [ ] Validate decimal and integer lexical forms before delegating
-  numeric conversion. Test both permitted alternate spellings and invalid input.
+- [ ] Verify integer-family lexical forms, including permitted alternate spellings
+  and invalid input, and document the lexical-processing policy.
 - [ ] Detect unsupported decimal precision/range without silently rounding exact
   values. Document limits and expose useful errors. Consider allocation-backed
   arbitrary-precision support as a separate enhancement while preserving the
