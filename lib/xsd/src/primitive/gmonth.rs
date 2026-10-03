@@ -10,6 +10,8 @@ use core::fmt;
 /// hashing are structural. An absent timezone is distinct from explicit UTC.
 /// This replaces the raw `u8` alias: use [`Self::new`] for checked construction
 /// and [`Self::month`] to retrieve the field.
+/// Parsing follows XSD 1.1 `--mm` syntax; legacy trailing hyphens (`--mm--`)
+/// are rejected. Use [`crate::parse_g_month`] to parse the optional timezone.
 ///
 /// With `serde`, the representation is now a struct with `month` (an integer)
 /// and `timezone` (optional signed minutes), replacing the former bare integer.
