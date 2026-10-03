@@ -227,6 +227,9 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// `20261231T12:34:56` are rejected.
 /// Years must not have a leading plus sign.
 /// Years longer than four digits must not begin with zero (excluding the sign).
+/// Four-digit negative years (`-0001` through `-9999`) are accepted. The signed
+/// year is preserved in the returned value and its XSD formatting without a
+/// historical-era adjustment. Negative zero (`-0000`) is rejected.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Fractional seconds use a period separator; a comma is rejected.
@@ -251,6 +254,8 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// ```
 /// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
 /// assert_eq!(value.to_string(), "2026-12-31T12:34:56");
+/// let value = xsd::parse_datetime("-2024-02-29T12:34:56.125").unwrap();
+/// assert_eq!(value.to_string(), "-2024-02-29T12:34:56.125");
 /// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
 /// assert!(xsd::parse_datetime("20261231T12:34:56").is_err());
@@ -269,7 +274,28 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 #[cfg(feature = "jiff")]
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
-    let datetime = input.parse::<DateTime>()?;
+    // Jiff requires six digits for negative years. Parse four-digit years by
+    // magnitude and restore the sign without allocating. Gregorian leap-year
+    // validity is identical for a year and its negation.
+    let negative_year = input.starts_with('-') && input.as_bytes().get(5) == Some(&b'-');
+    let civil_input = if negative_year { &input[1..] } else { input };
+    let mut datetime = civil_input.parse::<DateTime>()?;
+    if negative_year {
+        if datetime.year() == 0 {
+            return Err(jiff::Error::from_args(format_args!(
+                "xsd:dateTime years must not be negative zero"
+            )));
+        }
+        datetime = DateTime::new(
+            -datetime.year(),
+            datetime.month(),
+            datetime.day(),
+            datetime.hour(),
+            datetime.minute(),
+            datetime.second(),
+            datetime.subsec_nanosecond(),
+        )?;
+    }
     // Jiff accepts T, t, or space here; XSD only permits uppercase T.
     let separator = input
         .bytes()
@@ -325,7 +351,7 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
         )));
     }
     if jiff::fmt::temporal::DateTimeParser::new()
-        .parse_pieces(input)?
+        .parse_pieces(civil_input)?
         .to_numeric_offset()
         .is_some_and(|offset| offset.seconds().unsigned_abs() > 14 * 60 * 60)
     {

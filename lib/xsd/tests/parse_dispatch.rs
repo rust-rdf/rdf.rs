@@ -340,6 +340,82 @@ fn datetime_parsers_reject_zero_padded_extended_years() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_accept_four_digit_negative_years() {
+    for (input, year, month, day, hour, minute, second, nanosecond) in [
+        ("-0001-01-01T00:00:00", -1, 1, 1, 0, 0, 0, 0),
+        (
+            "-2024-02-29T12:34:56.125",
+            -2024,
+            2,
+            29,
+            12,
+            34,
+            56,
+            125_000_000,
+        ),
+        ("-2026-12-31T12:34:56", -2026, 12, 31, 12, 34, 56, 0),
+        (
+            "-9999-12-31T23:59:59.999999999",
+            -9999,
+            12,
+            31,
+            23,
+            59,
+            59,
+            999_999_999,
+        ),
+    ] {
+        let expected = xsd::Value::from(
+            xsd::primitive::DateTime::new(year, month, day, hour, minute, second, nanosecond)
+                .unwrap(),
+        );
+        assert_eq!(expected.to_string(), input);
+        for offset in ["", "+00:00", "-00:00", "+02:00", "-14:00", "+14:00"] {
+            let lexical = format!("{input}{offset}");
+            assert_eq!(xsd::parse_datetime(&lexical).unwrap(), expected);
+            assert_eq!(xsd::parse(&lexical, xsd::DATE_TIME).unwrap(), expected);
+        }
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn datetime_parsers_reject_invalid_negative_year_literals() {
+    for input in [
+        "-0000-01-01T00:00:00",
+        "-2023-02-29T12:34:56",
+        "-2024-13-01T12:34:56",
+        "-2024-01-32T12:34:56",
+        "-202-01-01T12:34:56",
+        "-abcd-01-01T12:34:56",
+        "-2026-12-31t12:34:56",
+        "-2026-12-31 12:34:56",
+        "-2026-12-31T12:34",
+        "-2026-12-31T23:59:60",
+        "-2026-12-31T12:34:56,125",
+        "-2026-12-31T12:34:56+14:01",
+        "-2026-12-31T12:34:56-14:01",
+        "-2026-12-31T12:34:56+02",
+        "-2026-12-31T12:34:56+0200",
+        "-2026-12-31T12:34:56+02:00:00",
+        "-2026-12-31T12:34:56[Europe/Paris]",
+    ] {
+        assert!(xsd::parse_datetime(input).is_err(), "{input}");
+        assert!(
+            matches!(
+                xsd::parse(input, xsd::DATE_TIME),
+                Err(ParseError::InvalidTemporal {
+                    datatype: PrimitiveType::DateTime,
+                    ..
+                })
+            ),
+            "{input}"
+        );
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_reject_positive_year_signs() {
     for input in [
         "+002026-12-31T12:34:56",
