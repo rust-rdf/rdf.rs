@@ -32,8 +32,7 @@ history. Reproduce the relevant finding against the current code before editing.
 [src/parse.rs](src/parse.rs) and [src/primitive_value.rs](src/primitive_value.rs).
 
 `DateTime` directly aliases a Jiff civil type, which cannot retain
-timezone offsets. `Time` stores optional offsets, but its parser still discards
-them. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
+timezone offsets. With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
 it, the exported alias is the unsigned `core::time::Duration`.
 
 **Observed with default features, using `xsd::parse`:**
@@ -42,8 +41,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
 | --- | --- | --- |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
-| `xsd::TIME` | `12:34:56+02:00` | Accepted; offset discarded |
-| `xsd::TIME` | `24:00:00+02:00` | Rejected despite valid XSD end-of-day notation |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
 
 **Subtasks and acceptance criteria:**
@@ -56,7 +53,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Make lossy `DateTime` and `Time` civil-value conversions
   explicit/fallible, building on the exact `TimezoneOffset`/Jiff offset conversions.
 - [ ] Enforce temporal lexical grammars for timezone-bearing values, including
-  end-of-day notation for `DateTime` and `Time`.
+  end-of-day notation for `DateTime`.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,

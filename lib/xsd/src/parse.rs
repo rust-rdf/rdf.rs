@@ -636,10 +636,9 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// Requires `jiff` (enabled by `datetime`). Inputs must begin with two-digit
 /// hours, minutes, and seconds separated by colons (`hh:mm:ss`). Seconds may
 /// include a fractional part; omitted clock fields are not filled in with zero.
-/// Timezone-free `24:00:00` denotes midnight and is normalized to `00:00:00`.
+/// `24:00:00` denotes midnight and is normalized to `00:00:00`, retaining any timezone.
 /// It may have a period followed by one or more ASCII zero digits, with no
-/// precision limit for this all-zero fraction. Other hour-24 forms, including
-/// those with a timezone suffix, currently return an error.
+/// precision limit for this all-zero fraction. Other hour-24 forms return an error.
 /// For hours 00 through 23, a fractional part requires one to nine ASCII digits
 /// (nanosecond precision). Longer fractions are rejected even when the excess
 /// digits are zero; they are never rounded or truncated.
@@ -648,13 +647,14 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// to 59 by the underlying parser.
 /// Numeric timezone offsets must use `+hh:mm` or `-hh:mm` and be between `-14:00`
 /// and `+14:00`, inclusive. Abbreviated offsets and offset seconds are rejected.
-/// The returned civil value currently does not retain accepted timezone offsets.
+/// `Z` denotes UTC. The returned value retains the optional timezone, distinguishing
+/// absence from explicit UTC. Signed zero offsets format as `Z`. Input is not trimmed.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
 /// # Errors
 ///
-/// Apart from the timezone-free end-of-day forms described above, returns an
+/// Apart from the end-of-day forms described above, returns an
 /// error when the input cannot be parsed by the underlying civil-time
 /// parser, does not begin with the required `hh:mm:ss` clock fields, uses a
 /// comma to separate fractional seconds, specifies a leap second, contains
@@ -680,19 +680,55 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 #[cfg(feature = "jiff")]
 pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
-    // XSD permits end-of-day notation; Jiff's civil clock stops at hour 23.
-    // Inspect the entire suffix so no nonzero fraction or annotation is lost.
-    if is_timezone_free_end_of_day(input) {
-        return Time::new(0, 0, 0, 0).map(Value::from);
-    }
-    validate_nanosecond_precision(input)?;
-    let time = Time::from(input.parse::<jiff::civil::Time>()?);
-    // Jiff validates the digits and ranges; require all three colon-separated fields.
     if !matches!(input.as_bytes(), [_, _, b':', _, _, b':', _, _, ..]) {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:time literals require hours, minutes, and seconds (hh:mm:ss)"
         )));
     }
+    if input.as_bytes().contains(&b'[') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:time literals must not contain bracketed annotations"
+        )));
+    }
+    let timezone_start = input.as_bytes().get(8..).and_then(|suffix| {
+        suffix
+            .iter()
+            .position(|byte| matches!(byte, b'+' | b'-' | b'Z' | b'z'))
+    });
+    let (clock, timezone) = if let Some(start) = timezone_start {
+        let (clock, suffix) = input.split_at(start + 8);
+        // Preserve the range diagnostic for oversized backend-style offsets.
+        if let [b'+' | b'-', h1, h2, rest @ ..] = suffix.as_bytes()
+            && h1.is_ascii_digit()
+            && h2.is_ascii_digit()
+        {
+            let hours = (h1 - b'0') * 10 + h2 - b'0';
+            if hours > 14 || (hours == 14 && rest.iter().any(|byte| matches!(byte, b'1'..=b'9'))) {
+                return Err(jiff::Error::from_args(format_args!(
+                    "xsd:time timezone offsets must be between -14:00 and +14:00"
+                )));
+            }
+        }
+        let offset = suffix
+            .parse::<crate::TimezoneOffset>()
+            .map_err(|error| match error {
+                crate::TimezoneOffsetError::OutOfRange => jiff::Error::from_args(format_args!(
+                    "xsd:time timezone offsets must be between -14:00 and +14:00"
+                )),
+                _ => jiff::Error::from_args(format_args!(
+                    "xsd:time numeric timezone offsets require +hh:mm or -hh:mm"
+                )),
+            })?;
+        (clock, Some(offset))
+    } else {
+        (input, None)
+    };
+    // XSD permits end-of-day notation; Jiff's civil clock stops at hour 23.
+    if is_timezone_free_end_of_day(clock) {
+        return Time::new(0, 0, 0, 0).map(|time| time.with_timezone(timezone).into());
+    }
+    validate_nanosecond_precision(clock)?;
+    let time = Time::from(clock.parse::<jiff::civil::Time>()?).with_timezone(timezone);
     if input.as_bytes().get(8) == Some(&b',') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:time fractional seconds require a period separator"
@@ -703,28 +739,6 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:time seconds must be less than 60"
         )));
-    }
-    // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
-    if input.as_bytes().contains(&b'[') {
-        return Err(jiff::Error::from_args(format_args!(
-            "xsd:time literals must not contain bracketed annotations"
-        )));
-    }
-    // With clock fields validated and annotations excluded, a sign starts an offset.
-    if let Some(start) = input.bytes().position(|byte| matches!(byte, b'+' | b'-')) {
-        // Jiff validates the two hour digits. At 14 hours, all smaller units must be zero.
-        let (hours, rest) = input[start + 1..].split_at(2);
-        if hours > "14" || (hours == "14" && rest.bytes().any(|byte| matches!(byte, b'1'..=b'9'))) {
-            return Err(jiff::Error::from_args(format_args!(
-                "xsd:time timezone offsets must be between -14:00 and +14:00"
-            )));
-        }
-        // Jiff validates the digits; XSD requires exactly two colon-separated fields.
-        if !matches!(&input.as_bytes()[start..], [b'+' | b'-', _, _, b':', _, _]) {
-            return Err(jiff::Error::from_args(format_args!(
-                "xsd:time numeric timezone offsets require +hh:mm or -hh:mm"
-            )));
-        }
     }
     Ok(Value::from(time))
 }

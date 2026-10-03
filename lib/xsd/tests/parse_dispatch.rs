@@ -618,9 +618,6 @@ fn time_parsers_reject_invalid_end_of_day() {
         "24:00:00[Etc/UTC]",
         "24:00:00.0[u-ca=iso8601]",
         "25:00:00",
-        "24:00:00Z",
-        "24:00:00+02:00",
-        "24:00:00.0-02:00",
     ] {
         assert!(xsd::parse_time(input).is_err(), "{input}");
         assert!(
