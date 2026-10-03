@@ -1,5 +1,28 @@
 use xsd::TimezoneOffset;
 
+#[cfg(feature = "jiff")]
+#[test]
+fn jiff_conversion_preserves_offsets_and_rejects_loss() {
+    use xsd::TimezoneOffsetError::{OutOfRange, SubMinute};
+    for minutes in -840..=840 {
+        let offset = TimezoneOffset::from_minutes(minutes).unwrap();
+        let jiff_offset = jiff::tz::Offset::from(offset);
+        assert_eq!(jiff_offset.seconds(), i32::from(minutes) * 60);
+        assert_eq!(TimezoneOffset::try_from(jiff_offset), Ok(offset));
+    }
+    for (seconds, error) in [
+        (1, SubMinute),
+        (-1, SubMinute),
+        (59, SubMinute),
+        (50_401, OutOfRange),
+        (-50_401, OutOfRange),
+        (54_000, OutOfRange),
+    ] {
+        let offset = jiff::tz::Offset::from_seconds(seconds).unwrap();
+        assert_eq!(TimezoneOffset::try_from(offset), Err(error));
+    }
+}
+
 #[test]
 fn every_offset_round_trips_through_xsd_syntax() {
     for minutes in -840..=840 {

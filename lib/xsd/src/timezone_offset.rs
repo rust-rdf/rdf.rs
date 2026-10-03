@@ -28,6 +28,8 @@ pub enum TimezoneOffsetError {
     InvalidLexical,
     /// The offset exceeds 14 hours or its minute field exceeds 59.
     OutOfRange,
+    /// A source offset contains seconds that cannot be represented as whole minutes.
+    SubMinute,
 }
 
 impl fmt::Display for TimezoneOffsetError {
@@ -37,11 +39,41 @@ impl fmt::Display for TimezoneOffsetError {
             Self::OutOfRange => {
                 "XSD timezone offset is outside -14:00..=+14:00 or has invalid minutes"
             },
+            Self::SubMinute => "XSD timezone offsets must use whole minutes",
         })
     }
 }
 
 impl core::error::Error for TimezoneOffsetError {}
+
+/// Exact conversion from Jiff, available with `jiff` (or `datetime`).
+#[cfg(feature = "jiff")]
+impl TryFrom<jiff::tz::Offset> for TimezoneOffset {
+    type Error = TimezoneOffsetError;
+
+    /// Rejects offsets outside XSD's 14-hour bound or containing sub-minute
+    /// seconds. Neither rounding nor truncation is performed. Range validation
+    /// precedes precision validation when both constraints are violated.
+    fn try_from(offset: jiff::tz::Offset) -> Result<Self, Self::Error> {
+        let seconds = offset.seconds();
+        if !(-50_400..=50_400).contains(&seconds) {
+            return Err(TimezoneOffsetError::OutOfRange);
+        }
+        if seconds % 60 != 0 {
+            return Err(TimezoneOffsetError::SubMinute);
+        }
+        Ok(Self((seconds / 60) as i16))
+    }
+}
+
+/// Lossless conversion to Jiff, available with `jiff` (or `datetime`).
+#[cfg(feature = "jiff")]
+impl From<TimezoneOffset> for jiff::tz::Offset {
+    fn from(offset: TimezoneOffset) -> Self {
+        Self::from_seconds(i32::from(offset.minutes()) * 60)
+            .expect("validated XSD offsets fit in Jiff's offset range")
+    }
+}
 
 impl core::str::FromStr for TimezoneOffset {
     type Err = TimezoneOffsetError;
