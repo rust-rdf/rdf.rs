@@ -53,6 +53,21 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     Duration(Duration),
 
+    /// A civil date and time, available with `jiff` (enabled by `datetime`).
+    ///
+    /// `Display` uses the date formatting of [`Self::Date`], followed by `T`
+    /// and `hh:mm:ss` with fractional seconds when nonzero. Fractional seconds
+    /// retain nanosecond precision and omit trailing zeros. No timezone is
+    /// represented, and the stored year number is preserved without an era adjustment.
+    ///
+    /// ```
+    /// use xsd::{PrimitiveValue, primitive::DateTime};
+    /// let value = PrimitiveValue::DateTime(
+    ///     DateTime::new(-1, 1, 2, 12, 34, 56, 125_000_000).unwrap(),
+    /// );
+    /// assert_eq!(value.to_string(), "-0001-01-02T12:34:56.125");
+    /// ```
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#dateTime>
     #[cfg(feature = "jiff")]
     DateTime(DateTime),
@@ -121,7 +136,10 @@ impl fmt::Display for PrimitiveValue {
             #[cfg(feature = "jiff")]
             Duration(d) => d.fmt(f),
             #[cfg(feature = "jiff")]
-            DateTime(d) => d.fmt(f),
+            DateTime(d) => {
+                Date(d.date()).fmt(f)?;
+                write!(f, "T{}", d.time())
+            },
             #[cfg(feature = "jiff")]
             Time(t) => t.fmt(f),
             #[cfg(feature = "jiff")]

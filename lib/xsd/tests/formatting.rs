@@ -120,6 +120,28 @@ fn date_lexical_year_formatting() {
 }
 
 #[test]
+#[cfg(feature = "jiff")]
+fn datetime_lexical_year_formatting() {
+    use xsd::primitive::DateTime;
+
+    for (year, prefix) in [
+        (-9999, "-9999"),
+        (-2026, "-2026"),
+        (-1, "-0001"),
+        (1, "0001"),
+        (9999, "9999"),
+    ] {
+        for (nanosecond, suffix) in [(0, ""), (125_000_000, ".125"), (1, ".000000001")] {
+            let value = DateTime::new(year, 1, 2, 12, 34, 56, nanosecond).unwrap();
+            assert_primitive(
+                PrimitiveValue::DateTime(value),
+                &format!("{prefix}-01-02T12:34:56{suffix}"),
+            );
+        }
+    }
+}
+
+#[test]
 fn partial_calendar_lexical_forms() {
     use PrimitiveValue::*;
     for (value, expected) in [
@@ -174,6 +196,15 @@ fn formatting_propagates_writer_errors() {
         assert!(write!(&mut short, "{value}").is_err());
         let mut year_only = heapless::String::<5>::new();
         assert!(write!(&mut year_only, "{value}").is_err());
+        let value = PrimitiveValue::DateTime(
+            xsd::primitive::DateTime::new(-1, 1, 2, 12, 34, 56, 125_000_000).unwrap(),
+        );
+        let mut short = heapless::String::<2>::new();
+        assert!(write!(&mut short, "{value}").is_err());
+        let mut date_only = heapless::String::<11>::new();
+        assert!(write!(&mut date_only, "{value}").is_err());
+        let mut whole_seconds = heapless::String::<20>::new();
+        assert!(write!(&mut whole_seconds, "{value}").is_err());
     }
     #[cfg(feature = "alloc")]
     for value in [

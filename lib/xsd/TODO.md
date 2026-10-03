@@ -54,7 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
   validation, date components, and fractional seconds. Enforce numeric timezone
   offset syntax for `Date`. Align negative-year parsing for `Date` and `DateTime`
-  and negative-year `DateTime` formatting with XSD year syntax.
+  with XSD year syntax.
   Define supported year and fractional precision ranges; report unsupported
   values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.
@@ -130,7 +130,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 - [ ] Make BSON method and trait conversion routes agree for each value and
   handle Decimal128 representation failures without `unwrap()` panics.
 - [ ] Complete binary JSON conversion using the existing lexical encodings.
-  Align date, partial-calendar, and QName JSON/BSON string output with the
+  Align date, dateTime, partial-calendar, and QName JSON/BSON string output with the
   `Display` implementation; those methods still contain independent, incomplete
   formatting. Preserve the existing BSON binary representation.
 - [ ] Document the distinction between derived Serde serialization and explicit
