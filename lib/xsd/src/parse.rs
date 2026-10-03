@@ -130,6 +130,23 @@ pub fn parse_decimal(input: impl AsRef<str>) -> Result<Value, ParseDecimalError>
 }
 
 /// Parses an input string containing an `xsd:integer` literal.
+///
+/// Accepts an optional `+` or `-` followed by one or more ASCII digits.
+/// Leading zeros and signed zero are accepted; whitespace, decimal points,
+/// exponents, and digit separators are rejected. XML Schema whitespace
+/// preprocessing must be performed separately by the caller. The backend
+/// enforces this grammar and currently limits values to the `i128` range.
+/// Original lexical spelling is not retained.
+///
+/// # Errors
+///
+/// Returns [`ParseIntegerError`] for malformed input or an out-of-range value.
+/// Its [`kind()`](core::num::ParseIntError::kind) identifies the failure.
+///
+/// ```
+/// assert_eq!(xsd::parse_integer("+001").unwrap().to_string(), "1");
+/// assert!(xsd::parse_integer("1.0").is_err());
+/// ```
 pub fn parse_integer(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -139,6 +156,12 @@ pub fn parse_integer(input: impl AsRef<str>) -> Result<Value, ParseIntegerError>
 }
 
 /// Parses an input string containing an `xsd:long` literal.
+///
+/// Uses the lexical rules of [`parse_integer`] and the signed 64-bit range.
+///
+/// # Errors
+///
+/// Returns [`ParseIntegerError`] for malformed input or overflow.
 pub fn parse_long(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -148,6 +171,12 @@ pub fn parse_long(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
 }
 
 /// Parses an input string containing an `xsd:int` literal.
+///
+/// Uses the lexical rules of [`parse_integer`] and the signed 32-bit range.
+///
+/// # Errors
+///
+/// Returns [`ParseIntegerError`] for malformed input or overflow.
 pub fn parse_int(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -157,6 +186,12 @@ pub fn parse_int(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
 }
 
 /// Parses an input string containing an `xsd:short` literal.
+///
+/// Uses the lexical rules of [`parse_integer`] and the signed 16-bit range.
+///
+/// # Errors
+///
+/// Returns [`ParseIntegerError`] for malformed input or overflow.
 pub fn parse_short(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
@@ -166,6 +201,12 @@ pub fn parse_short(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
 }
 
 /// Parses an input string containing an `xsd:byte` literal.
+///
+/// Uses the lexical rules of [`parse_integer`] and the signed 8-bit range.
+///
+/// # Errors
+///
+/// Returns [`ParseIntegerError`] for malformed input or overflow.
 pub fn parse_byte(input: impl AsRef<str>) -> Result<Value, ParseIntegerError> {
     input
         .as_ref()
