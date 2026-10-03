@@ -125,17 +125,34 @@ impl DecimalValue {
         }
     }
 
+    /// Clones and converts this value using [`Self::into_json`]. Requires `serde`.
+    /// Integer conversion always returns `Some`, using strings outside `i64`.
     #[cfg(feature = "serde")]
     pub fn to_json(&self) -> Option<serde_json::Value> {
         Some(self.clone().into_json())
     }
 
+    /// Converts to an untagged JSON value. Requires `serde`.
+    ///
+    /// Integer-family values use exact JSON integer numbers within the `i64`
+    /// range; larger `Integer` values use decimal strings. This replaces the
+    /// former lossy `f64` encoding of `Integer`. Consumers that parse all JSON
+    /// numbers as binary64 may still lose precision beyond 53 bits.
+    /// Datatype identity and original lexical spelling are not retained; retain
+    /// the datatype separately to parse the number or string back into XSD.
+    /// This differs from the enum's derived Serde serialization.
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
         use DecimalValue::*;
         match self {
             Decimal(r) => r.as_f64().into(), // TODO: string
-            Integer(z) => z.as_f64().into(), // TODO: string
+            Integer(z) => {
+                use alloc::string::ToString;
+                match z.to_i64() {
+                    Some(n) => n.into(),
+                    None => serde_json::Value::String(z.to_string()),
+                }
+            },
             Long(z) => z.into(),
             Int(z) => z.into(),
             Short(z) => z.into(),
