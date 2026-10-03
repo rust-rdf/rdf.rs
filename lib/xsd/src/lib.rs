@@ -37,6 +37,15 @@
 //! not JSON-LD value objects carrying `@value` and `@type`; they do not provide
 //! JSON-LD expansion, compaction, or RDF datatype-preserving round trips.
 //!
+//! ## Rudof interoperability
+//!
+//! The `rudof` feature enables `std` (and thus `alloc`) and the optional
+//! `oxsdatatypes` dependency. It currently provides no dedicated Rudof or
+//! `oxsdatatypes` conversion API, trait implementations, or public re-exports.
+//! It also does not enable `datetime` or change which datatypes [`parse`]
+//! supports. Applications using `oxsdatatypes` directly must declare their own
+//! dependency and handle conversion and representation limits explicitly.
+//!
 //! ## Borsh interoperability
 //!
 //! The `borsh` feature enables `BorshSerialize` and `BorshDeserialize` for
