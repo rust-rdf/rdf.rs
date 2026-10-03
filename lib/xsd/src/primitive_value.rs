@@ -261,6 +261,32 @@ fn fmt_base64(bytes: &[u8], f: &mut fmt::Formatter<'_>) -> fmt::Result {
 }
 
 impl PrimitiveValue {
+    /// Constructs a timezone-free `xsd:gMonthDay`, validating both fields.
+    ///
+    /// Returns `None` for an invalid month or a day outside that month's range.
+    /// February 29 is valid because no year is specified; February 30 and April
+    /// 31 are not. Available without allocation or date/time features. Formatting
+    /// uses `--mm-dd`. Direct [`Self::GMonthDay`] construction is unchecked.
+    ///
+    /// ```
+    /// let leap_day = xsd::PrimitiveValue::g_month_day(2, 29).unwrap();
+    /// assert_eq!(leap_day.to_string(), "--02-29");
+    /// assert!(xsd::PrimitiveValue::g_month_day(2, 30).is_none());
+    /// ```
+    pub const fn g_month_day(month: GMonth, day: GDay) -> Option<Self> {
+        let last_day = match month {
+            2 => 29,
+            4 | 6 | 9 | 11 => 30,
+            1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+            _ => return None,
+        };
+        if day >= 1 && day <= last_day {
+            Some(Self::GMonthDay((month, day)))
+        } else {
+            None
+        }
+    }
+
     /// Constructs a timezone-free `xsd:gDay`, validating the day of the month.
     ///
     /// Returns `None` unless `day` is in `1..=31`. No month or year is implied,

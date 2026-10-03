@@ -62,8 +62,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   negative calendar durations, zero, and conversion limits when replacing the alias.
 - [ ] Replace raw partial-calendar aliases with validated representations and
   timezone support. Direct `GMonth` variant construction still admits `0` and
-  `255`; extend the checked `PrimitiveValue::g_month`/`g_day` paths to paired fields and
-  eventually enforce validation at the representation/serialization boundary.
+  `255`; extend checked construction to year/month pairs, building on
+  `PrimitiveValue::g_month`, `g_day`, and `g_month_day`. Eventually enforce
+  validation at the representation/serialization boundary.
   Reuse the formatting regressions while adding constructor and parser coverage.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
