@@ -53,8 +53,9 @@
 //! [`TimezoneOffset`]. It also
 //! forwards Borsh support to the numeric backend and enables `alloc`, without
 //! requiring `std`.
-//! With `jiff` as well, `primitive::Date` and `primitive::Time` support versioned,
-//! validated type-local encodings documented on those types.
+//! With `jiff` as well, `primitive::Date`, `primitive::Time`, and
+//! `primitive::DateTime` support versioned, validated type-local encodings
+//! documented on those types.
 //!
 //! [`Value`] and [`PrimitiveValue`] do **not** implement Borsh serialization or
 //! deserialization, even with `borsh` enabled. Wrapping a supported numeric

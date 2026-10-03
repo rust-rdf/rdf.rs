@@ -33,6 +33,14 @@ mod value {
     /// recover the represented value. Neither encoding recovers original spelling
     /// such as hour 24, fractional trailing zeros, or signed zero offsets.
     ///
+    /// With `borsh`, the new type-local version-1 encoding is: version byte `1`,
+    /// little-endian `i16` year, `i8` month, day, hour, minute, and second,
+    /// little-endian `i32` nanoseconds, then Borsh `Option<TimezoneOffset>` (tag
+    /// `0` for absent, or `1` and little-endian `i16` minutes). This is 13 or 15
+    /// bytes, with one offset and no datatype tag or nested component versions.
+    /// There was no previous Borsh encoding for this type. Decoding rejects unknown
+    /// versions, invalid calendar/clock fields, invalid option tags, and offsets.
+    ///
     /// ```
     /// use xsd::{primitive::DateTime, TimezoneOffset};
     /// let value = DateTime::new(-1, 2, 28, 12, 34, 56, 1).unwrap()
@@ -207,6 +215,53 @@ mod value {
         /// absent timezones and instants outside Jiff's supported range.
         fn try_from(value: DateTime) -> Result<Self, Self::Error> {
             value.to_timestamp()
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshSerialize for DateTime {
+        fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+            borsh::BorshSerialize::serialize(
+                &(
+                    1u8,
+                    self.year(),
+                    self.month(),
+                    self.day(),
+                    self.hour(),
+                    self.minute(),
+                    self.second(),
+                    self.subsec_nanosecond(),
+                    self.timezone,
+                ),
+                writer,
+            )
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshDeserialize for DateTime {
+        fn deserialize_reader<R: borsh::io::Read>(
+            reader: &mut R,
+        ) -> Result<Self, borsh::io::Error> {
+            use borsh::io::{Error, ErrorKind};
+            if u8::deserialize_reader(reader)? != 1 {
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "unsupported XSD date-time encoding version",
+                ));
+            }
+            let (year, month, day, hour, minute, second, nanosecond, timezone) =
+                <(i16, i8, i8, i8, i8, i8, i32, Option<TimezoneOffset>)>::deserialize_reader(
+                    reader,
+                )?;
+            Self::new(year, month, day, hour, minute, second, nanosecond)
+                .map(|value| value.with_timezone(timezone))
+                .map_err(|_| {
+                    Error::new(
+                        ErrorKind::InvalidData,
+                        "invalid XSD date-time calendar or clock fields",
+                    )
+                })
         }
     }
 }
