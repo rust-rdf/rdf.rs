@@ -351,6 +351,7 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 ///
 /// Requires `jiff` (enabled by `datetime`). Duration designators must be
 /// uppercase ASCII; friendly and clock-style backend spellings are rejected.
+/// Only a leading minus sign is allowed; a leading plus sign is rejected.
 ///
 /// # Errors
 ///
@@ -360,7 +361,12 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 #[cfg(feature = "jiff")]
 pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationError> {
     let input = input.as_ref();
-    let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
+    if input.starts_with('+') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:duration must not have a leading plus sign"
+        )));
+    }
+    let unsigned = input.strip_prefix('-').unwrap_or(input);
     if !unsigned.starts_with('P') || input.bytes().any(|byte| byte.is_ascii_lowercase()) {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:duration requires uppercase duration designators"
