@@ -15,6 +15,9 @@ use core::fmt;
 /// and `timezone` (optional signed minutes), replacing the former bare integer.
 /// Deserialization validates both fields. The enclosing `PrimitiveValue` enum
 /// retains its `GMonth` tag; consumers of the former payload must migrate.
+/// A missing `timezone` field decodes as absent. Round trips retain the month,
+/// offset, and enclosing enum tags, but cannot recover original lexical spelling.
+/// Invalid months and offsets are rejected even inside the value wrappers.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gMonth>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
