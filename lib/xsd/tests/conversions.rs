@@ -149,9 +149,18 @@ fn partial_calendar_conversions_preserve_lexical_structure() {
         (GYear(-1), "-0001"),
         (GYear(i32::MIN), "-2147483648"),
         (GYear(i32::MAX), "2147483647"),
-        (GMonthDay((1, 2)), "--01-02"),
-        (GMonthDay((2, 29)), "--02-29"),
-        (GMonthDay((12, 31)), "--12-31"),
+        (
+            GMonthDay(xsd::primitive::GMonthDay::new(1, 2).unwrap()),
+            "--01-02",
+        ),
+        (
+            GMonthDay(xsd::primitive::GMonthDay::new(2, 29).unwrap()),
+            "--02-29",
+        ),
+        (
+            GMonthDay(xsd::primitive::GMonthDay::new(12, 31).unwrap()),
+            "--12-31",
+        ),
         (GDay(xsd::primitive::GDay::new(1).unwrap()), "---01"),
         (GDay(xsd::primitive::GDay::new(31).unwrap()), "---31"),
         (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),

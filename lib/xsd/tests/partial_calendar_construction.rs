@@ -1,6 +1,13 @@
 use xsd::{PrimitiveType, PrimitiveValue};
 
 #[test]
+fn month_day_representation_rejects_impossible_dates() {
+    for (month, day) in [(2, 30), (4, 31), (0, 1), (13, 1), (1, 0), (255, 255)] {
+        assert!(xsd::primitive::GMonthDay::new(month, day).is_none());
+    }
+}
+
+#[test]
 fn day_representation_validates_every_u8() {
     for day in u8::MIN..=u8::MAX {
         let value = xsd::primitive::GDay::new(day);
@@ -51,9 +58,14 @@ fn checked_month_day_validates_all_field_combinations() {
                 .is_some_and(|&last| day >= 1 && day <= last);
             let value = PrimitiveValue::g_month_day(month, day);
             assert_eq!(value.is_some(), expected, "{month}/{day}");
+            let fields = xsd::primitive::GMonthDay::new(month, day);
+            assert_eq!(fields.is_some(), expected, "{month}/{day}");
             if let Some(value) = value {
                 assert_eq!(value.r#type(), PrimitiveType::GMonthDay);
-                assert_eq!(value, PrimitiveValue::GMonthDay((month, day)));
+                let fields = fields.unwrap();
+                assert_eq!((fields.month(), fields.day()), (month, day));
+                assert_eq!(fields.timezone(), None);
+                assert_eq!(value, PrimitiveValue::GMonthDay(fields));
                 assert_eq!(value.to_string(), format!("--{month:02}-{day:02}"));
             }
         }

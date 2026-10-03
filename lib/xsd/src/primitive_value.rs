@@ -23,7 +23,8 @@ use ::alloc::{borrow::Cow, string::String, vec::Vec};
 /// Partial-calendar values use the same lexical strings for explicit JSON
 /// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
 /// do not validate raw calendar fields or include datatype identifiers or
-/// timezones, except for validated [`GMonth`] and [`GDay`] values, which retain their offsets.
+/// timezones, except for validated [`GMonth`], [`GDay`], and [`GMonthDay`] values,
+/// which retain their offsets.
 /// Derived Serde serialization uses a separate enum representation.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
@@ -200,7 +201,7 @@ impl fmt::Display for PrimitiveValue {
                 write!(f, "-{m:02}")
             },
             GYear(y) => fmt_year(*y, f),
-            GMonthDay((m, d)) => write!(f, "--{m:02}-{d:02}"),
+            GMonthDay(value) => value.fmt(f),
             GDay(d) => d.fmt(f),
             GMonth(m) => m.fmt(f),
             #[cfg(feature = "alloc")]
@@ -287,7 +288,8 @@ impl PrimitiveValue {
     /// Returns `None` for an invalid month or a day outside that month's range.
     /// February 29 is valid because no year is specified; February 30 and April
     /// 31 are not. Available without allocation or date/time features. Formatting
-    /// uses `--mm-dd`. Direct [`Self::GMonthDay`] construction is unchecked.
+    /// uses `--mm-dd`. The [`Self::GMonthDay`] payload is also validated;
+    /// this convenience constructor adds no timezone.
     ///
     /// ```
     /// let leap_day = xsd::PrimitiveValue::g_month_day(2, 29).unwrap();
@@ -295,16 +297,9 @@ impl PrimitiveValue {
     /// assert!(xsd::PrimitiveValue::g_month_day(2, 30).is_none());
     /// ```
     pub const fn g_month_day(month: u8, day: u8) -> Option<Self> {
-        let last_day = match month {
-            2 => 29,
-            4 | 6 | 9 | 11 => 30,
-            1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
-            _ => return None,
-        };
-        if day >= 1 && day <= last_day {
-            Some(Self::GMonthDay((month, day)))
-        } else {
-            None
+        match GMonthDay::new(month, day) {
+            Some(value) => Some(Self::GMonthDay(value)),
+            None => None,
         }
     }
 

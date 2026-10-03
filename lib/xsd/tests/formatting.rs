@@ -151,7 +151,10 @@ fn partial_calendar_lexical_forms() {
         (GYear(i32::MIN), "-2147483648"),
         (GYearMonth((2026, 1)), "2026-01"),
         (GYearMonth((-1, 12)), "-0001-12"),
-        (GMonthDay((2, 29)), "--02-29"),
+        (
+            GMonthDay(xsd::primitive::GMonthDay::new(2, 29).unwrap()),
+            "--02-29",
+        ),
         (GDay(xsd::primitive::GDay::new(1).unwrap()), "---01"),
         (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),
     ] {
