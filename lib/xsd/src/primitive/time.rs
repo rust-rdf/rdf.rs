@@ -25,6 +25,12 @@ mod value {
     /// bounds and rejects noncanonical civil strings, including embedded offsets,
     /// dates, leap seconds, and annotations, rather than silently losing data.
     ///
+    /// Explicit JSON/BSON conversion on [`crate::Value`] instead emits an XSD
+    /// lexical string with the clock, nanoseconds, and optional offset, omitting
+    /// the datatype tag. Parse that string with [`crate::TIME`] to recover the
+    /// represented value. Neither encoding preserves original lexical spelling,
+    /// such as hour 24, fractional trailing zeros, or the sign of a zero offset.
+    ///
     /// ```
     /// use xsd::{primitive::Time, TimezoneOffset};
     /// let time = Time::new(12, 34, 56, 1).unwrap().with_timezone(Some(TimezoneOffset::UTC));
