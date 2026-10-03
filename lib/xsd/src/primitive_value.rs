@@ -261,6 +261,24 @@ fn fmt_base64(bytes: &[u8], f: &mut fmt::Formatter<'_>) -> fmt::Result {
 }
 
 impl PrimitiveValue {
+    /// Constructs a timezone-free `xsd:gDay`, validating the day of the month.
+    ///
+    /// Returns `None` unless `day` is in `1..=31`. No month or year is implied,
+    /// so day 31 is valid. Available without allocation or date/time features.
+    /// Formatting uses `---dd`. Direct [`Self::GDay`] construction is unchecked.
+    ///
+    /// ```
+    /// assert_eq!(xsd::PrimitiveValue::g_day(31).unwrap().to_string(), "---31");
+    /// assert!(xsd::PrimitiveValue::g_day(32).is_none());
+    /// ```
+    pub const fn g_day(day: GDay) -> Option<Self> {
+        if day >= 1 && day <= 31 {
+            Some(Self::GDay(day))
+        } else {
+            None
+        }
+    }
+
     /// Constructs a timezone-free `xsd:gMonth`, validating the month.
     ///
     /// Returns `None` unless `month` is in `1..=12`. Available without allocation
