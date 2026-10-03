@@ -1,6 +1,28 @@
 #![cfg(feature = "jiff")]
 
 #[test]
+fn duration_precision_limits_are_explicit() {
+    for input in ["PT0.1234567891S", "-PT0.0000000001S", "PT1.0000000000S"] {
+        let error = xsd::parse_duration(input).unwrap_err();
+        assert!(error.to_string().contains("precision"), "{error}");
+        assert!(xsd::parse(input, xsd::DURATION).is_err());
+    }
+    for input in ["PT0.000000001S", "-PT0.123456789S", "PT1H2M3.999999999S"] {
+        let value = xsd::parse_duration(input).unwrap();
+        assert_eq!(value.to_string(), input);
+        assert_eq!(xsd::parse(input, xsd::DURATION).unwrap(), value);
+    }
+}
+
+#[test]
+fn duration_overflow_returns_errors() {
+    for input in ["PT9223372036854775808S", "PT999999999999999999999H"] {
+        assert!(xsd::parse_duration(input).is_err(), "accepted {input}");
+        assert!(xsd::parse(input, xsd::DURATION).is_err());
+    }
+}
+
+#[test]
 fn duration_allows_only_fractional_seconds() {
     for input in ["PT1.5H", "PT1.0H", "-PT1.5M", "PT1H2.5M", "PT1.S", "PT.5S"] {
         assert!(xsd::parse_duration(input).is_err(), "accepted {input}");

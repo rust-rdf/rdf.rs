@@ -354,12 +354,21 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 /// Only a leading minus sign is allowed; a leading plus sign is rejected.
 /// Only seconds may have a fraction, with ASCII digits on both sides of a
 /// period separator; commas and fractional hours or minutes are rejected.
+/// Fractional seconds support at most nine digits (nanosecond precision).
+/// Longer fractions are rejected, including excess zeros, never rounded.
 ///
 /// # Errors
 ///
 /// Returns an error for invalid lexical forms or values outside the backend's
 /// signed, fixed-length duration representation. Calendar years and months are
-/// not supported.
+/// not supported. Fractions longer than nine digits return an explicit precision
+/// error. Overflow returns an error rather than panicking.
+///
+/// ```
+/// let value = xsd::parse_duration("-PT1.000000001S").unwrap();
+/// assert_eq!(value.to_string(), "-PT1.000000001S");
+/// assert!(xsd::parse_duration("PT0.0000000001S").is_err());
+/// ```
 #[cfg(feature = "jiff")]
 pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationError> {
     let input = input.as_ref();
@@ -386,6 +395,11 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
         if !whole.as_bytes().last().is_some_and(u8::is_ascii_digit) || !valid_fraction {
             return Err(jiff::Error::from_args(format_args!(
                 "xsd:duration permits fractions only on seconds, with digits before and after the period"
+            )));
+        }
+        if suffix.len() - 1 > 9 {
+            return Err(jiff::Error::from_args(format_args!(
+                "xsd:duration fractional seconds exceed the supported nanosecond precision (9 digits)"
             )));
         }
     }
