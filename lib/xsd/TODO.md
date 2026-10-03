@@ -130,8 +130,6 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Make BSON method and trait conversion routes agree for each value and
   handle Decimal128 representation failures without `unwrap()` panics.
-- [ ] Align QName JSON/BSON string output with the `Display` implementation;
-  those methods still include a leading colon for empty prefixes.
 - [ ] Document the distinction between derived Serde serialization and explicit
   JSON/BSON conversion. Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.

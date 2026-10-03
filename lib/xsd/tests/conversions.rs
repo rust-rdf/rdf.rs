@@ -163,3 +163,20 @@ fn partial_calendar_conversions_preserve_lexical_structure() {
         assert_bson_string(value, lexical);
     }
 }
+
+#[test]
+#[cfg(any(feature = "serde", feature = "bson"))]
+fn qname_conversions_omit_empty_prefix_separators() {
+    for (prefix, local, lexical) in [
+        ("", "name", "name"),
+        ("ex", "name", "ex:name"),
+        ("", "名", "名"),
+        ("例", "名", "例:名"),
+    ] {
+        let value = PrimitiveValue::QName(prefix.into(), local.into());
+        #[cfg(feature = "serde")]
+        assert_json_string(value.clone(), lexical);
+        #[cfg(feature = "bson")]
+        assert_bson_string(value, lexical);
+    }
+}

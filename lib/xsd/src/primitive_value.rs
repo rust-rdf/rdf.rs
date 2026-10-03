@@ -13,9 +13,6 @@ use crate::primitive::{Date, DateTime, Duration, Time};
 #[cfg(feature = "alloc")]
 use ::alloc::{borrow::Cow, string::String, vec::Vec};
 
-#[cfg(any(feature = "serde", feature = "bson"))]
-use ::alloc::format;
-
 /// Value representation for XSD primitive datatypes.
 ///
 /// [`Display`](core::fmt::Display) writes lexical content without a datatype
@@ -162,6 +159,14 @@ pub enum PrimitiveValue {
     #[cfg(feature = "alloc")]
     AnyUri(String),
 
+    /// A lexical prefix and local name, formatted as `prefix:local` or just
+    /// `local` when the prefix is empty.
+    ///
+    /// Explicit JSON (`serde`) and BSON (`bson`) conversion use the same string
+    /// as `Display`, without a datatype identifier. These operations do not
+    /// validate names or resolve prefixes to namespace IRIs. Derived Serde
+    /// serialization retains the two fields in a separate enum representation.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#QName>
     #[cfg(feature = "alloc")]
     QName(String, String),
@@ -323,7 +328,7 @@ impl PrimitiveValue {
             #[cfg(feature = "alloc")]
             AnyUri(u) => Value::String(u),
             #[cfg(feature = "alloc")]
-            QName(n, s) => Value::String(format!("{}:{}", n, s)),
+            value @ QName(_, _) => Value::String(value.to_string()),
         }
     }
 
@@ -368,7 +373,7 @@ impl PrimitiveValue {
             #[cfg(feature = "alloc")]
             AnyUri(u) => Bson::String(u.to_string()),
             #[cfg(feature = "alloc")]
-            QName(n, s) => Bson::String(format!("{}:{}", n, s)),
+            value @ QName(_, _) => Bson::String(value.to_string()),
         }
     }
 }
