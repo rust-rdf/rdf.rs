@@ -154,8 +154,8 @@ fn partial_calendar_conversions_preserve_lexical_structure() {
         (GMonthDay((12, 31)), "--12-31"),
         (GDay(1), "---01"),
         (GDay(31), "---31"),
-        (GMonth(1), "--01"),
-        (GMonth(12), "--12"),
+        (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),
+        (GMonth(xsd::primitive::GMonth::new(12).unwrap()), "--12"),
     ] {
         #[cfg(feature = "serde")]
         assert_json_string(value.clone(), lexical);

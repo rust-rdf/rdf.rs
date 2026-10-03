@@ -63,8 +63,16 @@ fn checked_day_validates_every_u8() {
 }
 
 #[test]
-fn raw_month_variant_does_not_validate_fields() {
-    assert_eq!(PrimitiveValue::GMonth(255).to_string(), "--255");
+fn month_representation_validates_every_u8() {
+    for month in u8::MIN..=u8::MAX {
+        let value = xsd::primitive::GMonth::new(month);
+        assert_eq!(value.is_some(), (1..=12).contains(&month));
+        if let Some(value) = value {
+            assert_eq!(value.month(), month);
+            assert_eq!(value.timezone(), None);
+            assert_eq!(value.to_string(), format!("--{month:02}"));
+        }
+    }
 }
 
 #[test]
@@ -76,7 +84,10 @@ fn checked_month_validates_every_u8() {
         assert_eq!(value.is_some(), (1..=12).contains(&month), "{month}");
         if let Some(value) = value {
             assert_eq!(value.r#type(), PrimitiveType::GMonth);
-            assert_eq!(value, PrimitiveValue::GMonth(month));
+            assert_eq!(
+                value,
+                PrimitiveValue::GMonth(xsd::primitive::GMonth::new(month).unwrap())
+            );
             assert_eq!(value.to_string(), format!("--{month:02}"));
         }
     }

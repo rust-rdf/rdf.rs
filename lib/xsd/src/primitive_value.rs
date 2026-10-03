@@ -23,7 +23,8 @@ use ::alloc::{borrow::Cow, string::String, vec::Vec};
 /// Partial-calendar values use the same lexical strings for explicit JSON
 /// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
 /// do not validate raw calendar fields or include datatype identifiers or
-/// timezones. Derived Serde serialization uses a separate enum representation.
+/// timezones, except for validated [`GMonth`] values, which retain their offsets.
+/// Derived Serde serialization uses a separate enum representation.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -201,7 +202,7 @@ impl fmt::Display for PrimitiveValue {
             GYear(y) => fmt_year(*y, f),
             GMonthDay((m, d)) => write!(f, "--{m:02}-{d:02}"),
             GDay(d) => write!(f, "---{d:02}"),
-            GMonth(m) => write!(f, "--{m:02}"),
+            GMonth(m) => m.fmt(f),
             #[cfg(feature = "alloc")]
             HexBinary(bytes) => {
                 for byte in bytes {
@@ -273,7 +274,7 @@ impl PrimitiveValue {
     /// assert_eq!(value.to_string(), "-0001-02");
     /// assert!(xsd::PrimitiveValue::g_year_month(2026, 13).is_none());
     /// ```
-    pub const fn g_year_month(year: GYear, month: GMonth) -> Option<Self> {
+    pub const fn g_year_month(year: GYear, month: u8) -> Option<Self> {
         if month >= 1 && month <= 12 {
             Some(Self::GYearMonth((year, month)))
         } else {
@@ -293,7 +294,7 @@ impl PrimitiveValue {
     /// assert_eq!(leap_day.to_string(), "--02-29");
     /// assert!(xsd::PrimitiveValue::g_month_day(2, 30).is_none());
     /// ```
-    pub const fn g_month_day(month: GMonth, day: GDay) -> Option<Self> {
+    pub const fn g_month_day(month: u8, day: GDay) -> Option<Self> {
         let last_day = match month {
             2 => 29,
             4 | 6 | 9 | 11 => 30,
@@ -328,19 +329,18 @@ impl PrimitiveValue {
     /// Constructs a timezone-free `xsd:gMonth`, validating the month.
     ///
     /// Returns `None` unless `month` is in `1..=12`. Available without allocation
-    /// or date/time features. Formatting uses `--mm`. Direct construction with
-    /// [`Self::GMonth`] remains unchecked; this constructor adds no timezone.
+    /// or date/time features. Formatting uses `--mm`. The [`Self::GMonth`]
+    /// payload is also validated; this convenience constructor adds no timezone.
     ///
     /// ```
     /// let value = xsd::PrimitiveValue::g_month(2).unwrap();
     /// assert_eq!(value.to_string(), "--02");
     /// assert!(xsd::PrimitiveValue::g_month(0).is_none());
     /// ```
-    pub const fn g_month(month: GMonth) -> Option<Self> {
-        if month >= 1 && month <= 12 {
-            Some(Self::GMonth(month))
-        } else {
-            None
+    pub const fn g_month(month: u8) -> Option<Self> {
+        match GMonth::new(month) {
+            Some(month) => Some(Self::GMonth(month)),
+            None => None,
         }
     }
 

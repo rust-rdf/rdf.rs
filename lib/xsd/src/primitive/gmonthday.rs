@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use super::{GDay, GMonth};
+use super::GDay;
 
 /// A value of the `xsd:gMonthDay` datatype.
 ///
@@ -9,4 +9,4 @@ use super::{GDay, GMonth};
 /// including support for February 29 without assuming a particular year.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
-pub type GMonthDay = (GMonth, GDay);
+pub type GMonthDay = (u8, GDay);

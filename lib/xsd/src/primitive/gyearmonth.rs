@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 
-use super::{GMonth, GYear};
+use super::GYear;
 
 /// A value of the `xsd:gYearMonth` datatype.
 ///
@@ -9,4 +9,4 @@ use super::{GMonth, GYear};
 /// The year range is `i32::MIN..=i32::MAX`, including zero as in XSD 1.1.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
-pub type GYearMonth = (GYear, GMonth);
+pub type GYearMonth = (GYear, u8);

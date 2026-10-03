@@ -153,7 +153,7 @@ fn partial_calendar_lexical_forms() {
         (GYearMonth((-1, 12)), "-0001-12"),
         (GMonthDay((2, 29)), "--02-29"),
         (GDay(1), "---01"),
-        (GMonth(1), "--01"),
+        (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),
     ] {
         assert_primitive(value, expected);
     }
@@ -188,7 +188,7 @@ fn formatting_propagates_writer_errors() {
     use core::fmt::Write;
 
     let mut output = heapless::String::<2>::new();
-    assert!(write!(&mut output, "{}", PrimitiveValue::GMonth(1)).is_err());
+    assert!(write!(&mut output, "{}", PrimitiveValue::g_month(1).unwrap()).is_err());
     #[cfg(feature = "jiff")]
     {
         let value = PrimitiveValue::Date(xsd::primitive::Date::new(-1, 1, 2).unwrap());
