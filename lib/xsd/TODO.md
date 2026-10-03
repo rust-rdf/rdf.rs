@@ -51,7 +51,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 - [ ] Model optional timezone offsets and distinguish an absent timezone from
   UTC. Preserve the represented value through parsing, formatting, and conversion.
   Integrate `Option<TimezoneOffset>` into temporal values; the validated offset
-  type currently provides construction and formatting only.
+  type provides checked construction, strict lexical parsing, and formatting.
   Validate XSD offset bounds for `Date` and make lossy Jiff conversions
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars for timezone-bearing values, including

@@ -20,6 +20,60 @@ use core::fmt;
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TimezoneOffset(i16);
 
+/// An invalid XSD timezone-offset spelling or value.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[non_exhaustive]
+pub enum TimezoneOffsetError {
+    /// Expected `Z`, `+hh:mm`, or `-hh:mm`, using ASCII digits.
+    InvalidLexical,
+    /// The offset exceeds 14 hours or its minute field exceeds 59.
+    OutOfRange,
+}
+
+impl fmt::Display for TimezoneOffsetError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::InvalidLexical => "XSD timezone offsets require Z, +hh:mm, or -hh:mm",
+            Self::OutOfRange => {
+                "XSD timezone offset is outside -14:00..=+14:00 or has invalid minutes"
+            },
+        })
+    }
+}
+
+impl core::error::Error for TimezoneOffsetError {}
+
+impl core::str::FromStr for TimezoneOffset {
+    type Err = TimezoneOffsetError;
+
+    /// Parses exact XSD timezone syntax without whitespace preprocessing.
+    ///
+    /// Accepts uppercase `Z` or signed `hh:mm` in the inclusive range
+    /// `-14:00..=+14:00`. Both signed zero spellings normalize to UTC.
+    /// Empty input is an error, not an absent timezone. Returns
+    /// [`TimezoneOffsetError::InvalidLexical`] for malformed syntax and
+    /// [`TimezoneOffsetError::OutOfRange`] for invalid field values.
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        if input == "Z" {
+            return Ok(Self::UTC);
+        }
+        let [sign @ (b'+' | b'-'), h1, h2, b':', m1, m2] = input.as_bytes() else {
+            return Err(TimezoneOffsetError::InvalidLexical);
+        };
+        if ![h1, h2, m1, m2].iter().all(|byte| byte.is_ascii_digit()) {
+            return Err(TimezoneOffsetError::InvalidLexical);
+        }
+        let hours = i16::from((h1 - b'0') * 10 + (h2 - b'0'));
+        let minutes = i16::from((m1 - b'0') * 10 + (m2 - b'0'));
+        if minutes > 59 {
+            return Err(TimezoneOffsetError::OutOfRange);
+        }
+        let total = hours * 60 + minutes;
+        Self::from_minutes(if *sign == b'-' { -total } else { total })
+            .ok_or(TimezoneOffsetError::OutOfRange)
+    }
+}
+
 impl TimezoneOffset {
     /// The explicit UTC timezone, distinct from an absent timezone.
     pub const UTC: Self = Self(0);
