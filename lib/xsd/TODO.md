@@ -54,7 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. The `gYear` parser currently rejects
   timezone suffixes rather than discarding them.
-  Verify `GYearMonth` BSON, differential, RDF,
+  Verify `GYearMonth` differential, RDF,
   comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
@@ -101,7 +101,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Document the distinction between derived Serde serialization and explicit
   JSON/BSON conversion for the remaining datatypes beyond `Date`, `Time`,
-  `DateTime`, `GMonth`, `GDay`, and `GMonthDay`.
+  `DateTime`, `GMonth`, `GDay`, `GMonthDay`, and `GYearMonth`.
   Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.
 
