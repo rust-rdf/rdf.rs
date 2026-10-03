@@ -54,7 +54,6 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. These three partial-calendar parsers
   currently reject timezone suffixes rather than discarding them.
-  Verify `GDay` reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 

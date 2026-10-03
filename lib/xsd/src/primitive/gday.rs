@@ -5,6 +5,11 @@ use core::fmt;
 
 /// A validated XSD 1.1 `gDay` with an optional timezone.
 ///
+/// Construction, parsing, and formatting require neither `alloc` nor `jiff`.
+/// Formatting can target a fixed-capacity `core::fmt::Write` buffer; writer
+/// errors are propagated. Serde and Borsh support each require only their own
+/// feature, which implies `alloc` but does not enable date/time support.
+///
 /// Available without allocation or date/time features. All days in `1..=31`
 /// are valid because no month or year is specified. Formatting writes `---dd`
 /// followed by the optional offset, using `Z` for UTC. Equality, ordering, and
