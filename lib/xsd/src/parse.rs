@@ -71,6 +71,12 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Boolean) => parse_boolean(input),
+        Primitive(P::GDay) => {
+            crate::parse_g_day(input).map_err(|source| ParseError::InvalidCalendar {
+                datatype: P::GDay,
+                source,
+            })
+        },
         Primitive(P::GMonth) => {
             crate::parse_g_month(input).map_err(|source| ParseError::InvalidCalendar {
                 datatype: P::GMonth,

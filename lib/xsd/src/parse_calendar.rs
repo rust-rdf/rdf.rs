@@ -1,5 +1,33 @@
 use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 
+/// Parses a timezone-free `xsd:gDay` literal (`---dd`).
+///
+/// Requires exactly two ASCII digits in `01..=31`. No month is implied, so
+/// day 31 is valid. Input is not trimmed. Available without allocation or
+/// date/time features; the returned value formats as `---dd`.
+///
+/// # Errors
+///
+/// Returns [`ParseCalendarError::InvalidLexical`] for malformed input,
+/// [`ParseCalendarError::OutOfRange`] for invalid days, or
+/// [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+///
+/// ```
+/// assert_eq!(xsd::parse_g_day("---31").unwrap().to_string(), "---31");
+/// assert!(xsd::parse_g_day("---00").is_err());
+/// ```
+pub fn parse_g_day(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
+    let input = input.as_ref();
+    let bytes = input.as_bytes();
+    if !bytes.starts_with(b"---") {
+        return Err(ParseCalendarError::InvalidLexical);
+    }
+    let day = two_digits(bytes.get(3..5))?;
+    let value = PrimitiveValue::g_day(day).ok_or(ParseCalendarError::OutOfRange)?;
+    require_no_timezone(input.get(5..))?;
+    Ok(value.into())
+}
+
 /// Parses a timezone-free `xsd:gMonth` using XSD 1.1 syntax (`--mm`).
 ///
 /// Available without allocation or date/time features. Requires exactly two
