@@ -17,6 +17,10 @@ use core::fmt;
 /// This follows [XSD 1.1 §3.3.12](https://www.w3.org/TR/xmlschema11-2/#gMonthDay),
 /// even though the optional differential-test reference `oxsdatatypes` 0.2.3
 /// rejects February 29.
+/// Parsed values do not retain RDF lexical identity: `--02-29Z`,
+/// `--02-29+00:00`, and `--02-29-00:00` become the same value. RDF applications
+/// must retain original lexical strings and datatype identifiers separately
+/// when term identity matters.
 ///
 /// With `serde`, the representation is a struct with `month`, `day`, and
 /// `timezone` (optional signed minutes), replacing the former two-element tuple.
