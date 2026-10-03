@@ -261,6 +261,27 @@ fn fmt_base64(bytes: &[u8], f: &mut fmt::Formatter<'_>) -> fmt::Result {
 }
 
 impl PrimitiveValue {
+    /// Constructs a timezone-free `xsd:gYearMonth`, validating the month.
+    ///
+    /// Returns `None` unless `month` is in `1..=12`. All `i32` years are accepted,
+    /// including zero following XSD 1.1. Formatting preserves the signed year,
+    /// padded to at least four digits, followed by `-mm`; no era adjustment is
+    /// applied. Available without allocation or date/time features. Direct
+    /// [`Self::GYearMonth`] construction is unchecked.
+    ///
+    /// ```
+    /// let value = xsd::PrimitiveValue::g_year_month(-1, 2).unwrap();
+    /// assert_eq!(value.to_string(), "-0001-02");
+    /// assert!(xsd::PrimitiveValue::g_year_month(2026, 13).is_none());
+    /// ```
+    pub const fn g_year_month(year: GYear, month: GMonth) -> Option<Self> {
+        if month >= 1 && month <= 12 {
+            Some(Self::GYearMonth((year, month)))
+        } else {
+            None
+        }
+    }
+
     /// Constructs a timezone-free `xsd:gMonthDay`, validating both fields.
     ///
     /// Returns `None` for an invalid month or a day outside that month's range.
