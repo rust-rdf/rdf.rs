@@ -57,8 +57,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   and fractional seconds. Enforce numeric timezone
   offset syntax for `Date`; cover negative `Date` years when adding timezone
   support.
-  Define supported year and fractional precision ranges; report unsupported
-  values explicitly.
+  Define supported year and `DateTime` fractional precision ranges; report
+  unsupported values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Test mixed components,
   negative durations, zero, and conversion limits.

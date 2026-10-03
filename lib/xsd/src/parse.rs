@@ -538,6 +538,9 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// It may have a period followed by one or more ASCII zero digits, with no
 /// precision limit for this all-zero fraction. Other hour-24 forms, including
 /// those with a timezone suffix, currently return an error.
+/// For hours 00 through 23, a fractional part requires one to nine ASCII digits
+/// (nanosecond precision). Longer fractions are rejected even when the excess
+/// digits are zero; they are never rounded or truncated.
 /// Fractional seconds use a period separator; a comma is rejected.
 /// Seconds must be less than 60; leap seconds are rejected rather than clamped
 /// to 59 by the underlying parser.
@@ -555,6 +558,7 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// comma to separate fractional seconds, specifies a leap second, contains
 /// bracketed annotations, or has a numeric timezone offset with invalid XSD syntax
 /// or a value outside the XSD range.
+/// Fractions beyond nanosecond precision return an explicit precision error.
 ///
 /// ```
 /// assert!(xsd::parse_time("12:34").is_err());
@@ -579,6 +583,7 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     if is_timezone_free_end_of_day(input) {
         return Time::new(0, 0, 0, 0).map(Value::from);
     }
+    validate_nanosecond_precision(input)?;
     let time = input.parse::<Time>()?;
     // Jiff validates the digits and ranges; require all three colon-separated fields.
     if !matches!(input.as_bytes(), [_, _, b':', _, _, b':', _, _, ..]) {
@@ -620,6 +625,22 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         }
     }
     Ok(Value::from(time))
+}
+
+#[cfg(feature = "jiff")]
+fn validate_nanosecond_precision(clock: &str) -> Result<(), jiff::Error> {
+    if let Some(fraction) = clock.as_bytes().get(8..).and_then(|s| s.strip_prefix(b".")) {
+        let digits = fraction
+            .iter()
+            .take_while(|byte| byte.is_ascii_digit())
+            .count();
+        if digits > 9 {
+            return Err(jiff::Error::from_args(format_args!(
+                "XSD fractional seconds exceed the supported nanosecond precision (9 digits)"
+            )));
+        }
+    }
+    Ok(())
 }
 
 #[cfg(feature = "jiff")]
