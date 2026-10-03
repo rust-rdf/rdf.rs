@@ -9,6 +9,10 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
     for (lexical, datatype) in [
         ("--12Z", Datatype::from(xsd::G_MONTH)),
         ("--00", Datatype::from(xsd::G_MONTH)),
+        ("---01Z", Datatype::from(xsd::G_DAY)),
+        ("--02-29+01:00", Datatype::from(xsd::G_MONTH_DAY)),
+        ("0000Z", Datatype::from(xsd::G_YEAR)),
+        ("-0001-01-14:00", Datatype::from(xsd::G_YEAR_MONTH)),
         ("00ff", Datatype::from(xsd::HEX_BINARY)),
         ("+0042", Datatype::from(xsd::Type::from("unsignedInt"))),
         ("not-an-integer", Datatype::from(xsd::INT)),
@@ -67,25 +71,33 @@ fn supported_literals_still_parse_as_values() {
 }
 
 #[test]
-fn month_literals_preserve_datatype_and_lexical_content() {
-    let term = HeapTerm::from(("--12".to_owned(), Datatype::from(xsd::G_MONTH)));
-    assert_eq!(
-        term,
-        HeapTerm::TypedValue(xsd::parse("--12", xsd::G_MONTH).unwrap())
-    );
-    #[cfg(feature = "oxrdf")]
-    {
-        let external = oxrdf::Term::from(term.clone());
+fn partial_calendar_literals_preserve_datatype_and_lexical_content() {
+    for (lexical, datatype) in [
+        ("--12", xsd::G_MONTH),
+        ("---31", xsd::G_DAY),
+        ("--02-29", xsd::G_MONTH_DAY),
+        ("0000", xsd::G_YEAR),
+        ("-2147483648-12", xsd::G_YEAR_MONTH),
+    ] {
+        let term = HeapTerm::from((lexical.to_owned(), Datatype::from(datatype.clone())));
         assert_eq!(
-            external,
-            oxrdf::Term::Literal(oxrdf::Literal::new_typed_literal(
-                "--12",
-                oxrdf::NamedNode::new("http://www.w3.org/2001/XMLSchema#gMonth").unwrap()
-            ))
+            term,
+            HeapTerm::TypedValue(xsd::parse(lexical, &datatype).unwrap())
         );
-        assert_eq!(
-            HeapTerm::from(external),
-            HeapTerm::TypedLiteral("--12".to_owned(), Datatype::from(xsd::G_MONTH))
-        );
+        #[cfg(feature = "oxrdf")]
+        {
+            let external = oxrdf::Term::from(term.clone());
+            assert_eq!(
+                external,
+                oxrdf::Term::Literal(oxrdf::Literal::new_typed_literal(
+                    lexical,
+                    oxrdf::NamedNode::new(datatype.iri_string().into_owned()).unwrap()
+                ))
+            );
+            assert_eq!(
+                HeapTerm::from(external),
+                HeapTerm::TypedLiteral(lexical.to_owned(), Datatype::from(datatype))
+            );
+        }
     }
 }

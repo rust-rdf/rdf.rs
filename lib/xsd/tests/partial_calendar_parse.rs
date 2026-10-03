@@ -122,3 +122,46 @@ fn years_validate_lexical_rules_bounds_and_timezone_suffixes() {
         );
     }
 }
+#[test]
+fn year_months_round_trip_at_year_boundaries() {
+    for year in [i32::MIN, -10000, -1, 0, 1, 10000, i32::MAX] {
+        for month in 1..=12 {
+            let value = xsd::Value::from(xsd::PrimitiveValue::g_year_month(year, month).unwrap());
+            let lexical = value.to_string();
+            assert_eq!(xsd::parse_g_year_month(&lexical).unwrap(), value);
+            assert_eq!(xsd::parse(&lexical, xsd::G_YEAR_MONTH).unwrap(), value);
+        }
+    }
+}
+
+#[test]
+fn year_months_reject_invalid_fields_and_timezone_loss() {
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    for (input, cause) in [
+        ("2026-00", OutOfRange),
+        ("2026-13", OutOfRange),
+        ("2147483648-01", OutOfRange),
+        ("-2147483649-12", OutOfRange),
+        ("-0000-01", InvalidLexical),
+        ("+2026-01", InvalidLexical),
+        ("02026-01", InvalidLexical),
+        ("2026-1", InvalidLexical),
+        ("202601", InvalidLexical),
+        ("2026-01-01", InvalidLexical),
+        ("2026-０1", InvalidLexical),
+        ("2026-01 ", InvalidLexical),
+        ("2026-01Z", UnsupportedTimezone),
+        ("-0001-01-14:00", UnsupportedTimezone),
+        ("0000-01+00:00", UnsupportedTimezone),
+        ("2026-01+14:01", InvalidLexical),
+    ] {
+        assert_eq!(
+            xsd::parse_g_year_month(input).unwrap_err(),
+            cause,
+            "{input}"
+        );
+        assert!(
+            matches!(xsd::parse(input, xsd::G_YEAR_MONTH), Err(xsd::ParseError::InvalidCalendar { datatype: xsd::PrimitiveType::GYearMonth, source }) if source == cause)
+        );
+    }
+}

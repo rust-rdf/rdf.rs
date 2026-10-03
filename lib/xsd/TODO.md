@@ -69,8 +69,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
-  adding timezone-aware representations. Extend timezone-free parsing to
-  `gYearMonth`.
+  adding timezone-aware representations. The five partial-calendar parsers
+  currently reject timezone suffixes rather than discarding them.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
@@ -161,8 +161,8 @@ Implement one datatype or tightly related family per change, in this order:
 
 - [ ] Unsigned integer datatypes and sign-constrained integer families:
   `nonNegativeInteger`, `positiveInteger`, `nonPositiveInteger`, `negativeInteger`.
-- [ ] Binary and partial-calendar parsing/validation, building on the existing
-  formatting and the representations from #3.
+- [ ] Binary parsing/validation and timezone-bearing partial-calendar parsing,
+  building on the existing formatting and the representations from #3.
 - [ ] `dateTimeStamp`, `dayTimeDuration`, and `yearMonthDuration` after the
   temporal representation work.
 - [ ] Common string-derived datatypes: `normalizedString`, `token`, `language`.

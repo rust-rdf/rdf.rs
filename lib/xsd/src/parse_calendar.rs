@@ -1,5 +1,34 @@
 use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 
+/// Parses a timezone-free `xsd:gYearMonth` literal (`yyyy-mm`).
+///
+/// Uses the year grammar and full `i32` range of [`parse_g_year`], including
+/// XSD 1.1 year zero. Requires a hyphen followed by exactly two ASCII month
+/// digits in `01..=12`. Does not trim whitespace. Formatting preserves the year
+/// and month without an era adjustment. Available without allocation or
+/// date/time features.
+///
+/// # Errors
+///
+/// Returns [`ParseCalendarError::InvalidLexical`] for malformed input,
+/// [`ParseCalendarError::OutOfRange`] for unsupported years or invalid months,
+/// or [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+///
+/// ```
+/// assert_eq!(xsd::parse_g_year_month("-0001-02").unwrap().to_string(), "-0001-02");
+/// assert!(xsd::parse_g_year_month("2026-13").is_err());
+/// ```
+pub fn parse_g_year_month(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
+    let (year, suffix) = year_prefix(input.as_ref())?;
+    let month_input = suffix
+        .strip_prefix('-')
+        .ok_or(ParseCalendarError::InvalidLexical)?;
+    let month = two_digits(month_input.as_bytes().get(..2))?;
+    let value = PrimitiveValue::g_year_month(year, month).ok_or(ParseCalendarError::OutOfRange)?;
+    require_no_timezone(month_input.get(2..))?;
+    Ok(value.into())
+}
+
 /// Parses a timezone-free `xsd:gYear` following XSD 1.1 year numbering.
 ///
 /// Requires at least four ASCII digits, optionally preceded by `-`. Longer
