@@ -13,8 +13,9 @@
 /// variant, comparison follows the stored integer, not timezone-aware XSD
 /// temporal comparison. Original lexical spelling is not retained.
 ///
-/// [`crate::parse`] currently returns [`crate::ParseError::UnsupportedDatatype`]
-/// for [`crate::G_YEAR`], even though construction and formatting are available.
+/// [`crate::parse_g_year`] and [`crate::parse`] support timezone-free XSD lexical
+/// forms, validating year spelling and range. Timezone suffixes return errors
+/// rather than being discarded.
 /// Explicit JSON conversion (`serde`) emits the formatted year as an untagged
 /// string. Derived Serde serialization instead preserves the `GYear` variant
 /// and integer field and supports structural round trips.

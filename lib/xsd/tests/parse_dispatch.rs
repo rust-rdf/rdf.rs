@@ -6,7 +6,6 @@ use xsd::{ParseError, PrimitiveType, Type};
 fn unsupported_builtin_datatypes_return_errors() {
     for (input, datatype) in [
         ("2026-12", xsd::G_YEAR_MONTH),
-        ("2026", xsd::G_YEAR),
         ("00FF", xsd::HEX_BINARY),
         ("AQI=", xsd::BASE64_BINARY),
         ("urn:example:item", xsd::ANY_URI),

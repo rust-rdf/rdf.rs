@@ -16,11 +16,10 @@ fn gyear_formatting_preserves_the_entire_signed_range() {
         let value = PrimitiveValue::GYear(year);
         assert_eq!(value.to_string(), lexical);
         assert_eq!(value.r#type(), xsd::PrimitiveType::GYear);
-        assert_eq!(xsd::Value::from(value).to_string(), lexical);
-        assert!(matches!(
-            xsd::parse(lexical, xsd::G_YEAR),
-            Err(xsd::ParseError::UnsupportedDatatype(datatype)) if datatype == xsd::G_YEAR
-        ));
+        let value = xsd::Value::from(value);
+        assert_eq!(value.to_string(), lexical);
+        assert_eq!(xsd::parse(lexical, xsd::G_YEAR).unwrap(), value);
+        assert_eq!(xsd::parse_g_year(lexical).unwrap(), value);
     }
 }
 

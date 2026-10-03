@@ -1,5 +1,45 @@
 use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 
+/// Parses a timezone-free `xsd:gYear` following XSD 1.1 year numbering.
+///
+/// Requires at least four ASCII digits, optionally preceded by `-`. Longer
+/// years must not start with zero. Year `0000` is accepted; `-0000` and a leading
+/// `+` are rejected. Supports the entire `i32` range without an era adjustment.
+/// Input is not trimmed. Available without allocation or date/time features.
+///
+/// # Errors
+///
+/// Returns [`ParseCalendarError::InvalidLexical`] for invalid spelling,
+/// [`ParseCalendarError::OutOfRange`] for years outside `i32`, or
+/// [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+///
+/// ```
+/// assert_eq!(xsd::parse_g_year("-0001").unwrap().to_string(), "-0001");
+/// assert!(xsd::parse_g_year("-0000").is_err());
+/// ```
+pub fn parse_g_year(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
+    let (year, suffix) = year_prefix(input.as_ref())?;
+    require_no_timezone(Some(suffix))?;
+    Ok(PrimitiveValue::GYear(year).into())
+}
+
+fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError> {
+    let negative = input.starts_with('-');
+    let unsigned = input.strip_prefix('-').unwrap_or(input);
+    let digits = unsigned.bytes().take_while(u8::is_ascii_digit).count();
+    if digits < 4 || (digits > 4 && unsigned.starts_with('0')) {
+        return Err(ParseCalendarError::InvalidLexical);
+    }
+    let end = digits + usize::from(negative);
+    let year = input[..end]
+        .parse::<i32>()
+        .map_err(|_| ParseCalendarError::OutOfRange)?;
+    if negative && year == 0 {
+        return Err(ParseCalendarError::InvalidLexical);
+    }
+    Ok((year, &input[end..]))
+}
+
 /// Parses a timezone-free `xsd:gMonthDay` literal (`--mm-dd`).
 ///
 /// Validates the two-digit ASCII fields against the Gregorian month lengths,

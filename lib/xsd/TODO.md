@@ -70,7 +70,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. Extend timezone-free parsing to
-  `gYear` and `gYearMonth`.
+  `gYearMonth`.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
