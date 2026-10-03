@@ -12,7 +12,10 @@ pub enum ParseCalendarError {
     InvalidLexical,
     /// Calendar fields are invalid or exceed the supported representation.
     OutOfRange,
-    /// A valid timezone suffix cannot be retained by the current representation.
+    /// A valid timezone suffix cannot be retained by a representation.
+    ///
+    /// Retained for compatibility; the built-in partial-calendar parsers now
+    /// preserve timezones and no longer return this variant.
     UnsupportedTimezone,
 }
 

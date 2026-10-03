@@ -46,10 +46,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,
   negative calendar durations, zero, and conversion limits when replacing the alias.
-- [ ] Connect the `GYear` timezone field to parsing and verify Serde, Borsh,
+- [ ] Verify `GYear` Serde, Borsh,
   JSON, BSON, differential, RDF, comparison, and reduced-feature contracts.
-  Reuse `tests/gyear_limits.rs` boundary regressions. The `gYear` parser still
-  rejects timezone suffixes rather than discarding them.
+  Reuse `tests/gyear_limits.rs` boundary regressions.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
@@ -73,8 +72,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   version-sensitive rules such as year zero and NaN comparison. Distinguish XML
   Schema whitespace preprocessing from RDF lexical-form handling rather than
   unconditionally trimming every datatype.
-  Align `gYear`, `date`, and `dateTime` negative-zero year parsing with XSD 1.1's
-  `yearFragValue` mapping, as now implemented for `gYearMonth`; these parsers
+  Align `date` and `dateTime` negative-zero year parsing with XSD 1.1's
+  `yearFragValue` mapping, as now implemented for `gYear` and `gYearMonth`; these parsers
   still reject `-0000` rather than normalizing it to year zero.
 - [ ] Detect unsupported decimal precision/range without silently rounding exact
   values. Document limits and expose useful errors. Consider allocation-backed

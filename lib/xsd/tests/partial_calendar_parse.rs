@@ -97,23 +97,23 @@ fn month_days_round_trip_and_validate_calendar_combinations() {
 }
 #[test]
 fn years_validate_lexical_rules_bounds_and_timezone_suffixes() {
-    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange};
     for (input, cause) in [
         ("", InvalidLexical),
         ("123", InvalidLexical),
         ("+2026", InvalidLexical),
         ("02026", InvalidLexical),
         ("-02026", InvalidLexical),
-        ("-0000", InvalidLexical),
+        ("-00000", InvalidLexical),
         ("2026 ", InvalidLexical),
         ("２０２６", InvalidLexical),
         ("2026-01", InvalidLexical),
         ("2147483648", OutOfRange),
         ("-2147483649", OutOfRange),
         ("9999999999999999999999999999999", OutOfRange),
-        ("2026Z", UnsupportedTimezone),
-        ("-0001-14:00", UnsupportedTimezone),
-        ("0000+00:00", UnsupportedTimezone),
+        ("2026z", InvalidLexical),
+        ("-0001-14:01", InvalidLexical),
+        ("0000+00:60", InvalidLexical),
         ("2026+14:01", InvalidLexical),
     ] {
         assert_eq!(xsd::parse_g_year(input).unwrap_err(), cause, "{input}");

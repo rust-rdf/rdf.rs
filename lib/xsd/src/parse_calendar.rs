@@ -1,9 +1,9 @@
-use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
+use crate::{ParseCalendarError, PrimitiveValue, Value};
 
 /// Parses an `xsd:gYearMonth` literal (`yyyy-mm` and an optional timezone).
 ///
 /// Uses the year grammar and full `i32` range of [`parse_g_year`], including
-/// XSD 1.1 year zero, but also accepts `-0000` and normalizes it to `0000`.
+/// XSD 1.1 year zero (`-0000` normalizes to `0000`).
 /// Requires a hyphen followed by exactly two ASCII month
 /// digits in `01..=12`. Does not trim whitespace. Formatting preserves the year
 /// and month without an era adjustment. Available without allocation or
@@ -23,15 +23,7 @@ use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 /// assert_eq!(xsd::parse_g_year_month("0000-01-00:00").unwrap().to_string(), "0000-01Z");
 /// ```
 pub fn parse_g_year_month(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
-    let input = input.as_ref();
-    // XSD 1.1 maps both zero spellings to year zero. Keep the shared parser's
-    // existing policy for the other year-bearing datatypes until they migrate.
-    let input = if input.starts_with("-0000-") {
-        &input[1..]
-    } else {
-        input
-    };
-    let (year, suffix) = year_prefix(input)?;
+    let (year, suffix) = parse_year_prefix(input.as_ref(), true)?;
     let month_input = suffix
         .strip_prefix('-')
         .ok_or(ParseCalendarError::InvalidLexical)?;
@@ -50,30 +42,47 @@ pub fn parse_g_year_month(input: impl AsRef<str>) -> Result<Value, ParseCalendar
     Ok(PrimitiveValue::GYearMonth(value.with_timezone(timezone)).into())
 }
 
-/// Parses a timezone-free `xsd:gYear` following XSD 1.1 year numbering.
+/// Parses an `xsd:gYear` with an optional timezone, using XSD 1.1 year numbering.
 ///
 /// Requires at least four ASCII digits, optionally preceded by `-`. Longer
-/// years must not start with zero. Year `0000` is accepted; `-0000` and a leading
-/// `+` are rejected. Supports the entire `i32` range without an era adjustment.
+/// years must not start with zero. Both `0000` and `-0000` map to year zero;
+/// a leading `+` is rejected. Supports the full `i32` range without an era adjustment.
 /// Input is not trimmed. Available without allocation or date/time features.
+/// An optional `Z`, `+hh:mm`, or `-hh:mm` suffix is retained, within
+/// `-14:00..=+14:00`. Absence differs from UTC; zero offsets format as `Z`.
 ///
 /// # Errors
 ///
-/// Returns [`ParseCalendarError::InvalidLexical`] for invalid spelling,
-/// [`ParseCalendarError::OutOfRange`] for years outside `i32`, or
-/// [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+/// Returns [`ParseCalendarError::InvalidLexical`] for invalid spelling or timezone
+/// bounds, or [`ParseCalendarError::OutOfRange`] for years outside `i32`.
 ///
 /// ```
 /// assert_eq!(xsd::parse_g_year("-0001").unwrap().to_string(), "-0001");
-/// assert!(xsd::parse_g_year("-0000").is_err());
+/// assert_eq!(xsd::parse_g_year("-0000-00:00").unwrap().to_string(), "0000Z");
 /// ```
 pub fn parse_g_year(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
-    let (year, suffix) = year_prefix(input.as_ref())?;
-    require_no_timezone(Some(suffix))?;
-    Ok(PrimitiveValue::GYear(crate::primitive::GYear::new(year)).into())
+    let (year, suffix) = parse_year_prefix(input.as_ref(), true)?;
+    let timezone = if suffix.is_empty() {
+        None
+    } else {
+        Some(
+            suffix
+                .parse()
+                .map_err(|_| ParseCalendarError::InvalidLexical)?,
+        )
+    };
+    Ok(PrimitiveValue::GYear(crate::primitive::GYear::new(year).with_timezone(timezone)).into())
 }
 
+#[cfg(feature = "jiff")]
 pub(crate) fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError> {
+    parse_year_prefix(input, false)
+}
+
+fn parse_year_prefix(
+    input: &str,
+    allow_negative_zero: bool,
+) -> Result<(i32, &str), ParseCalendarError> {
     let negative = input.starts_with('-');
     let unsigned = input.strip_prefix('-').unwrap_or(input);
     let digits = unsigned.bytes().take_while(u8::is_ascii_digit).count();
@@ -84,7 +93,7 @@ pub(crate) fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError
     let year = input[..end]
         .parse::<i32>()
         .map_err(|_| ParseCalendarError::OutOfRange)?;
-    if negative && year == 0 {
+    if negative && year == 0 && !allow_negative_zero {
         return Err(ParseCalendarError::InvalidLexical);
     }
     Ok((year, &input[end..]))
@@ -214,16 +223,6 @@ pub fn parse_g_month(input: impl AsRef<str>) -> Result<Value, ParseCalendarError
 fn two_digits(bytes: Option<&[u8]>) -> Result<u8, ParseCalendarError> {
     match bytes {
         Some([a, b]) if a.is_ascii_digit() && b.is_ascii_digit() => Ok((a - b'0') * 10 + b - b'0'),
-        _ => Err(ParseCalendarError::InvalidLexical),
-    }
-}
-
-fn require_no_timezone(suffix: Option<&str>) -> Result<(), ParseCalendarError> {
-    match suffix {
-        Some("") => Ok(()),
-        Some(suffix) if suffix.parse::<TimezoneOffset>().is_ok() => {
-            Err(ParseCalendarError::UnsupportedTimezone)
-        },
         _ => Err(ParseCalendarError::InvalidLexical),
     }
 }
