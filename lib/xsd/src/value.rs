@@ -126,11 +126,19 @@ impl Value {
         }
     }
 
+    /// Clones and converts using [`Self::into_json`]. Requires `serde`.
+    /// Always returns `Some`; values without a numeric JSON encoding use strings.
     #[cfg(feature = "serde")]
     pub fn to_json(&self) -> Option<serde_json::Value> {
         Some(self.clone().into_json())
     }
 
+    /// Converts to untagged JSON, requiring `serde`.
+    ///
+    /// Delegates to [`DecimalValue::into_json`] or [`PrimitiveValue::into_json`]:
+    /// decimals and integers outside `i64` use strings, as do non-finite floats
+    /// (`INF`, `-INF`, `NaN`). Other numeric values use JSON numbers. Retain the
+    /// XSD datatype separately for decoding; this is not derived Serde encoding.
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
         match self {

@@ -102,14 +102,13 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 
 **Observed with the indicated optional feature enabled:**
 
-- `serde`: converting parsed `INF` or `NaN` to JSON panics.
 - `bson`: for `DecimalValue::Integer(9007199254740993_i128.into())`,
   `.into_bson()` preserves an `Int64`, while `bson::Bson::from(value)` produces
   a rounded `Double`.
 - `bson`: converting `DecimalValue::Integer(i128::MAX.into())` with
   `.into_bson()` panics when Decimal128 cannot represent it exactly.
-- `to_json()` and `to_bson()` wrap the conversion in `Some(...)`; their `Option`
-  signatures do not actually handle these failures.
+- `to_bson()` wraps the conversion in `Some(...)`; its `Option` signature
+  does not actually handle these failures.
 
 **Subtasks and acceptance criteria:**
 

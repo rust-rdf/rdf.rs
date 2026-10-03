@@ -293,6 +293,8 @@ impl PrimitiveValue {
         }
     }
 
+    /// Clones and converts using [`Self::into_json`]. Requires `serde`.
+    /// Always returns `Some`, including string encodings for non-finite floats.
     #[cfg(feature = "serde")]
     pub fn to_json(&self) -> Option<serde_json::Value> {
         Some(self.clone().into_json())
@@ -304,6 +306,9 @@ impl PrimitiveValue {
     /// matching [`crate::DecimalValue::into_json`]. This replaces their former
     /// numeric encoding. Datatype identity and original lexical spelling are
     /// not included; this API differs from derived Serde serialization.
+    /// Finite floats use JSON numbers (binary32 values widen exactly to binary64).
+    /// Non-finite floats use XSD strings `INF`, `-INF`, or `NaN`, replacing the
+    /// former panic. Signed finite zero is retained; NaN payload bits are not.
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
         use PrimitiveValue::*;
@@ -314,8 +319,8 @@ impl PrimitiveValue {
             String(s) => Value::String(s),
             Boolean(b) => b.into_json(),
             Decimal(d) => Value::String(d.to_string()),
-            Float(f) => f.into_json(),
-            Double(d) => d.into_json(),
+            Float(f) => float_into_json(f32::from(f) as f64),
+            Double(d) => float_into_json(f64::from(d)),
             #[cfg(feature = "jiff")]
             Duration(d) => Value::String(d.to_string()),
             #[cfg(feature = "jiff")]
@@ -381,6 +386,23 @@ impl PrimitiveValue {
             #[cfg(feature = "alloc")]
             value @ QName(_, _) => Bson::String(value.to_string()),
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+fn float_into_json(number: f64) -> serde_json::Value {
+    match serde_json::Number::from_f64(number) {
+        Some(number) => serde_json::Value::Number(number),
+        None => serde_json::Value::String(
+            if number.is_nan() {
+                "NaN"
+            } else if number.is_sign_negative() {
+                "-INF"
+            } else {
+                "INF"
+            }
+            .into(),
+        ),
     }
 }
 
