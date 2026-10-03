@@ -74,12 +74,35 @@ impl DecimalValue {
         }
     }
 
-    /// Upcasts the type of this value to its wider base type.
+    /// Upcasts this value to its immediate base type, preserving its exact number.
+    ///
+    /// Returns `None` for a decimal (already the base type), or when an integer
+    /// cannot be represented exactly by the decimal backend. The current backend
+    /// supports integer magnitudes up to `79228162514264337593543950335`.
+    /// Although XSD decimal contains the integer value space, this bounded Rust
+    /// representation does not. Out-of-range widening returns `None` rather than
+    /// panicking. Requires neither allocation nor `std`.
+    ///
+    /// ```
+    /// use xsd::DecimalValue;
+    /// assert_eq!(DecimalValue::Byte(42).widen(), Some(DecimalValue::Short(42)));
+    /// assert!(DecimalValue::from(i128::MAX).widen().is_none());
+    /// ```
     pub fn widen(&self) -> Option<Self> {
         use DecimalValue::*;
         match self {
             Decimal(_) => None, // already the widest primitive base type
-            Integer(n) => Some(Decimal(n.into())),
+            Integer(n) => {
+                use core::fmt::Write;
+                // Avoid the backend's infallible integer conversion, which can
+                // panic. An i128 needs at most 39 digits and one minus sign.
+                let mut lexical = heapless::String::<40>::new();
+                write!(&mut lexical, "{n}").ok()?;
+                let decimal = lexical.parse::<crate::primitive::Decimal>().ok()?;
+                // Guard exactness as well as range if backend behavior changes.
+                let recovered = i128::try_from(&decimal).ok()?;
+                (crate::derived::Integer::from(recovered) == *n).then_some(Decimal(decimal))
+            },
             Long(n) => Some(Integer(n.into())),
             Int(n) => Some(Long(*n as _)),
             Short(n) => Some(Int(*n as _)),

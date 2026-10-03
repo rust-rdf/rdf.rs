@@ -76,9 +76,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   it to `0.1234567890123456789012345679`.
 - Parsing integer `340282366920938463463374607431768211456` fails because of the
   current bounded representation.
-- `xsd::Value::from(i128::MAX)` and
-  `xsd::DecimalValue::Integer(i128::MAX.into()).widen()` panic while converting
-  the integer to the narrower-capacity decimal representation.
+- `xsd::Value::from(i128::MAX)` panics while converting the integer to the
+  narrower-capacity decimal representation.
 
 **Subtasks and acceptance criteria:**
 
@@ -90,9 +89,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   values. Document limits and expose useful errors. Consider allocation-backed
   arbitrary-precision support as a separate enhancement while preserving the
   allocation-free configuration.
-- [ ] Make integer construction and decimal widening range-safe. A widening API
-  must either preserve the number exactly or report inability to represent it;
-  it must not panic. Coordinate construction policy with #6.
+- [ ] Make integer construction range-safe without panics or loss of precision.
+  Coordinate construction policy with #6.
 
 ## 5. Make JSON/BSON conversion precise and consistent — high priority
 
