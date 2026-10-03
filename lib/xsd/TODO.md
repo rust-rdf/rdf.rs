@@ -41,6 +41,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 | --- | --- | --- |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
+| `xsd::DATE` | `2026-12-31+02:00` | Rejected |
 | `xsd::TIME` | `12:34:56+02:00` | Accepted; offset discarded |
 | `xsd::TIME` | `24:00:00` | Rejected despite valid XSD end-of-day notation |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
@@ -53,8 +54,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation, leap-day
   validation, date components, and fractional seconds. Enforce numeric timezone
-  offset syntax for `Date`. Align negative-year parsing for `Date` and `DateTime`
-  with XSD year syntax.
+  offset syntax for `Date`. Align negative-year parsing for `DateTime` with XSD
+  year syntax; cover negative `Date` years when adding timezone support.
   Define supported year and fractional precision ranges; report unsupported
   values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.

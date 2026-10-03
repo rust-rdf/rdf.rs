@@ -440,6 +440,9 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 /// `20261231` are rejected.
 /// Years must not have a leading plus sign.
 /// Years longer than four digits must not begin with zero (excluding the sign).
+/// Four-digit negative years (`-0001` through `-9999`) are accepted for dates
+/// without a timezone. The signed year is preserved in the returned value and
+/// its XSD formatting without applying a historical-era adjustment.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
@@ -456,13 +459,30 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
 /// assert!(xsd::parse_date("20261231").is_err());
 /// assert!(xsd::parse_date("+002026-12-31").is_err());
 /// assert!(xsd::parse_date("-002026-12-31").is_err());
+/// assert_eq!(
+///     xsd::parse_date("-2026-12-31").unwrap(),
+///     xsd::Value::from(xsd::primitive::Date::new(-2026, 12, 31).unwrap()),
+/// );
 /// assert_eq!(xsd::parse_date("2024-02-29").unwrap().to_string(), "2024-02-29");
 /// ```
 #[cfg(feature = "jiff")]
 pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
+    // Jiff requires six digits for negative years. Adapt four-digit XSD years
+    // on the stack, keeping the original input for the lexical checks below.
+    let mut normalized = [b'0'; 13];
+    let civil_input = if input.len() == 11 && input.starts_with('-') && input.as_bytes()[5] == b'-'
+    {
+        normalized[0] = b'-';
+        normalized[3..].copy_from_slice(&input.as_bytes()[1..]);
+        core::str::from_utf8(&normalized).map_err(|error| {
+            jiff::Error::from_args(format_args!("invalid xsd:date encoding: {error}"))
+        })?
+    } else {
+        input
+    };
     if jiff::fmt::temporal::DateTimeParser::new()
-        .parse_pieces(input)?
+        .parse_pieces(civil_input)?
         .time()
         .is_some()
     {
@@ -471,7 +491,7 @@ pub fn parse_date(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         )));
     }
     // Preserve the civil-date parser's other checks, including offset handling.
-    let date = input.parse::<Date>()?;
+    let date = civil_input.parse::<Date>()?;
     // Jiff accepts bracketed annotations that are outside the XSD lexical grammar.
     if input.as_bytes().contains(&b'[') {
         return Err(jiff::Error::from_args(format_args!(

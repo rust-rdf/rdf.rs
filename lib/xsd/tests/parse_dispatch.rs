@@ -436,6 +436,41 @@ fn datetime_parsers_require_xsd_numeric_offset_syntax() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn date_parsers_accept_four_digit_negative_years() {
+    for (input, year, month, day) in [
+        ("-0001-01-01", -1, 1, 1),
+        ("-2024-02-29", -2024, 2, 29),
+        ("-2026-12-31", -2026, 12, 31),
+        ("-9999-12-31", -9999, 12, 31),
+    ] {
+        let expected = xsd::Value::from(xsd::primitive::Date::new(year, month, day).unwrap());
+        assert_eq!(xsd::parse_date(input).unwrap(), expected);
+        assert_eq!(xsd::parse(input, xsd::DATE).unwrap(), expected);
+        assert_eq!(expected.to_string(), input);
+    }
+    for input in [
+        "-2023-02-29",
+        "-2024-13-01",
+        "-2024-01-32",
+        "-202-01-01",
+        "-abcd-01-01",
+    ] {
+        assert!(xsd::parse_date(input).is_err(), "{input}");
+        assert!(
+            matches!(
+                xsd::parse(input, xsd::DATE),
+                Err(ParseError::InvalidTemporal {
+                    datatype: PrimitiveType::Date,
+                    ..
+                })
+            ),
+            "{input}"
+        );
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_reject_out_of_range_offsets() {
     for input in [
         "2026-12-31T12:34:56-15:00",
