@@ -17,6 +17,10 @@ use core::fmt;
 /// zero. Use [`crate::parse_g_year_month`] for lexical validation; input is not
 /// trimmed. XSD years are unbounded, but this representation returns range
 /// errors outside `i32`, rather than truncating or wrapping.
+/// Parsed values do not retain RDF lexical identity: `0000-01Z`,
+/// `0000-01+00:00`, and `-0000-01Z` become the same value. RDF applications must
+/// retain original lexical strings and datatype identifiers separately when
+/// term identity matters.
 ///
 /// With `serde`, the representation is a struct with `year`, `month`, and
 /// `timezone` (optional signed minutes), replacing the former two-element tuple.

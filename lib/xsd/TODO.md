@@ -54,8 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. The `gYear` parser currently rejects
   timezone suffixes rather than discarding them.
-  Verify `GYearMonth` RDF,
-  comparison, and reduced-feature contracts.
+  Verify `GYearMonth` comparison and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
@@ -134,7 +133,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   subtypes, NaN, signed zero, and partially ordered temporal values. Keep Rust
   `Eq`/`Ord`/`Hash` contracts consistent.
 - [ ] Extend RDF integration regressions beyond `Date`, `Time`, `DateTime`,
-  `GMonth`, `GDay`, and `GMonthDay`:
+  `GMonth`, `GDay`, `GMonthDay`, and `GYearMonth`:
   semantic equality must not erase datatype or lexical identity.
   For example, distinct RDF lexical forms such as `"1"` and
   `"01"` can denote the same integer without becoming the same RDF term.
