@@ -69,7 +69,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
-  adding parser coverage and timezone-aware representations.
+  adding timezone-aware representations. Extend timezone-free parsing beyond
+  `gMonth` to the remaining partial-calendar datatypes.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 

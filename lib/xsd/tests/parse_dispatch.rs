@@ -9,7 +9,6 @@ fn unsupported_builtin_datatypes_return_errors() {
         ("2026", xsd::G_YEAR),
         ("--12-31", xsd::G_MONTH_DAY),
         ("---31", xsd::G_DAY),
-        ("--12", xsd::G_MONTH),
         ("00FF", xsd::HEX_BINARY),
         ("AQI=", xsd::BASE64_BINARY),
         ("urn:example:item", xsd::ANY_URI),
@@ -979,8 +978,8 @@ fn temporal_errors_preserve_datatype_and_source() {
 
 #[test]
 fn unsupported_error_identifies_the_datatype() {
-    let error = xsd::parse("--12", xsd::G_MONTH).unwrap_err();
-    assert_eq!(error.to_string(), "unsupported datatype: xsd:gMonth");
+    let error = xsd::parse("00FF", xsd::HEX_BINARY).unwrap_err();
+    assert_eq!(error.to_string(), "unsupported datatype: xsd:hexBinary");
 }
 
 fn assert_unsupported(input: &str, datatype: Type) {

@@ -28,6 +28,8 @@ use crate::{
 /// [`ParseError::InvalidDecimal`]; float/double failures return
 /// [`ParseError::InvalidFloat`]. These numeric errors retain the requested datatype
 /// and underlying cause. Boolean failures return [`ParseError::InvalidBoolean`].
+/// Partial-calendar failures return [`ParseError::InvalidCalendar`]; supported
+/// partial-calendar parsers require neither allocation nor date/time features.
 #[cfg_attr(
     feature = "jiff",
     doc = "Temporal failures return [`ParseError::InvalidTemporal`], retaining the requested datatype and original Jiff error."
@@ -69,6 +71,12 @@ pub fn parse(input: impl AsRef<str>, datatype: impl Into<Type>) -> Result<Value,
         #[cfg(feature = "alloc")]
         Primitive(P::String) => parse_string(input).map_err(|_| ParseError::InvalidLiteral),
         Primitive(P::Boolean) => parse_boolean(input),
+        Primitive(P::GMonth) => {
+            crate::parse_g_month(input).map_err(|source| ParseError::InvalidCalendar {
+                datatype: P::GMonth,
+                source,
+            })
+        },
         Primitive(P::Float) => parse_float(input).map_err(|source| ParseError::InvalidFloat {
             datatype: P::Float,
             source,

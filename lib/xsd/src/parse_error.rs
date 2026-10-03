@@ -2,6 +2,34 @@
 
 use crate::{DecimalType, PrimitiveType, Type};
 
+/// A partial-calendar lexical, range, or representation error.
+///
+/// Available without allocation or date/time features.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[non_exhaustive]
+pub enum ParseCalendarError {
+    /// The input does not match the datatype's XSD lexical grammar.
+    InvalidLexical,
+    /// Calendar fields are invalid or exceed the supported representation.
+    OutOfRange,
+    /// A valid timezone suffix cannot be retained by the current representation.
+    UnsupportedTimezone,
+}
+
+impl core::fmt::Display for ParseCalendarError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str(match self {
+            Self::InvalidLexical => "invalid XSD partial-calendar lexical form",
+            Self::OutOfRange => "XSD partial-calendar fields are outside the supported range",
+            Self::UnsupportedTimezone => {
+                "timezone-bearing XSD partial-calendar values are not yet supported"
+            },
+        })
+    }
+}
+
+impl core::error::Error for ParseCalendarError {}
+
 /// An error encountered when parsing an `xsd:boolean` literal.
 ///
 /// [`crate::parse_boolean`] reports [`ParseError::InvalidBoolean`] through this alias.
@@ -94,6 +122,17 @@ impl core::error::Error for ParseTemporalError {}
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum ParseError {
+    /// A partial-calendar parser failed, retaining its datatype and cause.
+    ///
+    /// Available without date/time features. The cause distinguishes invalid
+    /// syntax, invalid fields, and unsupported timezone-bearing values and is
+    /// exposed through [`core::error::Error::source`].
+    InvalidCalendar {
+        /// The requested partial-calendar datatype.
+        datatype: PrimitiveType,
+        /// The lexical, range, or representation failure.
+        source: ParseCalendarError,
+    },
     /// The selected parser could not parse or represent the literal.
     ///
     /// The underlying parser's cause is not retained.
@@ -201,6 +240,9 @@ pub enum ParseError {
 impl core::fmt::Display for ParseError {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
+            Self::InvalidCalendar { datatype, source } => {
+                write!(f, "invalid {} literal: {source}", datatype.curie())
+            },
             Self::InvalidLiteral => f.write_str("invalid XSD literal"),
             Self::InvalidBoolean => {
                 f.write_str("invalid xsd:boolean literal: expected true, false, 1, or 0")
@@ -228,6 +270,7 @@ impl core::fmt::Display for ParseError {
 impl core::error::Error for ParseError {
     fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
         match self {
+            Self::InvalidCalendar { source, .. } => Some(source),
             Self::InvalidInteger { source, .. } => Some(source),
             Self::InvalidDecimal { source, .. } => Some(source),
             Self::InvalidFloat { source, .. } => Some(source),

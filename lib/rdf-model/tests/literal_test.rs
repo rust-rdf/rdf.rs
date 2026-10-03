@@ -7,7 +7,8 @@ use rdf_model::{Datatype, HeapTerm};
 #[test]
 fn unparsed_literals_preserve_lexical_form_and_datatype() {
     for (lexical, datatype) in [
-        ("--12", Datatype::from(xsd::G_MONTH)),
+        ("--12Z", Datatype::from(xsd::G_MONTH)),
+        ("--00", Datatype::from(xsd::G_MONTH)),
         ("00ff", Datatype::from(xsd::HEX_BINARY)),
         ("+0042", Datatype::from(xsd::Type::from("unsignedInt"))),
         ("not-an-integer", Datatype::from(xsd::INT)),
@@ -63,4 +64,28 @@ fn supported_literals_still_parse_as_values() {
         term,
         HeapTerm::TypedValue(xsd::parse("42", xsd::INT).unwrap())
     );
+}
+
+#[test]
+fn month_literals_preserve_datatype_and_lexical_content() {
+    let term = HeapTerm::from(("--12".to_owned(), Datatype::from(xsd::G_MONTH)));
+    assert_eq!(
+        term,
+        HeapTerm::TypedValue(xsd::parse("--12", xsd::G_MONTH).unwrap())
+    );
+    #[cfg(feature = "oxrdf")]
+    {
+        let external = oxrdf::Term::from(term.clone());
+        assert_eq!(
+            external,
+            oxrdf::Term::Literal(oxrdf::Literal::new_typed_literal(
+                "--12",
+                oxrdf::NamedNode::new("http://www.w3.org/2001/XMLSchema#gMonth").unwrap()
+            ))
+        );
+        assert_eq!(
+            HeapTerm::from(external),
+            HeapTerm::TypedLiteral("--12".to_owned(), Datatype::from(xsd::G_MONTH))
+        );
+    }
 }

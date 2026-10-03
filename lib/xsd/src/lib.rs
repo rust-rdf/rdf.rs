@@ -169,6 +169,9 @@ pub use decimal_value::*;
 mod parse;
 pub use parse::*;
 
+mod parse_calendar;
+pub use parse_calendar::*;
+
 mod parse_error;
 pub use parse_error::*;
 
