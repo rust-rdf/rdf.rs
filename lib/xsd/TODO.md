@@ -178,7 +178,7 @@ rustdoc, and [Cargo.toml](Cargo.toml).
 - [ ] Add table-driven valid/invalid lexical cases as each parser is corrected,
   including precision, overflow, timezone, and unsupported-operation regressions.
 - [ ] Add property/differential tests where useful against an independent XSD
-  implementation for datatypes beyond `Date`, using optional `oxsdatatypes`.
+  implementation for datatypes beyond `Date` and `Time`, using optional `oxsdatatypes`.
   Use the chosen W3C semantics
   as the authority when implementations disagree.
 - [ ] Exercise runtime behavior under reduced feature sets, not just compilation.
