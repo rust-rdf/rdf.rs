@@ -64,7 +64,7 @@ fn days_round_trip_and_reject_invalid_fields() {
 
 #[test]
 fn month_days_round_trip_and_validate_calendar_combinations() {
-    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange};
     for (month, last_day) in (1..=12).zip([31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]) {
         for day in 0..=32 {
             let lexical = format!("--{month:02}-{day:02}");
@@ -86,8 +86,8 @@ fn month_days_round_trip_and_validate_calendar_combinations() {
         ("--01-01 ", InvalidLexical),
         ("--01-１", InvalidLexical),
         ("--01-01+15:00", InvalidLexical),
-        ("--02-29Z", UnsupportedTimezone),
-        ("--01-01-00:00", UnsupportedTimezone),
+        ("--02-29z", InvalidLexical),
+        ("--01-01-14:01", InvalidLexical),
     ] {
         assert_eq!(xsd::parse_g_month_day(input).unwrap_err(), cause, "{input}");
         assert!(

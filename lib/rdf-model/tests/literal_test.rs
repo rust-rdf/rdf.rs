@@ -10,7 +10,7 @@ fn unparsed_literals_preserve_lexical_form_and_datatype() {
         ("--12+14:01", Datatype::from(xsd::G_MONTH)),
         ("--00", Datatype::from(xsd::G_MONTH)),
         ("---01+14:01", Datatype::from(xsd::G_DAY)),
-        ("--02-29+01:00", Datatype::from(xsd::G_MONTH_DAY)),
+        ("--02-30+01:00", Datatype::from(xsd::G_MONTH_DAY)),
         ("0000Z", Datatype::from(xsd::G_YEAR)),
         ("-0001-01-14:00", Datatype::from(xsd::G_YEAR_MONTH)),
         ("00ff", Datatype::from(xsd::HEX_BINARY)),
@@ -79,6 +79,7 @@ fn partial_calendar_literals_preserve_datatype_and_lexical_content() {
         ("---31", xsd::G_DAY),
         ("---31Z", xsd::G_DAY),
         ("--02-29", xsd::G_MONTH_DAY),
+        ("--02-29+01:00", xsd::G_MONTH_DAY),
         ("0000", xsd::G_YEAR),
         ("-2147483648-12", xsd::G_YEAR_MONTH),
     ] {
