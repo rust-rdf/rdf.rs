@@ -298,6 +298,12 @@ impl PrimitiveValue {
         Some(self.clone().into_json())
     }
 
+    /// Converts to an untagged JSON value. Requires `serde`.
+    ///
+    /// Decimal values use strings preserving the stored decimal precision,
+    /// matching [`crate::DecimalValue::into_json`]. This replaces their former
+    /// numeric encoding. Datatype identity and original lexical spelling are
+    /// not included; this API differs from derived Serde serialization.
     #[cfg(feature = "serde")]
     pub fn into_json(self) -> serde_json::Value {
         use PrimitiveValue::*;
@@ -307,7 +313,7 @@ impl PrimitiveValue {
         match self {
             String(s) => Value::String(s),
             Boolean(b) => b.into_json(),
-            Decimal(d) => d.into_json().unwrap(),
+            Decimal(d) => Value::String(d.to_string()),
             Float(f) => f.into_json(),
             Double(d) => d.into_json(),
             #[cfg(feature = "jiff")]

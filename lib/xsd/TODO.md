@@ -102,7 +102,6 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 
 **Observed with the indicated optional feature enabled:**
 
-- `serde`: decimal conversion loses precision via `f64`.
 - `serde`: converting parsed `INF` or `NaN` to JSON panics.
 - `bson`: for `DecimalValue::Integer(9007199254740993_i128.into())`,
   `.into_bson()` preserves an `Int64`, while `bson::Bson::from(value)` produces
@@ -114,7 +113,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Extend the exact integer JSON encoding policy to decimals and define fallible conversion APIs for
+- [ ] Define fallible numeric-only conversion APIs for
   unsupported target values. Test large integers, high-precision decimals,
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Make BSON method and trait conversion routes agree for each value and
