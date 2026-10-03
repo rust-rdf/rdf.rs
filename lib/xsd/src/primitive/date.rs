@@ -30,6 +30,13 @@ mod value {
     /// Parse that string with [`crate::DATE`] to recover the represented value;
     /// neither encoding recovers the original spelling of a parsed literal.
     ///
+    /// With `borsh`, the new type-local version-1 encoding is: version byte `1`,
+    /// little-endian `i16` year, `i8` month, `i8` day, then Borsh
+    /// `Option<TimezoneOffset>` (tag `0` for absent, or `1` and little-endian `i16`
+    /// minutes). This is 6 or 8 bytes, with no datatype tag. There was no previous
+    /// Borsh encoding for this type. Decoding rejects unknown versions, invalid
+    /// calendar fields, invalid option tags, and out-of-range offsets.
+    ///
     /// ```
     /// use xsd::{primitive::Date, TimezoneOffset};
     /// let date = Date::new(-1, 2, 28).unwrap().with_timezone(Some(TimezoneOffset::UTC));
@@ -136,6 +143,36 @@ mod value {
             } else {
                 Ok(date.civil)
             }
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshSerialize for Date {
+        fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+            borsh::BorshSerialize::serialize(
+                &(1u8, self.year(), self.month(), self.day(), self.timezone),
+                writer,
+            )
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshDeserialize for Date {
+        fn deserialize_reader<R: borsh::io::Read>(
+            reader: &mut R,
+        ) -> Result<Self, borsh::io::Error> {
+            use borsh::io::{Error, ErrorKind};
+            if u8::deserialize_reader(reader)? != 1 {
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "unsupported XSD date encoding version",
+                ));
+            }
+            let (year, month, day, timezone) =
+                <(i16, i8, i8, Option<TimezoneOffset>)>::deserialize_reader(reader)?;
+            Self::new(year, month, day)
+                .map(|date| date.with_timezone(timezone))
+                .map_err(|_| Error::new(ErrorKind::InvalidData, "invalid XSD date calendar fields"))
         }
     }
 }
