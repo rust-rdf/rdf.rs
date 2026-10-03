@@ -1,5 +1,32 @@
 use xsd::TimezoneOffset;
 
+#[cfg(feature = "serde")]
+#[test]
+fn serde_validates_offsets_and_preserves_absence() {
+    for minutes in -840..=840 {
+        let offset = TimezoneOffset::from_minutes(minutes).unwrap();
+        let json = serde_json::to_string(&offset).unwrap();
+        assert_eq!(json, minutes.to_string());
+        assert_eq!(
+            serde_json::from_str::<TimezoneOffset>(&json).unwrap(),
+            offset
+        );
+    }
+    for json in ["841", "-841", "32768", "1.5", "\"Z\"", "null"] {
+        assert!(
+            serde_json::from_str::<TimezoneOffset>(json).is_err(),
+            "{json}"
+        );
+    }
+    for (offset, json) in [(None, "null"), (Some(TimezoneOffset::UTC), "0")] {
+        assert_eq!(serde_json::to_string(&offset).unwrap(), json);
+        assert_eq!(
+            serde_json::from_str::<Option<TimezoneOffset>>(json).unwrap(),
+            offset
+        );
+    }
+}
+
 #[cfg(feature = "jiff")]
 #[test]
 fn jiff_conversion_preserves_offsets_and_rejects_loss() {

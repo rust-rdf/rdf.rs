@@ -11,6 +11,10 @@ use core::fmt;
 /// writes `Z` for UTC and `+hh:mm` or `-hh:mm` otherwise; it does not preserve
 /// the original spelling of zero. This is an offset, not a named timezone.
 ///
+/// With `serde`, serialization uses a signed integer minute count, not a lexical
+/// string. Deserialization validates the XSD bounds. In JSON, an
+/// `Option<TimezoneOffset>` distinguishes absence (`null`) from UTC (`0`).
+///
 /// ```
 /// let offset = xsd::TimezoneOffset::from_minutes(330).unwrap();
 /// assert_eq!(offset.to_string(), "+05:30");
@@ -19,6 +23,22 @@ use core::fmt;
 /// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TimezoneOffset(i16);
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for TimezoneOffset {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_i16(self.0)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for TimezoneOffset {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let minutes = i16::deserialize(deserializer)?;
+        Self::from_minutes(minutes)
+            .ok_or_else(|| serde::de::Error::custom(TimezoneOffsetError::OutOfRange))
+    }
+}
 
 /// An invalid XSD timezone-offset spelling or value.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
