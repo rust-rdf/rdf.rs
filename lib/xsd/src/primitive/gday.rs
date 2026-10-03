@@ -25,6 +25,9 @@ use core::fmt;
 /// with [`crate::parse`] and [`crate::G_DAY`], not Serde deserialization of the
 /// wrapper. The string preserves the day and optional offset, but carries no
 /// datatype tag and normalizes signed zero offsets to `Z`.
+/// Explicit BSON conversion (requires `bson`, hence `std`) uses the same XSD
+/// string, not a BSON date-time or integer day. Reparse with [`crate::G_DAY`]
+/// to recover the value; a string literal with the same text has identical BSON.
 ///
 /// With `borsh`, the type-local version-1 encoding is a version byte `1`, a
 /// `u8` day, then `Option<TimezoneOffset>`: tag `0` for absent, or tag `1`
