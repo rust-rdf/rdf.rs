@@ -19,6 +19,15 @@
 //! use xsd::primitive::{Date, DateTime, Time};
 //! ```
 //!
+//! ## Sophia interoperability
+//!
+//! The `sophia` feature is currently an empty compatibility placeholder. It
+//! enables no dependencies, trait implementations, or conversion APIs in this
+//! crate, and does not enable `alloc` or `std`. In particular, enabling it does
+//! not make [`Value`] or [`PrimitiveValue`] implement Sophia term traits.
+//! Applications integrating with Sophia must provide their own term conversion,
+//! retaining RDF lexical forms and datatype identifiers outside parsed values.
+//!
 //! ## Borsh interoperability
 //!
 //! The `borsh` feature enables `BorshSerialize` and `BorshDeserialize` for
