@@ -364,6 +364,11 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// Four-digit negative years (`-0001` through `-9999`) are accepted. The signed
 /// year is preserved in the returned value and its XSD formatting without a
 /// historical-era adjustment. Negative zero (`-0000`) is rejected.
+/// Supported years are `-9999` through `9999`, including `0000` (the year before
+/// `0001`, as in XSD 1.1). Dates use the proleptic Gregorian calendar: years
+/// divisible by 4 are leap years except centuries not divisible by 400.
+/// This rule also applies to zero and negative years. Invalid calendar dates
+/// and years outside this bounded representation return errors.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Timezone-free `24:00:00`, optionally followed by a period and any number of
@@ -671,6 +676,11 @@ fn is_timezone_free_end_of_day(input: &str) -> bool {
 /// Four-digit negative years (`-0001` through `-9999`) are accepted for dates
 /// without a timezone. The signed year is preserved in the returned value and
 /// its XSD formatting without applying a historical-era adjustment.
+/// Supported years are `-9999` through `9999`. Year `0000` denotes the year
+/// before `0001`, following XSD 1.1; negative zero (`-0000`) is rejected.
+/// The proleptic Gregorian leap-year rule applies to signed years, including
+/// zero: divisible by 4, except centuries not divisible by 400. Invalid dates
+/// and years outside the supported range return errors rather than being clamped.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///

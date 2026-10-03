@@ -52,12 +52,10 @@ it, the exported alias is the unsigned `core::time::Duration`.
   UTC. Preserve the represented value through parsing, formatting, and conversion.
   Validate XSD offset bounds for `Date` and make lossy Jiff conversions
   explicit/fallible.
-- [ ] Enforce temporal lexical grammars, including end-of-day notation for
-  timezone-bearing `DateTime` and `Time`, leap-day validation, date components,
-  and fractional seconds. Enforce numeric timezone
+- [ ] Enforce temporal lexical grammars for timezone-bearing values, including
+  end-of-day notation for `DateTime` and `Time`. Enforce numeric timezone
   offset syntax for `Date`; cover negative `Date` years when adding timezone
   support.
-  Define supported year ranges; report unsupported values explicitly.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Test mixed components,
   negative durations, zero, and conversion limits.
