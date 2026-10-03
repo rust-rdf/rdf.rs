@@ -74,3 +74,35 @@ fn base64_binary_bson_preserves_bytes() {
         assert_eq!(Value::from(value).into_bson(), expected);
     }
 }
+
+#[cfg(all(feature = "bson", feature = "jiff"))]
+fn assert_bson_string(value: PrimitiveValue, lexical: &str) {
+    let expected = bson::Bson::String(lexical.into());
+    assert_eq!(value.to_string(), lexical);
+    assert_eq!(value.clone().into_bson(), expected);
+    assert_eq!(value.to_bson(), Some(expected.clone()));
+    assert_eq!(bson::Bson::from(value.clone()), expected);
+    let wrapped = Value::from(value);
+    assert_eq!(wrapped.to_bson(), Some(expected.clone()));
+    assert_eq!(wrapped.into_bson(), expected);
+}
+
+#[test]
+#[cfg(all(feature = "jiff", any(feature = "serde", feature = "bson")))]
+fn date_conversions_use_xsd_year_formatting() {
+    for (year, lexical) in [
+        (-9999, "-9999-01-02"),
+        (-1, "-0001-01-02"),
+        (0, "0000-01-02"),
+        (1, "0001-01-02"),
+        (2026, "2026-01-02"),
+        (9999, "9999-01-02"),
+    ] {
+        let value = PrimitiveValue::Date(xsd::primitive::Date::new(year, 1, 2).unwrap());
+        #[cfg(feature = "serde")]
+        assert_json_string(value.clone(), lexical);
+        #[cfg(feature = "bson")]
+        assert_bson_string(value.clone(), lexical);
+        assert_eq!(xsd::parse(lexical, xsd::DATE).unwrap(), Value::from(value));
+    }
+}

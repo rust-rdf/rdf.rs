@@ -81,6 +81,9 @@ pub enum PrimitiveValue {
     /// `Display` writes `yyyy-mm-dd`, with a minus sign before the four-digit
     /// year for negative years. It preserves the stored year number without
     /// applying a historical-era adjustment. No timezone is represented.
+    /// Explicit JSON (`serde`) and BSON (`bson`) conversions emit this same
+    /// XSD lexical string, without a datatype identifier. They do not use BSON's
+    /// timestamp representation. Derived Serde serialization is separate.
     ///
     /// ```
     /// use xsd::{PrimitiveValue, primitive::Date};
@@ -285,7 +288,7 @@ impl PrimitiveValue {
             #[cfg(feature = "jiff")]
             Time(t) => Value::String(t.to_string()),
             #[cfg(feature = "jiff")]
-            Date(d) => Value::String(d.to_string()),
+            value @ Date(_) => Value::String(value.to_string()),
             GYearMonth((y, m)) => Value::String(format!("{}-{}", y, m)),
             GYear(y) => Value::String(y.to_string()),
             GMonthDay((m, d)) => Value::String(format!("{}-{}", m, d)),
@@ -326,7 +329,7 @@ impl PrimitiveValue {
             #[cfg(feature = "jiff")]
             Time(t) => Bson::String(t.to_string()),
             #[cfg(feature = "jiff")]
-            Date(d) => Bson::String(d.to_string()),
+            value @ Date(_) => Bson::String(value.to_string()),
             GYearMonth((y, m)) => Bson::String(format!("{}-{}", y, m)),
             GYear(y) => Bson::String(y.to_string()),
             GMonthDay((m, d)) => Bson::String(format!("{}-{}", m, d)),
