@@ -17,7 +17,7 @@ publish.workspace = true
 [features]
 default = ["all", "std"]
 all = ["serde"]
-alloc = ["rdf-model/alloc"]
+alloc = ["dogma/labeled", "dogma/named", "rdf-model/alloc"]
 std = ["alloc", "dogma/std", "rdf-model/std", "serde?/std"]
 unstable = []
 

@@ -34,7 +34,7 @@ serde = ["alloc", "dep:serde", "dep:serde_json", "xsd/serde"]
 sophia = ["std", "dep:sophia", "xsd/sophia"]
 
 [dependencies]
-dogma.workspace = true
+dogma = { workspace = true, features = ["countable"] }
 known-languages.workspace = true
 xsd.workspace = true
 

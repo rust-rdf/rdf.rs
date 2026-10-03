@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
+- Update Dogma to 0.3.0. The re-exported `MaybeCountable` trait now uses
+  `maybe_count()`, `maybe_is_empty()`, and `maybe_is_nonempty()` in place of
+  `count()`, `is_empty()`, and `is_nonempty()`; `Countable` is unchanged.
 - Raise the minimum supported Rust version to 1.97.
 - Check locked builds on the MSRV, enabled adapters, the CLI, formatting,
   Clippy, and documentation in CI.
