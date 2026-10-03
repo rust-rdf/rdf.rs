@@ -588,6 +588,61 @@ fn datetime_parsers_accept_in_range_offsets() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn time_parsers_normalize_timezone_free_end_of_day() {
+    let midnight = xsd::parse_time("00:00:00").unwrap();
+    for input in [
+        "24:00:00",
+        "24:00:00.0",
+        "24:00:00.000000000",
+        "24:00:00.000000000000000000000000000000",
+    ] {
+        let value = xsd::parse_time(input).unwrap();
+        assert_eq!(value, midnight, "{input}");
+        assert_eq!(value.r#type(), xsd::TIME);
+        assert_eq!(value.to_string(), "00:00:00");
+        assert_eq!(xsd::parse(input, xsd::TIME).unwrap(), value);
+        assert_eq!(xsd::parse(value.to_string(), xsd::TIME).unwrap(), value);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
+fn time_parsers_reject_invalid_end_of_day() {
+    for input in [
+        "24:00",
+        "240000",
+        "24:01:00",
+        "24:00:01",
+        "24:00:60",
+        "24:00:00.",
+        "24:00:00.1",
+        "24:00:00.0000000001",
+        "24:00:00,0",
+        "24:00:00.０",
+        "24:00:00.0 ",
+        "24:00:00[Etc/UTC]",
+        "24:00:00.0[u-ca=iso8601]",
+        "25:00:00",
+        "24:00:00Z",
+        "24:00:00+02:00",
+        "24:00:00.0-02:00",
+    ] {
+        assert!(xsd::parse_time(input).is_err(), "{input}");
+        assert!(
+            matches!(
+                xsd::parse(input, xsd::TIME),
+                Err(ParseError::InvalidTemporal {
+                    datatype: PrimitiveType::Time,
+                    ..
+                })
+            ),
+            "{input}"
+        );
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn time_parsers_require_xsd_numeric_offset_syntax() {
     for offset in [
         "+02",

@@ -382,6 +382,10 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// Requires `jiff` (enabled by `datetime`). Inputs must begin with two-digit
 /// hours, minutes, and seconds separated by colons (`hh:mm:ss`). Seconds may
 /// include a fractional part; omitted clock fields are not filled in with zero.
+/// Timezone-free `24:00:00` denotes midnight and is normalized to `00:00:00`.
+/// It may have a period followed by one or more ASCII zero digits, with no
+/// precision limit for this all-zero fraction. Other hour-24 forms, including
+/// those with a timezone suffix, currently return an error.
 /// Fractional seconds use a period separator; a comma is rejected.
 /// Seconds must be less than 60; leap seconds are rejected rather than clamped
 /// to 59 by the underlying parser.
@@ -393,7 +397,8 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 ///
 /// # Errors
 ///
-/// Returns an error when the input cannot be parsed by the underlying civil-time
+/// Apart from the timezone-free end-of-day forms described above, returns an
+/// error when the input cannot be parsed by the underlying civil-time
 /// parser, does not begin with the required `hh:mm:ss` clock fields, uses a
 /// comma to separate fractional seconds, specifies a leap second, contains
 /// bracketed annotations, or has a numeric timezone offset with invalid XSD syntax
@@ -411,10 +416,22 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
 /// assert!(xsd::parse_time("12:34:56+02:00:00").is_err());
 /// assert_eq!(xsd::parse_time("12:34:00").unwrap().to_string(), "12:34:00");
 /// assert_eq!(xsd::parse_time("12:34:56.125").unwrap().to_string(), "12:34:56.125");
+/// assert_eq!(xsd::parse_time("24:00:00.000").unwrap().to_string(), "00:00:00");
+/// assert!(xsd::parse_time("24:00:00.001").is_err());
 /// ```
 #[cfg(feature = "jiff")]
 pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
+    // XSD permits end-of-day notation; Jiff's civil clock stops at hour 23.
+    // Inspect the entire suffix so no nonzero fraction or annotation is lost.
+    if let Some(suffix) = input.strip_prefix("24:00:00")
+        && (suffix.is_empty()
+            || suffix.strip_prefix('.').is_some_and(|fraction| {
+                !fraction.is_empty() && fraction.bytes().all(|byte| byte == b'0')
+            }))
+    {
+        return Time::new(0, 0, 0, 0).map(Value::from);
+    }
     let time = input.parse::<Time>()?;
     // Jiff validates the digits and ranges; require all three colon-separated fields.
     if !matches!(input.as_bytes(), [_, _, b':', _, _, b':', _, _, ..]) {
