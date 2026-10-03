@@ -1,6 +1,13 @@
 use xsd::{PrimitiveType, PrimitiveValue};
 
 #[test]
+fn year_month_representation_rejects_invalid_months() {
+    for month in [0, 13, 255] {
+        assert!(xsd::primitive::GYearMonth::new(0, month).is_none());
+    }
+}
+
+#[test]
 fn month_day_representation_rejects_impossible_dates() {
     for (month, day) in [(2, 30), (4, 31), (0, 1), (13, 1), (1, 0), (255, 255)] {
         assert!(xsd::primitive::GMonthDay::new(month, day).is_none());
@@ -36,9 +43,14 @@ fn checked_year_month_preserves_year_boundaries() {
         for month in u8::MIN..=u8::MAX {
             let value = PrimitiveValue::g_year_month(year, month);
             assert_eq!(value.is_some(), (1..=12).contains(&month));
+            let fields = xsd::primitive::GYearMonth::new(year, month);
+            assert_eq!(fields.is_some(), (1..=12).contains(&month));
             if let Some(value) = value {
                 assert_eq!(value.r#type(), PrimitiveType::GYearMonth);
-                assert_eq!(value, PrimitiveValue::GYearMonth((year, month)));
+                let fields = fields.unwrap();
+                assert_eq!((fields.year(), fields.month()), (year, month));
+                assert_eq!(fields.timezone(), None);
+                assert_eq!(value, PrimitiveValue::GYearMonth(fields));
                 assert_eq!(value.to_string(), format!("{lexical}-{month:02}"));
             }
         }

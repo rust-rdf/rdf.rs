@@ -142,9 +142,18 @@ fn datetime_conversions_preserve_xsd_years_and_fractional_seconds() {
 fn partial_calendar_conversions_preserve_lexical_structure() {
     use PrimitiveValue::*;
     for (value, lexical) in [
-        (GYearMonth((1, 2)), "0001-02"),
-        (GYearMonth((-1, 12)), "-0001-12"),
-        (GYearMonth((10000, 1)), "10000-01"),
+        (
+            GYearMonth(xsd::primitive::GYearMonth::new(1, 2).unwrap()),
+            "0001-02",
+        ),
+        (
+            GYearMonth(xsd::primitive::GYearMonth::new(-1, 12).unwrap()),
+            "-0001-12",
+        ),
+        (
+            GYearMonth(xsd::primitive::GYearMonth::new(10000, 1).unwrap()),
+            "10000-01",
+        ),
         (GYear(1), "0001"),
         (GYear(-1), "-0001"),
         (GYear(i32::MIN), "-2147483648"),

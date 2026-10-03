@@ -23,8 +23,8 @@ use ::alloc::{borrow::Cow, string::String, vec::Vec};
 /// Partial-calendar values use the same lexical strings for explicit JSON
 /// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
 /// do not validate raw calendar fields or include datatype identifiers or
-/// timezones, except for validated [`GMonth`], [`GDay`], and [`GMonthDay`] values,
-/// which retain their offsets.
+/// timezones, except for validated [`GMonth`], [`GDay`], [`GMonthDay`], and
+/// [`GYearMonth`] values, which retain their offsets.
 /// Derived Serde serialization uses a separate enum representation.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
@@ -196,10 +196,7 @@ impl fmt::Display for PrimitiveValue {
             Time(t) => t.fmt(f),
             #[cfg(feature = "jiff")]
             Date(d) => d.fmt(f),
-            GYearMonth((y, m)) => {
-                fmt_year(*y, f)?;
-                write!(f, "-{m:02}")
-            },
+            GYearMonth(value) => value.fmt(f),
             GYear(y) => fmt_year(*y, f),
             GMonthDay(value) => value.fmt(f),
             GDay(d) => d.fmt(f),
@@ -267,8 +264,8 @@ impl PrimitiveValue {
     /// Returns `None` unless `month` is in `1..=12`. All `i32` years are accepted,
     /// including zero following XSD 1.1. Formatting preserves the signed year,
     /// padded to at least four digits, followed by `-mm`; no era adjustment is
-    /// applied. Available without allocation or date/time features. Direct
-    /// [`Self::GYearMonth`] construction is unchecked.
+    /// applied. Available without allocation or date/time features. The
+    /// [`Self::GYearMonth`] payload is also validated; this constructor adds no timezone.
     ///
     /// ```
     /// let value = xsd::PrimitiveValue::g_year_month(-1, 2).unwrap();
@@ -276,10 +273,9 @@ impl PrimitiveValue {
     /// assert!(xsd::PrimitiveValue::g_year_month(2026, 13).is_none());
     /// ```
     pub const fn g_year_month(year: GYear, month: u8) -> Option<Self> {
-        if month >= 1 && month <= 12 {
-            Some(Self::GYearMonth((year, month)))
-        } else {
-            None
+        match GYearMonth::new(year, month) {
+            Some(value) => Some(Self::GYearMonth(value)),
+            None => None,
         }
     }
 
