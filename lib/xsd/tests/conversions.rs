@@ -75,7 +75,7 @@ fn base64_binary_bson_preserves_bytes() {
     }
 }
 
-#[cfg(all(feature = "bson", feature = "jiff"))]
+#[cfg(feature = "bson")]
 fn assert_bson_string(value: PrimitiveValue, lexical: &str) {
     let expected = bson::Bson::String(lexical.into());
     assert_eq!(value.to_string(), lexical);
@@ -134,5 +134,32 @@ fn datetime_conversions_preserve_xsd_years_and_fractional_seconds() {
                 Value::from(value)
             );
         }
+    }
+}
+
+#[test]
+#[cfg(any(feature = "serde", feature = "bson"))]
+fn partial_calendar_conversions_preserve_lexical_structure() {
+    use PrimitiveValue::*;
+    for (value, lexical) in [
+        (GYearMonth((1, 2)), "0001-02"),
+        (GYearMonth((-1, 12)), "-0001-12"),
+        (GYearMonth((10000, 1)), "10000-01"),
+        (GYear(1), "0001"),
+        (GYear(-1), "-0001"),
+        (GYear(i32::MIN), "-2147483648"),
+        (GYear(i32::MAX), "2147483647"),
+        (GMonthDay((1, 2)), "--01-02"),
+        (GMonthDay((2, 29)), "--02-29"),
+        (GMonthDay((12, 31)), "--12-31"),
+        (GDay(1), "---01"),
+        (GDay(31), "---31"),
+        (GMonth(1), "--01"),
+        (GMonth(12), "--12"),
+    ] {
+        #[cfg(feature = "serde")]
+        assert_json_string(value.clone(), lexical);
+        #[cfg(feature = "bson")]
+        assert_bson_string(value, lexical);
     }
 }

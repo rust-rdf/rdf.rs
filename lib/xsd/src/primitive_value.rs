@@ -23,6 +23,11 @@ use ::alloc::format;
 /// hexadecimal or padded Base64. Formatting does not validate stored fields or
 /// preserve the original spelling of a parsed literal.
 ///
+/// Partial-calendar values use the same lexical strings for explicit JSON
+/// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
+/// do not validate raw calendar fields or include datatype identifiers or
+/// timezones. Derived Serde serialization uses a separate enum representation.
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // #[cfg_attr(
@@ -99,18 +104,33 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     Date(Date),
 
+    /// A year and month, formatted as `yyyy-mm` with a sign for negative years.
+    /// JSON/BSON string conversion follows `Display`; see the type-level docs.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
     GYearMonth(GYearMonth),
 
+    /// A year, formatted with at least four digits and a sign for negative years.
+    /// JSON/BSON string conversion follows `Display`; see the type-level docs.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#gYear>
     GYear(GYear),
 
+    /// A month and day, formatted as `--mm-dd`.
+    /// JSON/BSON string conversion follows `Display`; see the type-level docs.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
     GMonthDay(GMonthDay),
 
+    /// A day of the month, formatted as `---dd`.
+    /// JSON/BSON string conversion follows `Display`; see the type-level docs.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#gDay>
     GDay(GDay),
 
+    /// A month, formatted as `--mm`.
+    /// JSON/BSON string conversion follows `Display`; see the type-level docs.
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#gMonth>
     GMonth(GMonth),
 
@@ -293,11 +313,9 @@ impl PrimitiveValue {
             Time(t) => Value::String(t.to_string()),
             #[cfg(feature = "jiff")]
             value @ Date(_) => Value::String(value.to_string()),
-            GYearMonth((y, m)) => Value::String(format!("{}-{}", y, m)),
-            GYear(y) => Value::String(y.to_string()),
-            GMonthDay((m, d)) => Value::String(format!("{}-{}", m, d)),
-            GDay(d) => Value::String(d.to_string()),
-            GMonth(m) => Value::String(m.to_string()),
+            value @ (GYearMonth(_) | GYear(_) | GMonthDay(_) | GDay(_) | GMonth(_)) => {
+                Value::String(value.to_string())
+            },
             #[cfg(feature = "alloc")]
             value @ HexBinary(_) => Value::String(value.to_string()),
             #[cfg(feature = "alloc")]
@@ -334,11 +352,9 @@ impl PrimitiveValue {
             Time(t) => Bson::String(t.to_string()),
             #[cfg(feature = "jiff")]
             value @ Date(_) => Bson::String(value.to_string()),
-            GYearMonth((y, m)) => Bson::String(format!("{}-{}", y, m)),
-            GYear(y) => Bson::String(y.to_string()),
-            GMonthDay((m, d)) => Bson::String(format!("{}-{}", m, d)),
-            GDay(d) => Bson::String(d.to_string()),
-            GMonth(m) => Bson::String(m.to_string()),
+            value @ (GYearMonth(_) | GYear(_) | GMonthDay(_) | GDay(_) | GMonth(_)) => {
+                Bson::String(value.to_string())
+            },
             #[cfg(feature = "alloc")]
             HexBinary(b) => Bson::Binary(Binary {
                 bytes: b,
