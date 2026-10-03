@@ -42,7 +42,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Complete temporal Borsh serialization for `Time` and `DateTime`.
+- [ ] Complete temporal Borsh serialization for `DateTime`.
   Preserve the validated offset's minute-count encoding when embedding offsets,
   distinguish absence from UTC, and reject invalid calendar/clock fields on decoding.
 - [ ] Represent signed durations with calendar-month and day/time components.

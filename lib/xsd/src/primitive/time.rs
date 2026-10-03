@@ -31,6 +31,13 @@ mod value {
     /// represented value. Neither encoding preserves original lexical spelling,
     /// such as hour 24, fractional trailing zeros, or the sign of a zero offset.
     ///
+    /// With `borsh`, the new type-local version-1 encoding is: version byte `1`,
+    /// `i8` hour, minute, and second, little-endian `i32` nanoseconds, then Borsh
+    /// `Option<TimezoneOffset>` (tag `0` for absent, or `1` and little-endian `i16`
+    /// minutes). This is 9 or 11 bytes, with no datatype tag. There was no previous
+    /// Borsh encoding for this type. Decoding rejects unknown versions, invalid
+    /// clock fields (including hour 24 and leap seconds), option tags, and offsets.
+    ///
     /// ```
     /// use xsd::{primitive::Time, TimezoneOffset};
     /// let time = Time::new(12, 34, 56, 1).unwrap().with_timezone(Some(TimezoneOffset::UTC));
@@ -137,6 +144,43 @@ mod value {
             } else {
                 Ok(time.civil)
             }
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshSerialize for Time {
+        fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+            borsh::BorshSerialize::serialize(
+                &(
+                    1u8,
+                    self.hour(),
+                    self.minute(),
+                    self.second(),
+                    self.subsec_nanosecond(),
+                    self.timezone,
+                ),
+                writer,
+            )
+        }
+    }
+
+    #[cfg(feature = "borsh")]
+    impl borsh::BorshDeserialize for Time {
+        fn deserialize_reader<R: borsh::io::Read>(
+            reader: &mut R,
+        ) -> Result<Self, borsh::io::Error> {
+            use borsh::io::{Error, ErrorKind};
+            if u8::deserialize_reader(reader)? != 1 {
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "unsupported XSD time encoding version",
+                ));
+            }
+            let (hour, minute, second, nanosecond, timezone) =
+                <(i8, i8, i8, i32, Option<TimezoneOffset>)>::deserialize_reader(reader)?;
+            Self::new(hour, minute, second, nanosecond)
+                .map(|time| time.with_timezone(timezone))
+                .map_err(|_| Error::new(ErrorKind::InvalidData, "invalid XSD time clock fields"))
         }
     }
 }
