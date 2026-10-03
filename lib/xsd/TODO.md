@@ -61,7 +61,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   boundary regressions in `tests/duration_limits.rs` to mixed components,
   negative calendar durations, zero, and conversion limits when replacing the alias.
 - [ ] Replace raw partial-calendar aliases with validated representations and
-  timezone support. For example, `GMonth = u8` currently admits `0` and `255`.
+  timezone support. Direct `GMonth` variant construction still admits `0` and
+  `255`; extend the checked `PrimitiveValue::g_month` path to other fields and
+  eventually enforce validation at the representation/serialization boundary.
   Reuse the formatting regressions while adding constructor and parser coverage.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority

@@ -261,6 +261,25 @@ fn fmt_base64(bytes: &[u8], f: &mut fmt::Formatter<'_>) -> fmt::Result {
 }
 
 impl PrimitiveValue {
+    /// Constructs a timezone-free `xsd:gMonth`, validating the month.
+    ///
+    /// Returns `None` unless `month` is in `1..=12`. Available without allocation
+    /// or date/time features. Formatting uses `--mm`. Direct construction with
+    /// [`Self::GMonth`] remains unchecked; this constructor adds no timezone.
+    ///
+    /// ```
+    /// let value = xsd::PrimitiveValue::g_month(2).unwrap();
+    /// assert_eq!(value.to_string(), "--02");
+    /// assert!(xsd::PrimitiveValue::g_month(0).is_none());
+    /// ```
+    pub const fn g_month(month: GMonth) -> Option<Self> {
+        if month >= 1 && month <= 12 {
+            Some(Self::GMonth(month))
+        } else {
+            None
+        }
+    }
+
     pub fn r#type(&self) -> PrimitiveType {
         use PrimitiveValue::*;
         match self {
