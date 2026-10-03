@@ -14,6 +14,9 @@ use core::fmt;
 /// With `serde`, serialization uses a signed integer minute count, not a lexical
 /// string. Deserialization validates the XSD bounds. In JSON, an
 /// `Option<TimezoneOffset>` distinguishes absence (`null`) from UTC (`0`).
+/// With `borsh`, the wire representation is exactly the two-byte little-endian
+/// signed `i16` minute count. Decoding rejects values outside `-840..=840` with
+/// an invalid-data error. This encoding is independent of date/time features.
 ///
 /// ```
 /// let offset = xsd::TimezoneOffset::from_minutes(330).unwrap();
@@ -23,6 +26,26 @@ use core::fmt;
 /// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TimezoneOffset(i16);
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshSerialize for TimezoneOffset {
+    fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+        borsh::BorshSerialize::serialize(&self.0, writer)
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshDeserialize for TimezoneOffset {
+    fn deserialize_reader<R: borsh::io::Read>(reader: &mut R) -> Result<Self, borsh::io::Error> {
+        let minutes = <i16 as borsh::BorshDeserialize>::deserialize_reader(reader)?;
+        Self::from_minutes(minutes).ok_or_else(|| {
+            borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                "XSD timezone offset is outside -14:00..=+14:00",
+            )
+        })
+    }
+}
 
 #[cfg(feature = "serde")]
 impl serde::Serialize for TimezoneOffset {

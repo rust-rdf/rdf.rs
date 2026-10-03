@@ -49,7 +49,8 @@
 //! ## Borsh interoperability
 //!
 //! The `borsh` feature enables `BorshSerialize` and `BorshDeserialize` for
-//! [`Type`], [`PrimitiveType`], [`DecimalType`], and [`DecimalValue`]. It also
+//! [`Type`], [`PrimitiveType`], [`DecimalType`], [`DecimalValue`], and
+//! [`TimezoneOffset`]. It also
 //! forwards Borsh support to the numeric backend and enables `alloc`, without
 //! requiring `std`.
 //!

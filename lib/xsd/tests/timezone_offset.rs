@@ -1,5 +1,32 @@
 use xsd::TimezoneOffset;
 
+#[cfg(feature = "borsh")]
+#[test]
+fn borsh_offsets_use_validated_little_endian_minutes() {
+    for minutes in i16::MIN..=i16::MAX {
+        let bytes = minutes.to_le_bytes();
+        let decoded = borsh::from_slice::<TimezoneOffset>(&bytes);
+        match TimezoneOffset::from_minutes(minutes) {
+            Some(offset) => {
+                assert_eq!(decoded.unwrap(), offset);
+                assert_eq!(borsh::to_vec(&offset).unwrap(), bytes);
+            },
+            None => assert_eq!(
+                decoded.unwrap_err().kind(),
+                borsh::io::ErrorKind::InvalidData
+            ),
+        }
+    }
+    for bytes in [&[][..], &[0][..], &[0, 0, 0][..]] {
+        assert!(borsh::from_slice::<TimezoneOffset>(bytes).is_err());
+    }
+    assert_eq!(borsh::to_vec(&None::<TimezoneOffset>).unwrap(), [0]);
+    assert_eq!(
+        borsh::to_vec(&Some(TimezoneOffset::UTC)).unwrap(),
+        [1, 0, 0]
+    );
+}
+
 #[cfg(feature = "serde")]
 #[test]
 fn serde_validates_offsets_and_preserves_absence() {
