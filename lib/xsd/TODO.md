@@ -47,13 +47,15 @@ it, the exported alias is the unsigned `core::time::Duration`.
   boundary regressions in `tests/duration_limits.rs` to mixed components,
   negative calendar durations, zero, and conversion limits when replacing the alias.
 - [ ] Replace raw partial-calendar aliases with validated representations and
-  timezone support for `GDay`, `GMonthDay`, `GYear`, and `GYearMonth`.
+  timezone support for `GMonthDay`, `GYear`, and `GYearMonth`.
   Enforce validation at the representation/serialization boundary,
   building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. These four partial-calendar parsers
   currently reject timezone suffixes rather than discarding them.
+  Connect the validated `GDay` timezone field to parsing and verify its Serde,
+  Borsh, JSON, BSON, differential, RDF, comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 

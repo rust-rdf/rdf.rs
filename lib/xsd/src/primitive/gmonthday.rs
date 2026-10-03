@@ -1,7 +1,5 @@
 // This is free and unencumbered software released into the public domain.
 
-use super::GDay;
-
 /// A value of the `xsd:gMonthDay` datatype.
 ///
 /// This raw `(month, day)` pair does not validate calendar fields or store a
@@ -9,4 +7,4 @@ use super::GDay;
 /// including support for February 29 without assuming a particular year.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
-pub type GMonthDay = (u8, GDay);
+pub type GMonthDay = (u8, u8);

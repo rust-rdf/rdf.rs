@@ -23,7 +23,7 @@ use ::alloc::{borrow::Cow, string::String, vec::Vec};
 /// Partial-calendar values use the same lexical strings for explicit JSON
 /// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
 /// do not validate raw calendar fields or include datatype identifiers or
-/// timezones, except for validated [`GMonth`] values, which retain their offsets.
+/// timezones, except for validated [`GMonth`] and [`GDay`] values, which retain their offsets.
 /// Derived Serde serialization uses a separate enum representation.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
@@ -201,7 +201,7 @@ impl fmt::Display for PrimitiveValue {
             },
             GYear(y) => fmt_year(*y, f),
             GMonthDay((m, d)) => write!(f, "--{m:02}-{d:02}"),
-            GDay(d) => write!(f, "---{d:02}"),
+            GDay(d) => d.fmt(f),
             GMonth(m) => m.fmt(f),
             #[cfg(feature = "alloc")]
             HexBinary(bytes) => {
@@ -294,7 +294,7 @@ impl PrimitiveValue {
     /// assert_eq!(leap_day.to_string(), "--02-29");
     /// assert!(xsd::PrimitiveValue::g_month_day(2, 30).is_none());
     /// ```
-    pub const fn g_month_day(month: u8, day: GDay) -> Option<Self> {
+    pub const fn g_month_day(month: u8, day: u8) -> Option<Self> {
         let last_day = match month {
             2 => 29,
             4 | 6 | 9 | 11 => 30,
@@ -312,17 +312,17 @@ impl PrimitiveValue {
     ///
     /// Returns `None` unless `day` is in `1..=31`. No month or year is implied,
     /// so day 31 is valid. Available without allocation or date/time features.
-    /// Formatting uses `---dd`. Direct [`Self::GDay`] construction is unchecked.
+    /// Formatting uses `---dd`. The [`Self::GDay`] payload is also validated;
+    /// this convenience constructor adds no timezone.
     ///
     /// ```
     /// assert_eq!(xsd::PrimitiveValue::g_day(31).unwrap().to_string(), "---31");
     /// assert!(xsd::PrimitiveValue::g_day(32).is_none());
     /// ```
-    pub const fn g_day(day: GDay) -> Option<Self> {
-        if day >= 1 && day <= 31 {
-            Some(Self::GDay(day))
-        } else {
-            None
+    pub const fn g_day(day: u8) -> Option<Self> {
+        match GDay::new(day) {
+            Some(day) => Some(Self::GDay(day)),
+            None => None,
         }
     }
 

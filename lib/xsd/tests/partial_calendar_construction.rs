@@ -1,6 +1,19 @@
 use xsd::{PrimitiveType, PrimitiveValue};
 
 #[test]
+fn day_representation_validates_every_u8() {
+    for day in u8::MIN..=u8::MAX {
+        let value = xsd::primitive::GDay::new(day);
+        assert_eq!(value.is_some(), (1..=31).contains(&day));
+        if let Some(value) = value {
+            assert_eq!(value.day(), day);
+            assert_eq!(value.timezone(), None);
+            assert_eq!(value.to_string(), format!("---{day:02}"));
+        }
+    }
+}
+
+#[test]
 fn checked_year_month_preserves_year_boundaries() {
     const YEAR_ZERO: Option<PrimitiveValue> = PrimitiveValue::g_year_month(0, 1);
     assert_eq!(YEAR_ZERO.unwrap().to_string(), "0000-01");
@@ -56,7 +69,10 @@ fn checked_day_validates_every_u8() {
         assert_eq!(value.is_some(), (1..=31).contains(&day), "{day}");
         if let Some(value) = value {
             assert_eq!(value.r#type(), PrimitiveType::GDay);
-            assert_eq!(value, PrimitiveValue::GDay(day));
+            assert_eq!(
+                value,
+                PrimitiveValue::GDay(xsd::primitive::GDay::new(day).unwrap())
+            );
             assert_eq!(value.to_string(), format!("---{day:02}"));
         }
     }

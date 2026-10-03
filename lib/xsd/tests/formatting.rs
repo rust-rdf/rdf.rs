@@ -152,7 +152,7 @@ fn partial_calendar_lexical_forms() {
         (GYearMonth((2026, 1)), "2026-01"),
         (GYearMonth((-1, 12)), "-0001-12"),
         (GMonthDay((2, 29)), "--02-29"),
-        (GDay(1), "---01"),
+        (GDay(xsd::primitive::GDay::new(1).unwrap()), "---01"),
         (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),
     ] {
         assert_primitive(value, expected);

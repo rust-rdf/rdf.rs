@@ -152,8 +152,8 @@ fn partial_calendar_conversions_preserve_lexical_structure() {
         (GMonthDay((1, 2)), "--01-02"),
         (GMonthDay((2, 29)), "--02-29"),
         (GMonthDay((12, 31)), "--12-31"),
-        (GDay(1), "---01"),
-        (GDay(31), "---31"),
+        (GDay(xsd::primitive::GDay::new(1).unwrap()), "---01"),
+        (GDay(xsd::primitive::GDay::new(31).unwrap()), "---31"),
         (GMonth(xsd::primitive::GMonth::new(1).unwrap()), "--01"),
         (GMonth(xsd::primitive::GMonth::new(12).unwrap()), "--12"),
     ] {
