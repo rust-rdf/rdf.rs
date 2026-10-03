@@ -18,7 +18,58 @@
 //! # #[cfg(feature = "jiff")]
 //! use xsd::primitive::{Date, DateTime, Time};
 //! ```
+//!
+//! ## Borsh interoperability
+//!
+//! The `borsh` feature enables `BorshSerialize` and `BorshDeserialize` for
+//! [`Type`], [`PrimitiveType`], [`DecimalType`], and [`DecimalValue`]. It also
+//! forwards Borsh support to the numeric backend and enables `alloc`, without
+//! requiring `std`.
+//!
+//! [`Value`] and [`PrimitiveValue`] do **not** implement Borsh serialization or
+//! deserialization, even with `borsh` enabled. Wrapping a supported numeric
+//! value in either enum does not make that wrapper serializable.
+//!
+//! The supported enums use structural binary encodings, not XSD lexical strings.
+//! Round trips preserve their variants and stored data; they cannot recover
+//! original lexical spelling that was discarded during parsing. This feature
+//! does not define a versioned, cross-release interchange format.
 
+#![cfg_attr(
+    feature = "borsh",
+    doc = r#"
+### Borsh examples
+
+Supported types round-trip through Borsh (requires `borsh`):
+
+```
+fn round_trip<T>(value: T)
+where
+    T: borsh::BorshSerialize + borsh::BorshDeserialize + PartialEq + core::fmt::Debug,
+{
+    let bytes = borsh::to_vec(&value).unwrap();
+    assert_eq!(borsh::from_slice::<T>(&bytes).unwrap(), value);
+}
+round_trip(xsd::DATE);
+round_trip(xsd::PrimitiveType::Date);
+round_trip(xsd::DecimalType::Int);
+round_trip(xsd::DecimalValue::Int(42));
+```
+
+The general value wrapper is intentionally outside this supported boundary:
+
+```compile_fail,E0277
+let value = xsd::Value::from(xsd::DecimalValue::Int(42));
+let bytes = borsh::to_vec(&value).unwrap();
+```
+
+The primitive wrapper likewise does not implement Borsh deserialization:
+
+```compile_fail,E0277
+let value = borsh::from_slice::<xsd::PrimitiveValue>(&[]).unwrap();
+```
+"#
+)]
 #![no_std]
 #![deny(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
