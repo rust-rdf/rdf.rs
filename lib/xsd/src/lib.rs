@@ -55,7 +55,8 @@
 //! requiring `std`.
 //! With `jiff` as well, `primitive::Date`, `primitive::Time`, and
 //! `primitive::DateTime` support versioned, validated type-local encodings
-//! documented on those types.
+//! documented on those types. `primitive::GMonth` has a versioned, validated
+//! encoding available without date/time features; see its migration notes.
 //!
 //! [`Value`] and [`PrimitiveValue`] do **not** implement Borsh serialization or
 //! deserialization, even with `borsh` enabled. Wrapping a supported numeric
