@@ -70,7 +70,7 @@ pub fn parse_g_year_month(input: impl AsRef<str>) -> Result<Value, ParseCalendar
 pub fn parse_g_year(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
     let (year, suffix) = year_prefix(input.as_ref())?;
     require_no_timezone(Some(suffix))?;
-    Ok(PrimitiveValue::GYear(year).into())
+    Ok(PrimitiveValue::GYear(crate::primitive::GYear::new(year)).into())
 }
 
 pub(crate) fn year_prefix(input: &str) -> Result<(i32, &str), ParseCalendarError> {

@@ -46,14 +46,10 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,
   negative calendar durations, zero, and conversion limits when replacing the alias.
-- [ ] Replace raw partial-calendar aliases with validated representations and
-  timezone support for `GYear`.
-  Enforce validation at the representation/serialization boundary,
-  building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
-  `g_year_month` constructors.
-  Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
-  adding timezone-aware representations. The `gYear` parser currently rejects
-  timezone suffixes rather than discarding them.
+- [ ] Connect the `GYear` timezone field to parsing and verify Serde, Borsh,
+  JSON, BSON, differential, RDF, comparison, and reduced-feature contracts.
+  Reuse `tests/gyear_limits.rs` boundary regressions. The `gYear` parser still
+  rejects timezone suffixes rather than discarding them.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 

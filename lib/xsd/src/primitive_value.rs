@@ -21,10 +21,9 @@ use ::alloc::{borrow::Cow, string::String, vec::Vec};
 /// preserve the original spelling of a parsed literal.
 ///
 /// Partial-calendar values use the same lexical strings for explicit JSON
-/// (`serde`) and BSON (`bson`) conversion as for `Display`. These conversions
-/// do not validate raw calendar fields or include datatype identifiers or
-/// timezones, except for validated [`GMonth`], [`GDay`], [`GMonthDay`], and
-/// [`GYearMonth`] values, which retain their offsets.
+/// (`serde`) and BSON (`bson`) conversion as for `Display`. Calendar fields and
+/// offsets are validated by their representations; conversions retain optional
+/// timezones but omit datatype identifiers.
 /// Derived Serde serialization uses a separate enum representation.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-datatypes>
@@ -197,7 +196,7 @@ impl fmt::Display for PrimitiveValue {
             #[cfg(feature = "jiff")]
             Date(d) => d.fmt(f),
             GYearMonth(value) => value.fmt(f),
-            GYear(y) => fmt_year(*y, f),
+            GYear(y) => y.fmt(f),
             GMonthDay(value) => value.fmt(f),
             GDay(d) => d.fmt(f),
             GMonth(m) => m.fmt(f),
@@ -220,14 +219,6 @@ impl fmt::Display for PrimitiveValue {
                 f.write_str(local)
             },
         }
-    }
-}
-
-fn fmt_year(year: GYear, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    if year < 0 {
-        write!(f, "-{:04}", year.unsigned_abs())
-    } else {
-        write!(f, "{year:04}")
     }
 }
 
@@ -272,7 +263,7 @@ impl PrimitiveValue {
     /// assert_eq!(value.to_string(), "-0001-02");
     /// assert!(xsd::PrimitiveValue::g_year_month(2026, 13).is_none());
     /// ```
-    pub const fn g_year_month(year: GYear, month: u8) -> Option<Self> {
+    pub const fn g_year_month(year: i32, month: u8) -> Option<Self> {
         match GYearMonth::new(year, month) {
             Some(value) => Some(Self::GYearMonth(value)),
             None => None,

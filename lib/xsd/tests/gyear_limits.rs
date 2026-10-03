@@ -13,7 +13,11 @@ const CASES: &[(i32, &str)] = &[
 #[test]
 fn gyear_formatting_preserves_the_entire_signed_range() {
     for &(year, lexical) in CASES {
-        let value = PrimitiveValue::GYear(year);
+        let fields = xsd::primitive::GYear::new(year);
+        assert_eq!(fields.year(), year);
+        assert_eq!(fields.timezone(), None);
+        assert_eq!(fields.to_string(), lexical);
+        let value = PrimitiveValue::GYear(fields);
         assert_eq!(value.to_string(), lexical);
         assert_eq!(value.r#type(), xsd::PrimitiveType::GYear);
         let value = xsd::Value::from(value);
@@ -27,9 +31,12 @@ fn gyear_formatting_preserves_the_entire_signed_range() {
 #[test]
 fn gyear_serde_and_explicit_json_have_distinct_representations() {
     for &(year, lexical) in CASES {
-        let value = PrimitiveValue::GYear(year);
+        let value = PrimitiveValue::GYear(xsd::primitive::GYear::new(year));
         let encoded = serde_json::to_value(&value).unwrap();
-        assert_eq!(encoded, serde_json::json!({"GYear": year}));
+        assert_eq!(
+            encoded,
+            serde_json::json!({"GYear": {"year": year, "timezone": null}})
+        );
         assert_eq!(
             serde_json::from_value::<PrimitiveValue>(encoded).unwrap(),
             value

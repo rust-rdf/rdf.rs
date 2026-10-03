@@ -145,10 +145,10 @@ fn datetime_lexical_year_formatting() {
 fn partial_calendar_lexical_forms() {
     use PrimitiveValue::*;
     for (value, expected) in [
-        (GYear(1), "0001"),
-        (GYear(-1), "-0001"),
-        (GYear(12345), "12345"),
-        (GYear(i32::MIN), "-2147483648"),
+        (GYear(xsd::primitive::GYear::new(1)), "0001"),
+        (GYear(xsd::primitive::GYear::new(-1)), "-0001"),
+        (GYear(xsd::primitive::GYear::new(12345)), "12345"),
+        (GYear(xsd::primitive::GYear::new(i32::MIN)), "-2147483648"),
         (
             GYearMonth(xsd::primitive::GYearMonth::new(2026, 1).unwrap()),
             "2026-01",
