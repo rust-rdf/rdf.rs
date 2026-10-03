@@ -9,7 +9,21 @@ use core::fmt;
 /// follow Gregorian month lengths, allowing February 29 because no year is
 /// specified. Formatting writes `--mm-dd` followed by the optional offset, using
 /// `Z` for UTC. Equality, ordering, and hashing are structural; absence differs
-/// from explicit UTC. This replaces the raw `(u8, u8)` alias: use [`Self::new`]
+/// from explicit UTC. `Ord` compares month, then day, then the optional signed
+/// minute count, with absence before any present offset. This total order is for
+/// Rust collections, not XSD temporal comparison: no timezone normalization or
+/// uncertainty from absent timezones is considered. `Eq` and `Hash` use the same
+/// fields. No XSD semantic comparison operation is provided yet.
+///
+/// ```
+/// use xsd::{primitive::GMonthDay, TimezoneOffset};
+/// let leap_day = GMonthDay::new(2, 29).unwrap();
+/// let utc = leap_day.with_timezone(Some(TimezoneOffset::UTC));
+/// assert_ne!(leap_day, utc);
+/// assert!(leap_day < utc); // structural ordering only
+/// ```
+///
+/// This replaces the raw `(u8, u8)` alias: use [`Self::new`]
 /// for checked construction and [`Self::month`] and [`Self::day`] for the fields.
 /// Parsing follows XSD 1.1 `--mm-dd` syntax, with exactly two ASCII digits per
 /// field. Use [`crate::parse_g_month_day`] to parse the optional timezone;
