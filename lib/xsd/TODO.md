@@ -54,8 +54,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. These two partial-calendar parsers
   currently reject timezone suffixes rather than discarding them.
-  Verify `GMonthDay` Serde,
-  Borsh, JSON, BSON, differential, RDF, comparison, and reduced-feature contracts.
+  Add `GMonthDay` Borsh encoding and verify JSON, BSON, differential, RDF,
+  comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 

@@ -16,6 +16,9 @@ use core::fmt;
 /// `timezone` (optional signed minutes), replacing the former two-element tuple.
 /// Decoding validates the combined calendar fields and offset. The enclosing
 /// `PrimitiveValue` enum retains its `GMonthDay` tag; old payloads must migrate.
+/// A missing `timezone` field decodes as absent. Round trips preserve the fields,
+/// offset, and enclosing enum tags, but not original lexical spelling. Invalid
+/// combinations such as February 30 are rejected even inside value wrappers.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gMonthDay>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
