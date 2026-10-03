@@ -53,7 +53,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Validate XSD offset bounds for `Date` and make lossy Jiff conversions
   explicit/fallible.
 - [ ] Enforce temporal lexical grammars, including end-of-day notation for
-  `DateTime` and timezone-bearing `Time`, leap-day validation, date components,
+  timezone-bearing `DateTime` and `Time`, leap-day validation, date components,
   and fractional seconds. Enforce numeric timezone
   offset syntax for `Date`; cover negative `Date` years when adding timezone
   support.

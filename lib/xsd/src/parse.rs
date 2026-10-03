@@ -232,6 +232,11 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// historical-era adjustment. Negative zero (`-0000`) is rejected.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
+/// Timezone-free `24:00:00`, optionally followed by a period and any number of
+/// ASCII zero digits, is normalized to midnight on the next calendar day.
+/// At least one digit is required after the period. Calendar arithmetic uses
+/// the stored year numbering, including year zero. Hour-24 forms with timezone
+/// suffixes are not yet supported.
 /// Fractional seconds use a period separator; a comma is rejected.
 /// Seconds must be less than 60; leap seconds are rejected rather than clamped
 /// to 59 by the underlying parser.
@@ -250,12 +255,18 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// omits the required `hh:mm:ss` clock fields, uses a comma to separate fractional
 /// seconds, specifies a leap second, contains bracketed annotations, or has a
 /// numeric timezone offset with invalid XSD syntax or a value outside the XSD range.
+/// End-of-day normalization also returns an error if the next day exceeds the
+/// supported year range (for example, `9999-12-31T24:00:00`).
 ///
 /// ```
 /// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
 /// assert_eq!(value.to_string(), "2026-12-31T12:34:56");
 /// let value = xsd::parse_datetime("-2024-02-29T12:34:56.125").unwrap();
 /// assert_eq!(value.to_string(), "-2024-02-29T12:34:56.125");
+/// assert_eq!(
+///     xsd::parse_datetime("2024-02-29T24:00:00").unwrap().to_string(),
+///     "2024-03-01T00:00:00",
+/// );
 /// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
 /// assert!(xsd::parse_datetime("20261231T12:34:56").is_err());
@@ -274,6 +285,13 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 #[cfg(feature = "jiff")]
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
+    if let Some((date, time)) = input.split_once('T')
+        && is_timezone_free_end_of_day(time)
+        && let Value::Primitive(crate::PrimitiveValue::Date(date)) = parse_date(date)?
+    {
+        let next = date.tomorrow()?;
+        return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0).map(Value::from);
+    }
     // Jiff requires six digits for negative years. Parse four-digit years by
     // magnitude and restore the sign without allocating. Gregorian leap-year
     // validity is identical for a year and its negation.
@@ -424,12 +442,7 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
     // XSD permits end-of-day notation; Jiff's civil clock stops at hour 23.
     // Inspect the entire suffix so no nonzero fraction or annotation is lost.
-    if let Some(suffix) = input.strip_prefix("24:00:00")
-        && (suffix.is_empty()
-            || suffix.strip_prefix('.').is_some_and(|fraction| {
-                !fraction.is_empty() && fraction.bytes().all(|byte| byte == b'0')
-            }))
-    {
+    if is_timezone_free_end_of_day(input) {
         return Time::new(0, 0, 0, 0).map(Value::from);
     }
     let time = input.parse::<Time>()?;
@@ -473,6 +486,16 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         }
     }
     Ok(Value::from(time))
+}
+
+#[cfg(feature = "jiff")]
+fn is_timezone_free_end_of_day(input: &str) -> bool {
+    input.strip_prefix("24:00:00").is_some_and(|suffix| {
+        suffix.is_empty()
+            || suffix.strip_prefix('.').is_some_and(|fraction| {
+                !fraction.is_empty() && fraction.bytes().all(|byte| byte == b'0')
+            })
+    })
 }
 
 /// Parses an input string containing an `xsd:date` literal.
