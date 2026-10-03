@@ -226,6 +226,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// Year, month, and day must be separated by hyphens; compact dates such as
 /// `20261231T12:34:56` are rejected.
 /// Years must not have a leading plus sign.
+/// Years longer than four digits must not begin with zero (excluding the sign).
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Fractional seconds use a period separator; a comma is rejected.
@@ -242,6 +243,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// Returns an error when the input cannot be parsed by the underlying
 /// civil-dateTime parser, does not use the required uppercase `T` separator,
 /// omits the required date-component hyphens, uses a leading plus sign on the year,
+/// has a year longer than four digits beginning with zero,
 /// omits the required `hh:mm:ss` clock fields, uses a comma to separate fractional
 /// seconds, specifies a leap second, contains bracketed annotations, or has a
 /// numeric timezone offset with invalid XSD syntax or a value outside the XSD range.
@@ -253,6 +255,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
 /// assert!(xsd::parse_datetime("20261231T12:34:56").is_err());
 /// assert!(xsd::parse_datetime("+002026-12-31T12:34:56").is_err());
+/// assert!(xsd::parse_datetime("-002026-12-31T12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56,125").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T23:59:60").is_err());
@@ -291,6 +294,14 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     if input.starts_with('+') {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:dateTime years must not have a leading plus sign"
+        )));
+    }
+    if date
+        .split_once('-')
+        .is_some_and(|(year, _)| year.len() > 4 && year.starts_with('0'))
+    {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime years longer than four digits must not begin with zero"
         )));
     }
     // Jiff validates the digits and ranges; require all three clock fields.

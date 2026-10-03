@@ -318,6 +318,28 @@ fn datetime_parsers_require_uppercase_t_separator() {
 
 #[test]
 #[cfg(feature = "jiff")]
+fn datetime_parsers_reject_zero_padded_extended_years() {
+    for input in [
+        "-002026-12-31T12:34:56",
+        "-000001-01-01T00:00:00",
+        "-009999-12-31T23:59:59.123456789",
+        "-002024-02-29T12:34:56.125+02:00",
+        "-002026-12-31T12:34:56-02:00",
+    ] {
+        let message = "xsd:dateTime years longer than four digits must not begin with zero";
+        assert_eq!(xsd::parse_datetime(input).unwrap_err().to_string(), message);
+        let ParseError::InvalidTemporal { datatype, source } =
+            xsd::parse(input, xsd::DATE_TIME).unwrap_err()
+        else {
+            panic!("expected a temporal parse error for {input}");
+        };
+        assert_eq!(datatype, PrimitiveType::DateTime);
+        assert_eq!(source.to_string(), message);
+    }
+}
+
+#[test]
+#[cfg(feature = "jiff")]
 fn datetime_parsers_reject_positive_year_signs() {
     for input in [
         "+002026-12-31T12:34:56",
