@@ -93,7 +93,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   version-sensitive rules such as year zero and NaN comparison. Distinguish XML
   Schema whitespace preprocessing from RDF lexical-form handling rather than
   unconditionally trimming every datatype.
-- [ ] Validate decimal, integer, float, and double lexical forms before delegating
+- [ ] Validate decimal, integer, and double lexical forms before delegating
   numeric conversion. Test both permitted alternate spellings and invalid input.
 - [ ] Detect unsupported decimal precision/range without silently rounding exact
   values. Document limits and expose useful errors. Consider allocation-backed

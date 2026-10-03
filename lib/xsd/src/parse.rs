@@ -204,13 +204,64 @@ pub fn parse_boolean(input: impl AsRef<str>) -> Result<Value, ParseBooleanError>
 }
 
 /// Parses an input string containing an `xsd:float` literal.
+///
+/// Validates the XSD 1.1 lexical grammar before converting to binary32. Accepts
+/// a signed decimal significand with an optional `e`/`E` exponent, or exactly
+/// `INF`, `+INF`, `-INF`, or `NaN`. At least one significand digit and, when
+/// present, one exponent digit are required. Input is not trimmed: callers
+/// performing XML Schema whitespace preprocessing must do so separately.
+/// The backend rounds to binary32; overflow and underflow can yield infinity
+/// and zero, respectively.
+///
+/// # Errors
+///
+/// Returns [`ParseFloatError::InvalidLexical`] for invalid lexical forms, and
+/// [`ParseFloatError::Backend`] for backend conversion failures.
+///
+/// ```
+/// assert!(xsd::parse_float("+.5E2").is_ok());
+/// assert!(xsd::parse_float("+INF").is_ok());
+/// assert!(matches!(xsd::parse_float("infinity"),
+///     Err(xsd::ParseFloatError::InvalidLexical)));
+/// ```
 pub fn parse_float(input: impl AsRef<str>) -> Result<Value, ParseFloatError> {
-    input.as_ref().parse::<Float>().map(Value::from)
+    let input = input.as_ref();
+    if !is_xsd_floating_point(input) {
+        return Err(ParseFloatError::InvalidLexical);
+    }
+    input.parse::<Float>().map(Value::from).map_err(Into::into)
+}
+
+fn is_xsd_floating_point(input: &str) -> bool {
+    if matches!(input, "INF" | "+INF" | "-INF" | "NaN") {
+        return true;
+    }
+    let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
+    let significand = if let Some((significand, exponent)) = unsigned.split_once(['e', 'E']) {
+        let exponent = exponent.strip_prefix(['+', '-']).unwrap_or(exponent);
+        if exponent.is_empty() || !exponent.bytes().all(|byte| byte.is_ascii_digit()) {
+            return false;
+        }
+        significand
+    } else {
+        unsigned
+    };
+    if let Some((integer, fraction)) = significand.split_once('.') {
+        !(integer.is_empty() && fraction.is_empty())
+            && integer.bytes().all(|byte| byte.is_ascii_digit())
+            && fraction.bytes().all(|byte| byte.is_ascii_digit())
+    } else {
+        !significand.is_empty() && significand.bytes().all(|byte| byte.is_ascii_digit())
+    }
 }
 
 /// Parses an input string containing an `xsd:double` literal.
 pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
-    input.as_ref().parse::<Double>().map(Value::from)
+    input
+        .as_ref()
+        .parse::<Double>()
+        .map(Value::from)
+        .map_err(Into::into)
 }
 
 /// Parses an input string containing an `xsd:duration` literal.

@@ -8,10 +8,48 @@ use crate::{DecimalType, PrimitiveType, Type};
 pub type ParseBooleanError = ParseError;
 
 /// An error encountered when parsing an `xsd:double` literal.
-pub type ParseDoubleError = core::num::ParseFloatError;
+pub type ParseDoubleError = ParseFloatError;
 
-/// An error encountered when parsing an `xsd:float` literal.
-pub type ParseFloatError = core::num::ParseFloatError;
+/// An error encountered when parsing an XSD floating-point literal.
+///
+/// Unlike the former alias to [`core::num::ParseFloatError`], this type
+/// distinguishes XSD lexical validation from backend conversion failures.
+/// It requires neither allocation nor `std`.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[non_exhaustive]
+pub enum ParseFloatError {
+    /// The input does not match the parser's XSD lexical grammar.
+    InvalidLexical,
+    /// The numeric backend could not convert the input.
+    Backend(
+        /// The original Rust floating-point parsing error.
+        core::num::ParseFloatError,
+    ),
+}
+
+impl core::fmt::Display for ParseFloatError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidLexical => f.write_str("invalid XSD floating-point lexical form"),
+            Self::Backend(source) => source.fmt(f),
+        }
+    }
+}
+
+impl core::error::Error for ParseFloatError {
+    fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
+        match self {
+            Self::InvalidLexical => None,
+            Self::Backend(source) => Some(source),
+        }
+    }
+}
+
+impl From<core::num::ParseFloatError> for ParseFloatError {
+    fn from(source: core::num::ParseFloatError) -> Self {
+        Self::Backend(source)
+    }
+}
 
 /// An error encountered when parsing an integer-family literal.
 ///
@@ -116,7 +154,7 @@ pub enum ParseError {
 
     /// An `xsd:float` or `xsd:double` parser failed.
     ///
-    /// Retains the requested floating-point datatype and the original parser
+    /// Retains the requested floating-point datatype and the lexical or backend
     /// error, also exposed through [`core::error::Error::source`].
     ///
     /// ```
@@ -129,7 +167,7 @@ pub enum ParseError {
     InvalidFloat {
         /// The requested datatype: [`PrimitiveType::Float`] or [`PrimitiveType::Double`].
         datatype: PrimitiveType,
-        /// The original parser error; [`ParseDoubleError`] uses the same underlying type.
+        /// The lexical or backend error; [`ParseDoubleError`] aliases this type.
         source: ParseFloatError,
     },
 
