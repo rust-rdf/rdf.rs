@@ -5,8 +5,13 @@ use core::fmt;
 
 /// A validated XSD 1.1 `gMonth` with an optional timezone.
 ///
-/// Available without allocation or date/time features. Formatting writes `--mm`
-/// followed by the optional offset, using `Z` for UTC. Equality, ordering, and
+/// Available without allocation or date/time features. Formatting can target a
+/// fixed-capacity `core::fmt::Write` buffer; writer errors are propagated.
+/// Construction, parsing, and formatting require neither `alloc`
+/// nor `jiff`. Serde and Borsh support each require only their own feature,
+/// which implies `alloc` but does not enable date/time support.
+/// Formatting writes `--mm` followed by the optional offset, using `Z` for UTC.
+/// Equality, ordering, and
 /// hashing are structural. An absent timezone is distinct from explicit UTC.
 /// `Ord` compares the month first, then the optional signed minute count, with
 /// absence before any present offset. This total order is for Rust collections,

@@ -53,8 +53,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   `g_year_month` constructors.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. These four partial-calendar parsers
-  currently reject timezone suffixes rather than discarding them. Verify `GMonth`
-  reduced-feature contracts.
+  currently reject timezone suffixes rather than discarding them.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
@@ -99,7 +98,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   unsupported target values. Test large integers, high-precision decimals,
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Document the distinction between derived Serde serialization and explicit
-  JSON/BSON conversion for the remaining datatypes beyond `Date`, `Time`, and `DateTime`.
+  JSON/BSON conversion for the remaining datatypes beyond `Date`, `Time`, `DateTime`, and `GMonth`.
   Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.
 
