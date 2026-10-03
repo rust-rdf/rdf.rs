@@ -59,6 +59,10 @@ pub enum PrimitiveValue {
     /// and `hh:mm:ss` with fractional seconds when nonzero. Fractional seconds
     /// retain nanosecond precision and omit trailing zeros. No timezone is
     /// represented, and the stored year number is preserved without an era adjustment.
+    /// Explicit JSON (`serde`) and BSON (`bson`) conversions emit this same
+    /// XSD lexical string, preserving nanoseconds and negative-year formatting.
+    /// They carry no datatype identifier and do not use BSON's millisecond
+    /// timestamp representation. Derived Serde serialization is separate.
     ///
     /// ```
     /// use xsd::{PrimitiveValue, primitive::DateTime};
@@ -284,7 +288,7 @@ impl PrimitiveValue {
             #[cfg(feature = "jiff")]
             Duration(d) => Value::String(d.to_string()),
             #[cfg(feature = "jiff")]
-            DateTime(d) => Value::String(d.to_string()),
+            value @ DateTime(_) => Value::String(value.to_string()),
             #[cfg(feature = "jiff")]
             Time(t) => Value::String(t.to_string()),
             #[cfg(feature = "jiff")]
@@ -325,7 +329,7 @@ impl PrimitiveValue {
             #[cfg(feature = "jiff")]
             Duration(d) => Bson::String(d.to_string()),
             #[cfg(feature = "jiff")]
-            DateTime(d) => Bson::String(d.to_string()),
+            value @ DateTime(_) => Bson::String(value.to_string()),
             #[cfg(feature = "jiff")]
             Time(t) => Bson::String(t.to_string()),
             #[cfg(feature = "jiff")]

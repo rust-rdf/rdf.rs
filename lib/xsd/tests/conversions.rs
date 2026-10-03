@@ -106,3 +106,33 @@ fn date_conversions_use_xsd_year_formatting() {
         assert_eq!(xsd::parse(lexical, xsd::DATE).unwrap(), Value::from(value));
     }
 }
+
+#[test]
+#[cfg(all(feature = "jiff", any(feature = "serde", feature = "bson")))]
+fn datetime_conversions_preserve_xsd_years_and_fractional_seconds() {
+    for (year, date) in [
+        (-9999, "-9999-01-02"),
+        (-1, "-0001-01-02"),
+        (2026, "2026-01-02"),
+    ] {
+        for (nanosecond, fraction) in [
+            (0, ""),
+            (1, ".000000001"),
+            (125_000_000, ".125"),
+            (999_999_999, ".999999999"),
+        ] {
+            let lexical = format!("{date}T12:34:56{fraction}");
+            let value = PrimitiveValue::DateTime(
+                xsd::primitive::DateTime::new(year, 1, 2, 12, 34, 56, nanosecond).unwrap(),
+            );
+            #[cfg(feature = "serde")]
+            assert_json_string(value.clone(), &lexical);
+            #[cfg(feature = "bson")]
+            assert_bson_string(value.clone(), &lexical);
+            assert_eq!(
+                xsd::parse(&lexical, xsd::DATE_TIME).unwrap(),
+                Value::from(value)
+            );
+        }
+    }
+}
