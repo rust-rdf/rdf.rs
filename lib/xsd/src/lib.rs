@@ -171,6 +171,9 @@ pub use parse::*;
 mod parse_error;
 pub use parse_error::*;
 
+mod timezone_offset;
+pub use timezone_offset::*;
+
 mod primitive_type;
 pub use primitive_type::*;
 
