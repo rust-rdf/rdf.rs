@@ -112,7 +112,8 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   unsupported target values. Test large integers, high-precision decimals,
   non-finite floats, and target range limits. Document any explicitly lossy API.
 - [ ] Document the distinction between derived Serde serialization and explicit
-  JSON/BSON conversion. Test the promised round-trip guarantees for each API,
+  JSON/BSON conversion for the remaining datatypes beyond `Date`.
+  Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.
 
 ## 6. Normalize datatype identity and define comparison semantics

@@ -23,6 +23,12 @@ mod value {
     /// the offset. With `serde`, the new representation is a struct with `civil`
     /// (Jiff's date string) and `timezone` (optional signed minutes). This replaces
     /// the former bare civil string; offset bounds are validated on decoding.
+    /// The `civil` field must match Jiff's formatted date exactly; embedded times,
+    /// offsets, and annotations are rejected rather than discarded. Explicit
+    /// JSON/BSON conversion on [`crate::Value`] instead emits an XSD lexical
+    /// string, retaining the date and timezone but omitting the datatype tag.
+    /// Parse that string with [`crate::DATE`] to recover the represented value;
+    /// neither encoding recovers the original spelling of a parsed literal.
     ///
     /// ```
     /// use xsd::{primitive::Date, TimezoneOffset};
@@ -32,8 +38,26 @@ mod value {
     #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct Date {
+        #[cfg_attr(feature = "serde", serde(deserialize_with = "deserialize_civil"))]
         civil: jiff::civil::Date,
         timezone: Option<TimezoneOffset>,
+    }
+
+    #[cfg(feature = "serde")]
+    fn deserialize_civil<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<jiff::civil::Date, D::Error> {
+        use alloc::string::{String, ToString};
+        let input = <String as serde::Deserialize>::deserialize(deserializer)?;
+        let civil = input
+            .parse::<jiff::civil::Date>()
+            .map_err(serde::de::Error::custom)?;
+        if civil.to_string() != input {
+            return Err(serde::de::Error::custom(
+                "expected a canonical Jiff civil date without time, timezone, or annotations",
+            ));
+        }
+        Ok(civil)
     }
 
     impl Date {
