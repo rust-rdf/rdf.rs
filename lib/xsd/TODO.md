@@ -57,8 +57,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   offset syntax for `Date`; cover negative `Date` years when adding timezone
   support.
 - [ ] Represent signed durations with calendar-month and day/time components.
-  Do not approximate a month as a fixed number of seconds. Test mixed components,
-  negative durations, zero, and conversion limits.
+  Do not approximate a month as a fixed number of seconds. Extend the fixed-length
+  boundary regressions in `tests/duration_limits.rs` to mixed components,
+  negative calendar durations, zero, and conversion limits when replacing the alias.
 - [ ] Replace raw partial-calendar aliases with validated representations and
   timezone support. For example, `GMonth = u8` currently admits `0` and `255`.
   Reuse the formatting regressions while adding constructor and parser coverage.
