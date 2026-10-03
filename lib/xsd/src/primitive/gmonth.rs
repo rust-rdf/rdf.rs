@@ -12,6 +12,9 @@ use core::fmt;
 /// and [`Self::month`] to retrieve the field.
 /// Parsing follows XSD 1.1 `--mm` syntax; legacy trailing hyphens (`--mm--`)
 /// are rejected. Use [`crate::parse_g_month`] to parse the optional timezone.
+/// Parsed values do not retain RDF lexical identity: `--01Z`, `--01+00:00`,
+/// and `--01-00:00` become the same value. RDF applications must retain original
+/// lexical strings and datatype identifiers separately when term identity matters.
 ///
 /// With `serde`, the representation is now a struct with `month` (an integer)
 /// and `timezone` (optional signed minutes), replacing the former bare integer.

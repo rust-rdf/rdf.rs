@@ -7,7 +7,7 @@ use rdf_model::{Datatype, HeapTerm};
 #[test]
 fn unparsed_literals_preserve_lexical_form_and_datatype() {
     for (lexical, datatype) in [
-        ("--12Z", Datatype::from(xsd::G_MONTH)),
+        ("--12+14:01", Datatype::from(xsd::G_MONTH)),
         ("--00", Datatype::from(xsd::G_MONTH)),
         ("---01Z", Datatype::from(xsd::G_DAY)),
         ("--02-29+01:00", Datatype::from(xsd::G_MONTH_DAY)),
@@ -74,6 +74,8 @@ fn supported_literals_still_parse_as_values() {
 fn partial_calendar_literals_preserve_datatype_and_lexical_content() {
     for (lexical, datatype) in [
         ("--12", xsd::G_MONTH),
+        ("--12Z", xsd::G_MONTH),
+        ("--01-14:00", xsd::G_MONTH),
         ("---31", xsd::G_DAY),
         ("--02-29", xsd::G_MONTH_DAY),
         ("0000", xsd::G_YEAR),
