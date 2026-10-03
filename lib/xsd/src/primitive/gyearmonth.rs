@@ -23,6 +23,12 @@ use core::fmt;
 /// but not original lexical spelling. Invalid fields are rejected even inside
 /// value wrappers.
 ///
+/// Explicit JSON conversion on [`crate::PrimitiveValue`] or [`crate::Value`]
+/// (requires `serde`) instead emits the formatted XSD string. Recover the value
+/// with [`crate::parse`] and [`crate::G_YEAR_MONTH`], not Serde deserialization of
+/// the wrapper. This preserves signed years, months, and optional offsets, but
+/// carries no datatype tag and normalizes signed zero offsets to `Z`.
+///
 /// With `borsh`, the type-local version-1 encoding is a version byte `1`, a
 /// little-endian `i32` year, a `u8` month, then `Option<TimezoneOffset>`: tag `0`
 /// for absent, or tag `1` followed by little-endian `i16` minutes. This is 7 or 9

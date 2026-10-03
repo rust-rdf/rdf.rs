@@ -54,7 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. The `gYear` parser currently rejects
   timezone suffixes rather than discarding them.
-  Verify `GYearMonth` JSON, BSON, differential, RDF,
+  Verify `GYearMonth` BSON, differential, RDF,
   comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
