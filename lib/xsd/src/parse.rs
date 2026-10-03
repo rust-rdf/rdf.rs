@@ -352,7 +352,8 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 /// Requires `jiff` (enabled by `datetime`). Duration designators must be
 /// uppercase ASCII; friendly and clock-style backend spellings are rejected.
 /// Only a leading minus sign is allowed; a leading plus sign is rejected.
-/// Fractional components require a period separator; commas are rejected.
+/// Only seconds may have a fraction, with ASCII digits on both sides of a
+/// period separator; commas and fractional hours or minutes are rejected.
 ///
 /// # Errors
 ///
@@ -377,6 +378,16 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
         return Err(jiff::Error::from_args(format_args!(
             "xsd:duration requires uppercase duration designators"
         )));
+    }
+    if let Some((whole, suffix)) = input.split_once('.') {
+        let valid_fraction = suffix.strip_suffix('S').is_some_and(|fraction| {
+            !fraction.is_empty() && fraction.bytes().all(|byte| byte.is_ascii_digit())
+        });
+        if !whole.as_bytes().last().is_some_and(u8::is_ascii_digit) || !valid_fraction {
+            return Err(jiff::Error::from_args(format_args!(
+                "xsd:duration permits fractions only on seconds, with digits before and after the period"
+            )));
+        }
     }
     input.parse::<Duration>().map(Value::from)
 }
