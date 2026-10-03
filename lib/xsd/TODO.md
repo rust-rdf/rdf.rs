@@ -102,9 +102,6 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 
 **Observed with the indicated optional feature enabled:**
 
-- `bson`: for `DecimalValue::Integer(9007199254740993_i128.into())`,
-  `.into_bson()` preserves an `Int64`, while `bson::Bson::from(value)` produces
-  a rounded `Double`.
 - `bson`: converting `DecimalValue::Integer(i128::MAX.into())` with
   `.into_bson()` panics when Decimal128 cannot represent it exactly.
 - `to_bson()` wraps the conversion in `Some(...)`; its `Option` signature
@@ -115,8 +112,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 - [ ] Define fallible numeric-only conversion APIs for
   unsupported target values. Test large integers, high-precision decimals,
   non-finite floats, and target range limits. Document any explicitly lossy API.
-- [ ] Make BSON method and trait conversion routes agree for each value and
-  handle Decimal128 representation failures without `unwrap()` panics.
+- [ ] Handle BSON Decimal128 representation failures without `unwrap()` panics.
 - [ ] Document the distinction between derived Serde serialization and explicit
   JSON/BSON conversion. Test the promised round-trip guarantees for each API,
   including whether datatype identity and exact numeric values survive.

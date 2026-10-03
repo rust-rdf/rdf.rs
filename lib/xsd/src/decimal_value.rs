@@ -162,11 +162,25 @@ impl DecimalValue {
         }
     }
 
+    /// Clones and converts using [`Self::into_bson`]. Requires `bson`.
+    /// Currently wraps the result in `Some`; it shares that method's panics.
     #[cfg(feature = "bson")]
     pub fn to_bson(&self) -> Option<bson::Bson> {
         Some(self.clone().into_bson())
     }
 
+    /// Converts to untagged BSON. Requires `bson` (and thus `std`).
+    ///
+    /// `Byte`, `Short`, and `Int` use `Int32`; `Long` and integers fitting `i64`
+    /// use `Int64`. Other integers use `Decimal128`; the decimal backend uses
+    /// strings preserving the stored precision.
+    /// The `From<DecimalValue> for Bson` route uses this same policy, replacing
+    /// its former lossy `Double` encoding. Datatype identity is not retained.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the backend cannot represent the number as Decimal128,
+    /// including integers requiring more than 34 significant digits.
     #[cfg(feature = "bson")]
     pub fn into_bson(self) -> bson::Bson {
         use DecimalValue::*;
@@ -283,7 +297,8 @@ impl From<&DecimalValue> for serde_json::Value {
 
 #[cfg(feature = "bson")]
 impl From<DecimalValue> for bson::Bson {
+    /// Uses [`DecimalValue::into_bson`], including its representation and panics.
     fn from(input: DecimalValue) -> Self {
-        bson::Bson::Double(input.as_f64())
+        input.into_bson()
     }
 }
