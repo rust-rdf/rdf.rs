@@ -18,6 +18,10 @@ use core::fmt;
 /// Decoding validates the month and offset and enforces the `i32` year range.
 /// The enclosing `PrimitiveValue` enum retains its `GYearMonth` tag; old
 /// payloads must migrate.
+/// A missing `timezone` field decodes as absent. Round trips preserve signed
+/// years (including both `i32` bounds), months, offsets, and enclosing enum tags,
+/// but not original lexical spelling. Invalid fields are rejected even inside
+/// value wrappers.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
