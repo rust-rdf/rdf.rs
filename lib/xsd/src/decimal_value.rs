@@ -163,7 +163,7 @@ impl DecimalValue {
     }
 
     /// Clones and converts using [`Self::into_bson`]. Requires `bson`.
-    /// Currently wraps the result in `Some`; it shares that method's panics.
+    /// Always returns `Some`, using strings when an integer exceeds Decimal128 precision.
     #[cfg(feature = "bson")]
     pub fn to_bson(&self) -> Option<bson::Bson> {
         Some(self.clone().into_bson())
@@ -172,26 +172,32 @@ impl DecimalValue {
     /// Converts to untagged BSON. Requires `bson` (and thus `std`).
     ///
     /// `Byte`, `Short`, and `Int` use `Int32`; `Long` and integers fitting `i64`
-    /// use `Int64`. Other integers use `Decimal128`; the decimal backend uses
-    /// strings preserving the stored precision.
+    /// use `Int64`. Other integers use `Decimal128` if exactly representable,
+    /// otherwise decimal strings. Decimal values use strings preserving the
+    /// stored precision. The string fallback replaces the former panic for
+    /// integers such as `i128::MAX`; it never rounds to fit Decimal128.
     /// The `From<DecimalValue> for Bson` route uses this same policy, replacing
     /// its former lossy `Double` encoding. Datatype identity is not retained.
     ///
-    /// # Panics
-    ///
-    /// Panics when the backend cannot represent the number as Decimal128,
-    /// including integers requiring more than 34 significant digits.
+    /// Retain the XSD datatype separately to decode numbers and strings back
+    /// into XSD. This method does not retain original lexical spelling and is
+    /// separate from the enum's derived Serde serialization.
     #[cfg(feature = "bson")]
     pub fn into_bson(self) -> bson::Bson {
         use DecimalValue::*;
+        use alloc::string::ToString;
         use bson::{Bson, Decimal128};
         match self {
-            Decimal(r) => r.into_bson().unwrap(),
-            Integer(z) if z.to_i64().is_some() => Bson::Int64(z.to_i64().unwrap() as _),
+            Decimal(r) => Bson::String(r.to_string()),
             Integer(z) => {
-                use alloc::string::ToString;
-                use core::str::FromStr;
-                Bson::Decimal128(Decimal128::from_str(z.to_string().as_str()).unwrap()) // FIXME
+                if let Some(n) = z.to_i64() {
+                    return Bson::Int64(n);
+                }
+                let lexical = z.to_string();
+                match lexical.parse::<Decimal128>() {
+                    Ok(number) => Bson::Decimal128(number),
+                    Err(_) => Bson::String(lexical),
+                }
             },
             Long(n) => Bson::Int64(n),
             Int(n) => Bson::Int32(n),
@@ -297,7 +303,7 @@ impl From<&DecimalValue> for serde_json::Value {
 
 #[cfg(feature = "bson")]
 impl From<DecimalValue> for bson::Bson {
-    /// Uses [`DecimalValue::into_bson`], including its representation and panics.
+    /// Uses [`DecimalValue::into_bson`], including its exact string fallback.
     fn from(input: DecimalValue) -> Self {
         input.into_bson()
     }
