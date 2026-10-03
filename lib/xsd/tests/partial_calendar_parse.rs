@@ -35,7 +35,7 @@ fn months_report_lexical_range_and_timezone_failures() {
 }
 #[test]
 fn days_round_trip_and_reject_invalid_fields() {
-    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange, UnsupportedTimezone};
+    use xsd::ParseCalendarError::{InvalidLexical, OutOfRange};
     for day in 1..=31 {
         let lexical = format!("---{day:02}");
         let value = xsd::parse_g_day(&lexical).unwrap();
@@ -52,8 +52,8 @@ fn days_round_trip_and_reject_invalid_fields() {
         ("---01 ", InvalidLexical),
         ("---０1", InvalidLexical),
         ("---01+00:60", InvalidLexical),
-        ("---01Z", UnsupportedTimezone),
-        ("---01+14:00", UnsupportedTimezone),
+        ("---01z", InvalidLexical),
+        ("---01+14:01", InvalidLexical),
     ] {
         assert_eq!(xsd::parse_g_day(input).unwrap_err(), cause, "{input}");
         assert!(

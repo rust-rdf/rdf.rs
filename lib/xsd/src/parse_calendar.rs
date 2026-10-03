@@ -99,21 +99,24 @@ pub fn parse_g_month_day(input: impl AsRef<str>) -> Result<Value, ParseCalendarE
     Ok(value.into())
 }
 
-/// Parses a timezone-free `xsd:gDay` literal (`---dd`).
+/// Parses an `xsd:gDay` literal (`---dd` and an optional timezone).
 ///
 /// Requires exactly two ASCII digits in `01..=31`. No month is implied, so
 /// day 31 is valid. Input is not trimmed. Available without allocation or
-/// date/time features; the returned value formats as `---dd`.
+/// date/time features. An optional `Z`, `+hh:mm`, or `-hh:mm` suffix is retained,
+/// within `-14:00..=+14:00`. Absence differs from UTC; zero offsets format as `Z`.
+/// Formatting preserves the day and offset, not original input spelling.
 ///
 /// # Errors
 ///
-/// Returns [`ParseCalendarError::InvalidLexical`] for malformed input,
-/// [`ParseCalendarError::OutOfRange`] for invalid days, or
-/// [`ParseCalendarError::UnsupportedTimezone`] for a valid timezone suffix.
+/// Returns [`ParseCalendarError::InvalidLexical`] for malformed input, including
+/// invalid timezone syntax or bounds, or [`ParseCalendarError::OutOfRange`]
+/// for invalid days.
 ///
 /// ```
 /// assert_eq!(xsd::parse_g_day("---31").unwrap().to_string(), "---31");
 /// assert!(xsd::parse_g_day("---00").is_err());
+/// assert_eq!(xsd::parse_g_day("---31+00:00").unwrap().to_string(), "---31Z");
 /// ```
 pub fn parse_g_day(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
     let input = input.as_ref();
@@ -122,9 +125,17 @@ pub fn parse_g_day(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> 
         return Err(ParseCalendarError::InvalidLexical);
     }
     let day = two_digits(bytes.get(3..5))?;
-    let value = PrimitiveValue::g_day(day).ok_or(ParseCalendarError::OutOfRange)?;
-    require_no_timezone(input.get(5..))?;
-    Ok(value.into())
+    let day = crate::primitive::GDay::new(day).ok_or(ParseCalendarError::OutOfRange)?;
+    let timezone = match input.get(5..) {
+        Some("") => None,
+        Some(suffix) => Some(
+            suffix
+                .parse()
+                .map_err(|_| ParseCalendarError::InvalidLexical)?,
+        ),
+        None => return Err(ParseCalendarError::InvalidLexical),
+    };
+    Ok(PrimitiveValue::GDay(day.with_timezone(timezone)).into())
 }
 
 /// Parses an `xsd:gMonth` using XSD 1.1 syntax (`--mm` and an optional timezone).
