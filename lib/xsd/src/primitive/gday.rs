@@ -9,6 +9,20 @@ use core::fmt;
 /// are valid because no month or year is specified. Formatting writes `---dd`
 /// followed by the optional offset, using `Z` for UTC. Equality, ordering, and
 /// hashing are structural; absence differs from explicit UTC.
+/// `Ord` compares the day first, then the optional signed minute count, with
+/// absence before any present offset. This total order is for Rust collections,
+/// not XSD temporal value comparison: it performs no timezone normalization and
+/// does not express uncertainty from an absent timezone. `Eq` and `Hash` use
+/// the same fields. No XSD semantic comparison operation is provided yet.
+///
+/// ```
+/// use xsd::{primitive::GDay, TimezoneOffset};
+/// let day = GDay::new(31).unwrap();
+/// let utc = day.with_timezone(Some(TimezoneOffset::UTC));
+/// assert_ne!(day, utc);
+/// assert!(day < utc); // structural ordering only
+/// ```
+///
 /// This replaces the raw `u8` alias: use [`Self::new`] for checked construction
 /// and [`Self::day`] to retrieve the field.
 /// Parsing follows XSD 1.1 `---dd` syntax, with exactly two ASCII day digits.
