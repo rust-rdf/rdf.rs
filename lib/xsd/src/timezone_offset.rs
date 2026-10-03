@@ -27,6 +27,22 @@ use core::fmt;
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TimezoneOffset(i16);
 
+/// A conversion to a civil value would discard an explicit timezone.
+///
+/// Even explicit UTC cannot be represented by a timezone-free civil value.
+/// Use the source value's `civil()` accessor only when discarding that distinction
+/// is intended. This error requires neither allocation nor date/time features.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TimezoneLossError;
+
+impl fmt::Display for TimezoneLossError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("conversion to a civil value would discard an explicit XSD timezone")
+    }
+}
+
+impl core::error::Error for TimezoneLossError {}
+
 #[cfg(feature = "borsh")]
 impl borsh::BorshSerialize for TimezoneOffset {
     fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {

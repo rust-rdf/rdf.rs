@@ -17,7 +17,9 @@ mod value {
     /// and retains the offset, normalizing explicit zero offsets to `Z`.
     /// Use [`crate::parse_date`] to parse XSD lexical forms.
     ///
-    /// This replaces the Jiff alias. Use [`Self::civil`] to explicitly discard
+    /// This replaces the Jiff alias. Conversion to `jiff::civil::Date` through
+    /// `TryFrom` rejects any present offset, including UTC, with
+    /// [`crate::TimezoneLossError`]. Use [`Self::civil`] to explicitly discard
     /// the offset. With `serde`, the new representation is a struct with `civil`
     /// (Jiff's date string) and `timezone` (optional signed minutes). This replaces
     /// the former bare civil string; offset bounds are validated on decoding.
@@ -96,6 +98,20 @@ mod value {
                 offset.fmt(f)?;
             }
             Ok(())
+        }
+    }
+
+    impl TryFrom<Date> for jiff::civil::Date {
+        type Error = crate::TimezoneLossError;
+
+        /// Converts only timezone-free dates; even explicit UTC would be lost.
+        /// Calendar fields are returned without timezone adjustment.
+        fn try_from(date: Date) -> Result<Self, Self::Error> {
+            if date.timezone.is_some() {
+                Err(crate::TimezoneLossError)
+            } else {
+                Ok(date.civil)
+            }
         }
     }
 }

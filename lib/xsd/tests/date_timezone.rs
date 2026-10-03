@@ -3,6 +3,28 @@
 use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::Date};
 
 #[test]
+fn civil_date_conversion_rejects_every_explicit_offset() {
+    let civil = jiff::civil::Date::new(-1, 12, 31).unwrap();
+    let date = Date::from(civil);
+    assert_eq!(jiff::civil::Date::try_from(date).unwrap(), civil);
+    assert_eq!(Value::from(civil), Value::from(date));
+    assert_eq!(PrimitiveValue::from(civil), PrimitiveValue::from(date));
+    for minutes in -840..=840 {
+        let offset = TimezoneOffset::from_minutes(minutes).unwrap();
+        let date = date.with_timezone(Some(offset));
+        assert_eq!(
+            jiff::civil::Date::try_from(date),
+            Err(xsd::TimezoneLossError)
+        );
+        assert_eq!(date.civil(), civil);
+        assert_eq!(date.timezone(), Some(offset));
+    }
+    let error = xsd::TimezoneLossError;
+    assert!(error.to_string().contains("timezone"));
+    assert!(std::error::Error::source(&error).is_none());
+}
+
+#[test]
 fn date_parser_preserves_offsets_and_signed_years() {
     for year in ["-9999", "-0001", "0000", "0001", "9999"] {
         for suffix in ["", "Z", "+00:00", "-00:00", "+14:00", "-14:00", "+05:45"] {

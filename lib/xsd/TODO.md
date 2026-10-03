@@ -52,7 +52,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Integrate `Option<TimezoneOffset>` into `DateTime` and `Time`; the validated offset
   type provides checked construction, strict lexical parsing, and formatting.
   Preserve its validated Serde/Borsh minute-count encodings when embedding offsets.
-  Make lossy civil-value conversions
+  Make lossy `DateTime` and `Time` civil-value conversions
   explicit/fallible, building on the exact `TimezoneOffset`/Jiff offset conversions.
 - [ ] Enforce temporal lexical grammars for timezone-bearing values, including
   end-of-day notation for `DateTime` and `Time`.
