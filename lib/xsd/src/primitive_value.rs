@@ -78,6 +78,10 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     DateTime(DateTime),
 
+    /// An XSD time with an optional timezone and nanosecond precision.
+    ///
+    /// `Display` and explicit JSON/BSON conversion preserve the clock and offset,
+    /// using `Z` for UTC. See [`Time`] for formatting and Serde encoding details.
     /// See: <https://www.w3.org/TR/xmlschema-2/#time>
     #[cfg(feature = "jiff")]
     Time(Time),
@@ -613,6 +617,13 @@ impl From<jiff::civil::DateTime> for PrimitiveValue {
 #[cfg(feature = "jiff")]
 impl From<jiff::civil::Time> for PrimitiveValue {
     fn from(input: jiff::civil::Time) -> Self {
+        Self::Time(input.into())
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl From<Time> for PrimitiveValue {
+    fn from(input: Time) -> Self {
         Self::Time(input)
     }
 }

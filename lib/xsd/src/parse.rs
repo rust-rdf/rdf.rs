@@ -686,7 +686,7 @@ pub fn parse_time(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
         return Time::new(0, 0, 0, 0).map(Value::from);
     }
     validate_nanosecond_precision(input)?;
-    let time = input.parse::<Time>()?;
+    let time = Time::from(input.parse::<jiff::civil::Time>()?);
     // Jiff validates the digits and ranges; require all three colon-separated fields.
     if !matches!(input.as_bytes(), [_, _, b':', _, _, b':', _, _, ..]) {
         return Err(jiff::Error::from_args(format_args!(
