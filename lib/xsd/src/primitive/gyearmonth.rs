@@ -5,6 +5,12 @@ use core::fmt;
 
 /// A validated XSD 1.1 `gYearMonth` with an optional timezone.
 ///
+/// Construction, parsing, and formatting require neither `alloc` nor `jiff`.
+/// Formatting can target a fixed-capacity `core::fmt::Write` buffer; writer
+/// errors are propagated, including at the signed year boundaries. Serde and
+/// Borsh support each require only their own feature, which implies `alloc`
+/// but does not enable date/time support.
+///
 /// Available without allocation or date/time features. Years span the entire
 /// `i32` range, including zero as in XSD 1.1; months must be in `1..=12`.
 /// Formatting writes a signed year padded to at least four digits, then `-mm`
