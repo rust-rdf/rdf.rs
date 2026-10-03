@@ -59,6 +59,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Test mixed components,
   negative durations, zero, and conversion limits.
+  Finish duration lexical validation beyond uppercase designators: reject leading
+  plus signs, comma fractions, fractional hours/minutes, and excess precision.
 - [ ] Replace raw partial-calendar aliases with validated representations and
   timezone support. For example, `GMonth = u8` currently admits `0` and `255`.
   Reuse the formatting regressions while adding constructor and parser coverage.

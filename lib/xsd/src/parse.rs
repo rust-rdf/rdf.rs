@@ -348,9 +348,25 @@ pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
 }
 
 /// Parses an input string containing an `xsd:duration` literal.
+///
+/// Requires `jiff` (enabled by `datetime`). Duration designators must be
+/// uppercase ASCII; friendly and clock-style backend spellings are rejected.
+///
+/// # Errors
+///
+/// Returns an error for invalid lexical forms or values outside the backend's
+/// signed, fixed-length duration representation. Calendar years and months are
+/// not supported.
 #[cfg(feature = "jiff")]
 pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationError> {
-    input.as_ref().parse::<Duration>().map(Value::from)
+    let input = input.as_ref();
+    let unsigned = input.strip_prefix(['+', '-']).unwrap_or(input);
+    if !unsigned.starts_with('P') || input.bytes().any(|byte| byte.is_ascii_lowercase()) {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:duration requires uppercase duration designators"
+        )));
+    }
+    input.parse::<Duration>().map(Value::from)
 }
 
 /// Parses an input string containing an `xsd:dateTime` literal.
