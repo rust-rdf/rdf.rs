@@ -20,6 +20,12 @@ use core::fmt;
 /// offset, and enclosing enum tags, but not original lexical spelling. Invalid
 /// combinations such as February 30 are rejected even inside value wrappers.
 ///
+/// Explicit JSON conversion on [`crate::PrimitiveValue`] or [`crate::Value`]
+/// (requires `serde`) instead emits the formatted XSD string. Recover the value
+/// with [`crate::parse`] and [`crate::G_MONTH_DAY`], not Serde deserialization of
+/// the wrapper. This preserves calendar fields and optional offset, but carries
+/// no datatype tag and normalizes signed zero offsets to `Z`.
+///
 /// With `borsh`, the type-local version-1 encoding is a version byte `1`, a
 /// `u8` month, a `u8` day, then `Option<TimezoneOffset>`: tag `0` for absent,
 /// or tag `1` followed by little-endian `i16` minutes. This is 4 or 6 bytes with
