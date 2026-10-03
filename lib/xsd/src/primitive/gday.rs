@@ -14,6 +14,9 @@ use core::fmt;
 /// Parsing follows XSD 1.1 `---dd` syntax, with exactly two ASCII day digits.
 /// Use [`crate::parse_g_day`] to parse the optional timezone; whitespace is not
 /// trimmed. Day 31 remains valid with any supported offset.
+/// Parsed values do not retain RDF lexical identity: `---31Z`, `---31+00:00`,
+/// and `---31-00:00` become the same value. RDF applications must retain original
+/// lexical strings and datatype identifiers separately when term identity matters.
 ///
 /// With `serde`, the representation is a struct with `day` (an integer) and
 /// `timezone` (optional signed minutes), replacing the former bare integer.
