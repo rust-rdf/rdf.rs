@@ -10,6 +10,20 @@ use core::fmt;
 /// Formatting writes a signed year padded to at least four digits, then `-mm`
 /// and the optional offset (`Z` for UTC), without an era adjustment. Equality,
 /// ordering, and hashing are structural; absence differs from explicit UTC.
+/// `Ord` compares the signed year, then month, then optional signed minute
+/// count, with absence before any present offset. This total order is for Rust
+/// collections, not XSD temporal comparison: no timezone normalization or
+/// uncertainty from absent timezones is considered. `Eq` and `Hash` use the same
+/// fields. No XSD semantic comparison operation is provided yet.
+///
+/// ```
+/// use xsd::{primitive::GYearMonth, TimezoneOffset};
+/// let year_zero = GYearMonth::new(0, 1).unwrap();
+/// let utc = year_zero.with_timezone(Some(TimezoneOffset::UTC));
+/// assert_ne!(year_zero, utc);
+/// assert!(year_zero < utc); // structural ordering only
+/// ```
+///
 /// This replaces the raw `(i32, u8)` alias: use [`Self::new`] for construction
 /// and [`Self::year`] and [`Self::month`] for the fields.
 /// Parsing follows XSD 1.1: both `0000` and `-0000` map to year zero, a leading
