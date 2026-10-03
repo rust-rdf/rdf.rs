@@ -127,9 +127,14 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
   Provide explicit value-comparison operations where appropriate, covering numeric
   subtypes, NaN, signed zero, and partially ordered temporal values. Keep Rust
   `Eq`/`Ord`/`Hash` contracts consistent.
-- [ ] Add RDF integration regressions: semantic equality must not erase datatype
-  or lexical identity. For example, distinct RDF lexical forms such as `"1"` and
+- [ ] Extend RDF integration regressions beyond `Date`, `Time`, and `DateTime`:
+  semantic equality must not erase datatype or lexical identity.
+  For example, distinct RDF lexical forms such as `"1"` and
   `"01"` can denote the same integer without becoming the same RDF term.
+- [ ] Define a lexical-preserving policy for implicit RDF literal construction:
+  `HeapTerm::from((String, Datatype))` currently normalizes successfully parsed
+  literals, unlike the explicit `HeapTerm::typed_literal` constructor. Account for
+  callers relying on value-backed terms before changing this conversion.
 
 ## 7. Complete datatype support end to end
 

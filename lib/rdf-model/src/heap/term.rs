@@ -31,11 +31,13 @@ pub enum HeapTerm {
     /// The term's datatype is either `rdf:langString` or `rdf:dirLangString`.
     TaggedString(String, Language, Option<BaseDirection>),
 
-    /// A typed value term.
+    /// A typed value term, without the original parsed lexical spelling.
+    /// Use [`Self::TypedLiteral`] when RDF lexical identity must be retained.
     TypedValue(Value),
 
-    /// A typed literal term that could not be instantiated as a typed value.
-    /// The term is either an ill-typed literal and/or an unsupported datatype.
+    /// A typed literal retaining its lexical spelling and datatype without parsing.
+    /// It can be valid, ill-typed, or have an unsupported datatype. Distinct lexical
+    /// forms remain distinct even when they denote the same XSD value.
     TypedLiteral(String, Datatype),
 
     /// The default-graph singleton; distinct from `Iri(DEFAULT_GRAPH_URN)`.
@@ -67,10 +69,25 @@ impl HeapTerm {
         Self::TaggedString(value.into(), tag.into(), Some(dir.into()))
     }
 
+    /// Constructs a value-backed literal, formatting from the stored XSD value.
+    /// Original lexical spelling is unavailable; use [`Self::typed_literal`] to
+    /// preserve spelling from an RDF source. Requires `alloc`.
     pub fn typed_value(value: impl Into<Value>) -> Self {
         Self::TypedValue(value.into())
     }
 
+    /// Constructs a lexical literal without parsing or normalizing its content.
+    ///
+    /// Preserves RDF lexical and datatype identity, including equivalent XSD
+    /// timezone spellings. No XSD validity check is performed. Requires `alloc`.
+    ///
+    /// ```
+    /// use rdf_model::HeapTerm;
+    /// let signed_zero = HeapTerm::typed_literal("2026-01-02+00:00", xsd::DATE);
+    /// let utc = HeapTerm::typed_literal("2026-01-02Z", xsd::DATE);
+    /// assert_ne!(signed_zero, utc);
+    /// assert_eq!(signed_zero.value_str(), "2026-01-02+00:00");
+    /// ```
     pub fn typed_literal(literal: impl Into<String>, datatype: impl Into<Datatype>) -> Self {
         Self::TypedLiteral(literal.into(), datatype.into())
     }
@@ -276,6 +293,8 @@ impl From<(String, Language)> for HeapTerm {
 
 /// Parses supported XSD literals, retaining the original lexical form and datatype
 /// as a [`HeapTerm::TypedLiteral`] when parsing fails or is unsupported.
+/// Successful parsing constructs a value-backed term and can normalize spelling;
+/// use [`HeapTerm::typed_literal`] instead to retain RDF lexical identity.
 /// Requires the `alloc` feature.
 impl From<(String, Datatype)> for HeapTerm {
     fn from((literal, datatype): (String, Datatype)) -> Self {
