@@ -3,6 +3,54 @@
 use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::DateTime};
 
 #[test]
+fn datetime_parser_preserves_offsets_and_end_of_day() {
+    for (date, next) in [
+        ("2024-02-29", "2024-03-01"),
+        ("-0001-12-31", "0000-01-01"),
+        ("0000-02-28", "0000-02-29"),
+    ] {
+        for clock in ["12:34:56.000000001", "24:00:00", "24:00:00.000000000000"] {
+            for suffix in ["", "Z", "+00:00", "-00:00", "+14:00", "-14:00", "+05:45"] {
+                let input = format!("{date}T{clock}{suffix}");
+                let value = xsd::parse_datetime(&input).unwrap();
+                let timezone = if suffix.is_empty() {
+                    None
+                } else {
+                    Some(suffix.parse::<TimezoneOffset>().unwrap())
+                };
+                let normalized = timezone.map(|o| o.to_string()).unwrap_or_default();
+                let expected = if clock.starts_with("24") {
+                    format!("{next}T00:00:00{normalized}")
+                } else {
+                    format!("{date}T{clock}{normalized}")
+                };
+                assert_eq!(value.to_string(), expected, "{input}");
+                assert_eq!(xsd::parse(&input, xsd::DATE_TIME).unwrap(), value);
+                assert_eq!(xsd::parse_datetime(expected).unwrap(), value);
+            }
+        }
+    }
+}
+
+#[test]
+fn datetime_parser_rejects_invalid_timezone_and_end_of_day_forms() {
+    for input in [
+        "9999-12-31T24:00:00Z",
+        "2026-01-02T24:00:00.001Z",
+        "2026-01-02T24:00:00+14:01",
+        "2026-01-02T12:34:56z",
+        "2026-01-02T12:34:56ZZ",
+        "2026-01-02T12:34:56Z+02:00",
+        "2026-01-02T12:34:56+02:00Z",
+        "2026-01-02ZT24:00:00Z",
+        "2026-01-02+02:00T24:00:00Z",
+        "2026-01-02T12:34:56Z ",
+    ] {
+        assert!(xsd::parse_datetime(input).is_err(), "{input}");
+    }
+}
+
+#[test]
 fn datetime_retains_offset_in_formatting_and_components() {
     for year in [-9999, -1, 0, 1, 9999] {
         for nanosecond in [0, 1, 999_999_999] {

@@ -31,7 +31,6 @@ history. Reproduce the relevant finding against the current code before editing.
 `datetime.rs`, `time.rs`, `duration.rs`, and the `g*.rs` files;
 [src/parse.rs](src/parse.rs) and [src/primitive_value.rs](src/primitive_value.rs).
 
-`DateTime` stores an optional timezone, but its parser still discards offsets.
 With `jiff`, `Duration` aliases `jiff::SignedDuration`; without
 it, the exported alias is the unsigned `core::time::Duration`.
 
@@ -39,21 +38,14 @@ it, the exported alias is the unsigned `core::time::Duration`.
 
 | Datatype | Literal | Current behavior |
 | --- | --- | --- |
-| `xsd::DATE_TIME` | `2026-12-31T12:34:56+02:00` | Accepted; offset discarded |
-| `xsd::DATE_TIME` | `2026-12-31T12:34:56Z` | Rejected |
 | `xsd::DURATION` | `P1D`, `P1M`, `P1Y` | Rejected |
 
 **Subtasks and acceptance criteria:**
 
-- [ ] Model optional timezone offsets and distinguish an absent timezone from
-  UTC. Preserve the represented value through parsing, formatting, and conversion.
-  Integrate the timezone-aware `DateTime` representation into parsing; the validated
-  offset type provides checked construction, strict lexical parsing, and formatting.
+- [ ] Complete temporal conversion and serialization boundaries.
   Preserve its validated Serde/Borsh minute-count encodings when embedding offsets.
   Make lossy `DateTime` civil-value conversions
   explicit/fallible, building on the exact `TimezoneOffset`/Jiff offset conversions.
-- [ ] Enforce temporal lexical grammars for timezone-bearing values, including
-  end-of-day notation for `DateTime`.
 - [ ] Represent signed durations with calendar-month and day/time components.
   Do not approximate a month as a fixed number of seconds. Extend the fixed-length
   boundary regressions in `tests/duration_limits.rs` to mixed components,

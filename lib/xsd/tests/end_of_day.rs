@@ -40,8 +40,6 @@ fn datetime_end_of_day_rejects_invalid_or_unrepresentable_inputs() {
         "20261231T24:00:00",
         "+002026-12-31T24:00:00",
         "-002026-12-31T24:00:00",
-        "2026-12-31T24:00:00Z",
-        "2026-12-31T24:00:00+02:00",
         "2026-12-31T24:00:00[Etc/UTC]",
     ] {
         assert!(xsd::parse_datetime(input).is_err(), "{input}");

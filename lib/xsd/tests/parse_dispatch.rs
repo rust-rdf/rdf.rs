@@ -367,6 +367,16 @@ fn datetime_parsers_accept_four_digit_negative_years() {
         assert_eq!(expected.to_string(), input);
         for offset in ["", "+00:00", "-00:00", "+02:00", "-14:00", "+14:00"] {
             let lexical = format!("{input}{offset}");
+            let timezone = if offset.is_empty() {
+                None
+            } else {
+                Some(offset.parse().unwrap())
+            };
+            let expected = xsd::Value::from(
+                xsd::primitive::DateTime::new(year, month, day, hour, minute, second, nanosecond)
+                    .unwrap()
+                    .with_timezone(timezone),
+            );
             assert_eq!(xsd::parse_datetime(&lexical).unwrap(), expected);
             assert_eq!(xsd::parse(&lexical, xsd::DATE_TIME).unwrap(), expected);
         }

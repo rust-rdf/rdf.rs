@@ -456,11 +456,10 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// and years outside this bounded representation return errors.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
-/// Timezone-free `24:00:00`, optionally followed by a period and any number of
+/// `24:00:00`, optionally followed by a period and any number of
 /// ASCII zero digits, is normalized to midnight on the next calendar day.
 /// At least one digit is required after the period. Calendar arithmetic uses
-/// the stored year numbering, including year zero. Hour-24 forms with timezone
-/// suffixes are not yet supported.
+/// the stored year numbering, including year zero, and retains the optional timezone.
 /// For hours 00 through 23, fractional seconds require one to nine ASCII digits
 /// (nanosecond precision). Longer fractions, including excess zero digits, are
 /// rejected instead of rounded or truncated.
@@ -469,7 +468,8 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// to 59 by the underlying parser.
 /// Numeric timezone offsets must use `+hh:mm` or `-hh:mm` and be between `-14:00`
 /// and `+14:00`, inclusive. Abbreviated offsets and offset seconds are rejected.
-/// The returned civil value currently does not retain accepted timezone offsets.
+/// `Z` denotes UTC. The returned value retains the optional timezone, distinguishing
+/// absence from explicit UTC. Signed zero offsets format as `Z`. Input is not trimmed.
 /// Bracketed timezone and calendar annotations (such as `[Europe/Paris]` and
 /// `[u-ca=iso8601]`) are not XSD syntax and are rejected instead of discarded.
 ///
@@ -514,7 +514,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeError> {
     let input = input.as_ref();
     if let Some((date, time)) = input.split_once('T')
-        && is_timezone_free_end_of_day(time)
+        && time.starts_with("24:")
         && let Value::Primitive(crate::PrimitiveValue::Date(date)) = parse_date(date)?
     {
         if date.timezone().is_some() {
@@ -522,8 +522,12 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
                 "xsd:dateTime timezone must follow the time component"
             )));
         }
+        let Value::Primitive(crate::PrimitiveValue::Time(time)) = parse_time(time)? else {
+            unreachable!("parse_time returns a Time value");
+        };
         let next = date.civil().tomorrow()?;
-        return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0).map(Value::from);
+        return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0)
+            .map(|datetime| datetime.with_timezone(time.timezone()).into());
     }
     if let Some((_, clock)) = input.split_once('T') {
         validate_nanosecond_precision(clock)?;
@@ -532,7 +536,14 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     // magnitude and restore the sign without allocating. Gregorian leap-year
     // validity is identical for a year and its negation.
     let negative_year = input.starts_with('-') && input.as_bytes().get(5) == Some(&b'-');
-    let civil_input = if negative_year { &input[1..] } else { input };
+    // Jiff's civil parser rejects Z. Strip only that suffix here; the complete
+    // input is still validated below, so duplicate/misplaced offsets are errors.
+    let without_utc = input.strip_suffix('Z').unwrap_or(input);
+    let civil_input = if negative_year {
+        &without_utc[1..]
+    } else {
+        without_utc
+    };
     let mut datetime = DateTime::from(civil_input.parse::<jiff::civil::DateTime>()?);
     if negative_year {
         if datetime.year() == 0 {
@@ -628,7 +639,20 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
             "xsd:dateTime numeric timezone offsets require +hh:mm or -hh:mm"
         )));
     }
-    Ok(Value::from(datetime))
+    let timezone = if let Some(start) = suffix.iter().position(|byte| matches!(byte, b'+' | b'-')) {
+        Some(
+            input[separator + 9 + start..]
+                .parse::<crate::TimezoneOffset>()
+                .map_err(|error| {
+                    jiff::Error::from_args(format_args!("invalid xsd:dateTime timezone: {error}"))
+                })?,
+        )
+    } else if input.ends_with('Z') {
+        Some(crate::TimezoneOffset::UTC)
+    } else {
+        None
+    };
+    Ok(Value::from(datetime.with_timezone(timezone)))
 }
 
 /// Parses an input string containing an `xsd:time` literal.
