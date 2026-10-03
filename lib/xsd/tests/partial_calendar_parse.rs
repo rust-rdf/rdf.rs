@@ -142,7 +142,7 @@ fn year_months_reject_invalid_fields_and_timezone_loss() {
         ("2026-13", OutOfRange),
         ("2147483648-01", OutOfRange),
         ("-2147483649-12", OutOfRange),
-        ("-0000-01", InvalidLexical),
+        ("-00000-01", InvalidLexical),
         ("+2026-01", InvalidLexical),
         ("02026-01", InvalidLexical),
         ("2026-1", InvalidLexical),

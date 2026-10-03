@@ -3,7 +3,8 @@ use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 /// Parses an `xsd:gYearMonth` literal (`yyyy-mm` and an optional timezone).
 ///
 /// Uses the year grammar and full `i32` range of [`parse_g_year`], including
-/// XSD 1.1 year zero. Requires a hyphen followed by exactly two ASCII month
+/// XSD 1.1 year zero, but also accepts `-0000` and normalizes it to `0000`.
+/// Requires a hyphen followed by exactly two ASCII month
 /// digits in `01..=12`. Does not trim whitespace. Formatting preserves the year
 /// and month without an era adjustment. Available without allocation or
 /// date/time features.
@@ -22,7 +23,15 @@ use crate::{ParseCalendarError, PrimitiveValue, TimezoneOffset, Value};
 /// assert_eq!(xsd::parse_g_year_month("0000-01-00:00").unwrap().to_string(), "0000-01Z");
 /// ```
 pub fn parse_g_year_month(input: impl AsRef<str>) -> Result<Value, ParseCalendarError> {
-    let (year, suffix) = year_prefix(input.as_ref())?;
+    let input = input.as_ref();
+    // XSD 1.1 maps both zero spellings to year zero. Keep the shared parser's
+    // existing policy for the other year-bearing datatypes until they migrate.
+    let input = if input.starts_with("-0000-") {
+        &input[1..]
+    } else {
+        input
+    };
+    let (year, suffix) = year_prefix(input)?;
     let month_input = suffix
         .strip_prefix('-')
         .ok_or(ParseCalendarError::InvalidLexical)?;

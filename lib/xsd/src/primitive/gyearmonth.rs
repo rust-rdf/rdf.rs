@@ -12,6 +12,11 @@ use core::fmt;
 /// ordering, and hashing are structural; absence differs from explicit UTC.
 /// This replaces the raw `(i32, u8)` alias: use [`Self::new`] for construction
 /// and [`Self::year`] and [`Self::month`] for the fields.
+/// Parsing follows XSD 1.1: both `0000` and `-0000` map to year zero, a leading
+/// plus sign is rejected, and years wider than four digits must not start with
+/// zero. Use [`crate::parse_g_year_month`] for lexical validation; input is not
+/// trimmed. XSD years are unbounded, but this representation returns range
+/// errors outside `i32`, rather than truncating or wrapping.
 ///
 /// With `serde`, the representation is a struct with `year`, `month`, and
 /// `timezone` (optional signed minutes), replacing the former two-element tuple.

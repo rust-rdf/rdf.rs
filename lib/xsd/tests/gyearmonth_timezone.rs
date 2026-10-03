@@ -2,6 +2,10 @@ use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::GYearMonth};
 
 #[test]
 fn year_boundaries_round_trip_at_every_offset() {
+    assert_eq!(
+        xsd::parse_g_year_month("-0000-01Z").unwrap().to_string(),
+        "0000-01Z"
+    );
     for year in [i32::MIN, -10000, -1, 0, 1, 10000, i32::MAX] {
         for month in [1, 12] {
             let bare = GYearMonth::new(year, month).unwrap();
@@ -59,7 +63,13 @@ fn malformed_suffixes_and_out_of_range_fields_return_errors() {
         );
         assert!(core::error::Error::source(&error).is_some());
     }
-    for input in ["2147483648-01Z", "-2147483649-12Z", "0000-00Z", "0000-13Z"] {
+    for input in [
+        "2147483648-01Z",
+        "-2147483649-12Z",
+        "0000-00Z",
+        "0000-13Z",
+        "-0000-00Z",
+    ] {
         assert_eq!(
             xsd::parse_g_year_month(input).unwrap_err(),
             xsd::ParseCalendarError::OutOfRange

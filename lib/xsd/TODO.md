@@ -54,7 +54,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
   adding timezone-aware representations. The `gYear` parser currently rejects
   timezone suffixes rather than discarding them.
-  Verify `GYearMonth` differential, RDF,
+  Verify `GYearMonth` RDF,
   comparison, and reduced-feature contracts.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
@@ -79,6 +79,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   version-sensitive rules such as year zero and NaN comparison. Distinguish XML
   Schema whitespace preprocessing from RDF lexical-form handling rather than
   unconditionally trimming every datatype.
+  Align `gYear`, `date`, and `dateTime` negative-zero year parsing with XSD 1.1's
+  `yearFragValue` mapping, as now implemented for `gYearMonth`; these parsers
+  still reject `-0000` rather than normalizing it to year zero.
 - [ ] Detect unsupported decimal precision/range without silently rounding exact
   values. Document limits and expose useful errors. Consider allocation-backed
   arbitrary-precision support as a separate enhancement while preserving the
@@ -176,7 +179,7 @@ rustdoc, and [Cargo.toml](Cargo.toml).
   including precision, overflow, timezone, and unsupported-operation regressions.
 - [ ] Add property/differential tests where useful against an independent XSD
   implementation for datatypes beyond `Date`, `Time`, `DateTime`, `GMonth`,
-  `GDay`, and `GMonthDay`, using optional `oxsdatatypes`.
+  `GDay`, `GMonthDay`, and `GYearMonth`, using optional `oxsdatatypes`.
   Use the chosen W3C semantics
   as the authority when implementations disagree.
 - [ ] Exercise runtime behavior under reduced feature sets, not just compilation.
