@@ -16,6 +16,9 @@ use core::fmt;
 /// `timezone` (optional signed minutes), replacing the former bare integer.
 /// Both fields are validated on decoding. The enclosing `PrimitiveValue` enum
 /// retains its `GDay` tag; consumers of the former payload must migrate.
+/// A missing `timezone` field decodes as absent. Round trips retain the day,
+/// offset, and enclosing enum tags, but cannot recover original lexical spelling.
+/// Invalid days and offsets are rejected even inside the value wrappers.
 ///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gDay>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
