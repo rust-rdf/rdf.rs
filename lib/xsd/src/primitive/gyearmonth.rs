@@ -23,6 +23,14 @@ use core::fmt;
 /// but not original lexical spelling. Invalid fields are rejected even inside
 /// value wrappers.
 ///
+/// With `borsh`, the type-local version-1 encoding is a version byte `1`, a
+/// little-endian `i32` year, a `u8` month, then `Option<TimezoneOffset>`: tag `0`
+/// for absent, or tag `1` followed by little-endian `i16` minutes. This is 7 or 9
+/// bytes with no datatype tag. It replaces the raw alias's five-byte encoding;
+/// decode legacy data as `(i32, u8)` and validate with [`Self::new`] before
+/// re-encoding. Decoding rejects unknown versions, invalid months and option
+/// tags, and out-of-range offsets.
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#gYearMonth>
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -91,4 +99,29 @@ fn deserialize_month<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Resul
     GYearMonth::new(0, month)
         .map(GYearMonth::month)
         .ok_or_else(|| serde::de::Error::custom("XSD month is outside 1..=12"))
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshSerialize for GYearMonth {
+    fn serialize<W: borsh::io::Write>(&self, writer: &mut W) -> Result<(), borsh::io::Error> {
+        borsh::BorshSerialize::serialize(&(1u8, self.year, self.month, self.timezone), writer)
+    }
+}
+
+#[cfg(feature = "borsh")]
+impl borsh::BorshDeserialize for GYearMonth {
+    fn deserialize_reader<R: borsh::io::Read>(reader: &mut R) -> Result<Self, borsh::io::Error> {
+        use borsh::io::{Error, ErrorKind};
+        if u8::deserialize_reader(reader)? != 1 {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "unsupported XSD gYearMonth encoding version",
+            ));
+        }
+        let (year, month, timezone) =
+            <(i32, u8, Option<TimezoneOffset>)>::deserialize_reader(reader)?;
+        Self::new(year, month)
+            .map(|value| value.with_timezone(timezone))
+            .ok_or_else(|| Error::new(ErrorKind::InvalidData, "XSD month is outside 1..=12"))
+    }
 }

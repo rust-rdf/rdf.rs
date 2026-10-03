@@ -55,8 +55,8 @@
 //! requiring `std`.
 //! With `jiff` as well, `primitive::Date`, `primitive::Time`, and
 //! `primitive::DateTime` support versioned, validated type-local encodings
-//! documented on those types. `primitive::GMonth`, `primitive::GDay`, and
-//! `primitive::GMonthDay` have
+//! documented on those types. `primitive::GMonth`, `primitive::GDay`,
+//! `primitive::GMonthDay`, and `primitive::GYearMonth` have
 //! versioned, validated encodings available without date/time features; see
 //! their migration notes.
 //!
