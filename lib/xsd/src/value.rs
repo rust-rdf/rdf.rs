@@ -20,6 +20,25 @@ use ::alloc::{borrow::Cow, string::String};
 /// [`Display`](core::fmt::Display) delegates to the contained value's lexical
 /// formatting. It does not preserve the original spelling of a parsed literal.
 ///
+/// # Signed integer construction
+///
+/// `From<i8>`, `From<i16>`, `From<i32>`, and `From<i64>` construct the matching
+/// [`DecimalValue`] variants (`Byte`, `Short`, `Int`, and `Long`). `From<i128>`
+/// and `From<isize>` construct `Integer`. Each preserves the full Rust input
+/// range without allocation or decimal conversion, including `i128::MIN`.
+/// The datatype agrees with parsing the corresponding XSD integer subtype.
+///
+/// This replaces the former primitive-decimal construction route: newly
+/// constructed integers have different enum variants, structural equality,
+/// and derived Serde output. Existing variants and their serialization tags
+/// are retained, so previously serialized primitive decimals still decode as
+/// primitive decimals. Callers matching values should handle `Value::Decimal`.
+///
+/// ```
+/// assert_eq!(xsd::Value::from(42_i32), xsd::parse("42", xsd::INT).unwrap());
+/// assert_eq!(xsd::Value::from(i128::MAX).to_string(), i128::MAX.to_string());
+/// ```
+///
 /// See: <https://www.w3.org/TR/xmlschema-2/#built-in-dataValues>
 #[derive(Clone, Debug, Display, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // #[cfg_attr(
@@ -188,38 +207,44 @@ impl From<Boolean> for Value {
 }
 
 impl From<i8> for Value {
+    /// Constructs an `xsd:byte` without changing the number.
     fn from(input: i8) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 
 impl From<i16> for Value {
+    /// Constructs an `xsd:short` without changing the number.
     fn from(input: i16) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 
 impl From<i32> for Value {
+    /// Constructs an `xsd:int` without changing the number.
     fn from(input: i32) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 
 impl From<i64> for Value {
+    /// Constructs an `xsd:long` without changing the number.
     fn from(input: i64) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 
 impl From<i128> for Value {
+    /// Constructs an `xsd:integer`, preserving the full signed 128-bit range.
     fn from(input: i128) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 
 impl From<isize> for Value {
+    /// Constructs an `xsd:integer`, preserving the full pointer-sized range.
     fn from(input: isize) -> Self {
-        Self::Primitive(input.into())
+        Self::Decimal(input.into())
     }
 }
 

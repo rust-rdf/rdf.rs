@@ -76,7 +76,7 @@ it, the exported alias is the unsigned `core::time::Duration`.
   it to `0.1234567890123456789012345679`.
 - Parsing integer `340282366920938463463374607431768211456` fails because of the
   current bounded representation.
-- `xsd::Value::from(i128::MAX)` panics while converting the integer to the
+- `xsd::PrimitiveValue::from(i128::MAX)` panics while converting the integer to the
   narrower-capacity decimal representation.
 
 **Subtasks and acceptance criteria:**
@@ -89,8 +89,9 @@ it, the exported alias is the unsigned `core::time::Duration`.
   values. Document limits and expose useful errors. Consider allocation-backed
   arbitrary-precision support as a separate enhancement while preserving the
   allocation-free configuration.
-- [ ] Make integer construction range-safe without panics or loss of precision.
-  Coordinate construction policy with #6.
+- [ ] Make explicit primitive-decimal construction from large integers range-safe
+  (`PrimitiveValue::from(i128)` and `Value::decimal`), using fallible APIs where
+  the destination cannot represent the number. Coordinate construction policy with #6.
 
 ## 5. Make JSON/BSON conversion precise and consistent — high priority
 
@@ -134,8 +135,6 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 
 - `Type::from(PrimitiveType::Decimal) != xsd::DECIMAL`: two representations of
   the same datatype compare unequal. Values have corresponding duplicate paths.
-- `Value::from(42_i32)` produces a primitive decimal, while
-  `xsd::parse("42", xsd::INT)` produces a derived `Int` value.
 - `DecimalValue::Byte(1) > DecimalValue::Short(100)` is `true`: derived ordering
   follows enum variant order, not numeric order.
 - `DecimalValue::Byte(1) == DecimalValue::Short(1)` is `false`. Parsed NaN values
@@ -144,7 +143,7 @@ traits in [src/decimal_value.rs](src/decimal_value.rs),
 **Subtasks and acceptance criteria:**
 
 - [ ] Establish one canonical datatype/value representation for decimal and
-  consistent Rust-number construction rules. Account for existing serialized
+  consistent explicit primitive-decimal construction rules. Account for existing serialized
   enums and downstream matching code before changing variants.
 - [ ] Specify structural equality/order separately from XSD semantic comparison.
   Provide explicit value-comparison operations where appropriate, covering numeric
