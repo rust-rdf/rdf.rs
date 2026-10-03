@@ -101,6 +101,25 @@ fn temporal_lexical_round_trips() {
 }
 
 #[test]
+#[cfg(feature = "jiff")]
+fn date_lexical_year_formatting() {
+    use xsd::primitive::Date;
+
+    for (year, expected) in [
+        (-9999, "-9999-01-02"),
+        (-2026, "-2026-01-02"),
+        (-1, "-0001-01-02"),
+        (1, "0001-01-02"),
+        (9999, "9999-01-02"),
+    ] {
+        assert_primitive(
+            PrimitiveValue::Date(Date::new(year, 1, 2).unwrap()),
+            expected,
+        );
+    }
+}
+
+#[test]
 fn partial_calendar_lexical_forms() {
     use PrimitiveValue::*;
     for (value, expected) in [
@@ -148,6 +167,14 @@ fn formatting_propagates_writer_errors() {
 
     let mut output = heapless::String::<2>::new();
     assert!(write!(&mut output, "{}", PrimitiveValue::GMonth(1)).is_err());
+    #[cfg(feature = "jiff")]
+    {
+        let value = PrimitiveValue::Date(xsd::primitive::Date::new(-1, 1, 2).unwrap());
+        let mut short = heapless::String::<2>::new();
+        assert!(write!(&mut short, "{value}").is_err());
+        let mut year_only = heapless::String::<5>::new();
+        assert!(write!(&mut year_only, "{value}").is_err());
+    }
     #[cfg(feature = "alloc")]
     for value in [
         PrimitiveValue::HexBinary(vec![0, 255]),

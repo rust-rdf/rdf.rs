@@ -61,6 +61,18 @@ pub enum PrimitiveValue {
     #[cfg(feature = "jiff")]
     Time(Time),
 
+    /// A civil date, available with `jiff` (enabled by `datetime`).
+    ///
+    /// `Display` writes `yyyy-mm-dd`, with a minus sign before the four-digit
+    /// year for negative years. It preserves the stored year number without
+    /// applying a historical-era adjustment. No timezone is represented.
+    ///
+    /// ```
+    /// use xsd::{PrimitiveValue, primitive::Date};
+    /// let value = PrimitiveValue::Date(Date::new(-1, 1, 2).unwrap());
+    /// assert_eq!(value.to_string(), "-0001-01-02");
+    /// ```
+    ///
     /// See: <https://www.w3.org/TR/xmlschema-2/#date>
     #[cfg(feature = "jiff")]
     Date(Date),
@@ -113,7 +125,10 @@ impl fmt::Display for PrimitiveValue {
             #[cfg(feature = "jiff")]
             Time(t) => t.fmt(f),
             #[cfg(feature = "jiff")]
-            Date(d) => d.fmt(f),
+            Date(d) => {
+                fmt_year(d.year().into(), f)?;
+                write!(f, "-{:02}-{:02}", d.month(), d.day())
+            },
             GYearMonth((y, m)) => {
                 fmt_year(*y, f)?;
                 write!(f, "-{m:02}")
