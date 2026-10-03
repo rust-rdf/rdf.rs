@@ -3,6 +3,27 @@
 use xsd::{PrimitiveValue, TimezoneOffset, Value, primitive::Time};
 
 #[test]
+fn civil_time_conversion_rejects_every_explicit_offset() {
+    for nanosecond in [0, 1, 999_999_999] {
+        let civil = jiff::civil::Time::new(23, 59, 59, nanosecond).unwrap();
+        let time = Time::from(civil);
+        assert_eq!(jiff::civil::Time::try_from(time).unwrap(), civil);
+        assert_eq!(Value::from(civil), Value::from(time));
+        assert_eq!(PrimitiveValue::from(civil), PrimitiveValue::from(time));
+        for minutes in -840..=840 {
+            let offset = TimezoneOffset::from_minutes(minutes).unwrap();
+            let time = time.with_timezone(Some(offset));
+            assert_eq!(
+                jiff::civil::Time::try_from(time),
+                Err(xsd::TimezoneLossError)
+            );
+            assert_eq!(time.civil(), civil);
+            assert_eq!(time.timezone(), Some(offset));
+        }
+    }
+}
+
+#[test]
 fn time_parser_retains_offsets_including_end_of_day() {
     for clock in [
         "00:00:00",

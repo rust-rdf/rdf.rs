@@ -16,8 +16,10 @@ mod value {
     /// zeros, and the optional offset (`Z` for UTC, signed `hh:mm` otherwise).
     /// Use [`crate::parse_time`] for XSD lexical validation.
     ///
-    /// This replaces the Jiff civil-time alias. [`Self::civil`] explicitly
-    /// discards any timezone. With `serde`, the encoding is now a struct with
+    /// This replaces the Jiff civil-time alias. Conversion to `jiff::civil::Time`
+    /// through `TryFrom` rejects any present offset, including UTC, with
+    /// [`crate::TimezoneLossError`]. [`Self::civil`] explicitly discards any
+    /// timezone. With `serde`, the encoding is now a struct with
     /// `civil` (Jiff's canonical time string) and `timezone` (optional signed
     /// minutes), replacing the former bare string. Decoding validates offset
     /// bounds and rejects noncanonical civil strings, including embedded offsets,
@@ -115,6 +117,20 @@ mod value {
                 offset.fmt(f)?;
             }
             Ok(())
+        }
+    }
+
+    impl TryFrom<Time> for jiff::civil::Time {
+        type Error = crate::TimezoneLossError;
+
+        /// Converts only timezone-free times; even explicit UTC would be lost.
+        /// Preserves nanoseconds without timezone adjustment or a reference date.
+        fn try_from(time: Time) -> Result<Self, Self::Error> {
+            if time.timezone.is_some() {
+                Err(crate::TimezoneLossError)
+            } else {
+                Ok(time.civil)
+            }
         }
     }
 }
