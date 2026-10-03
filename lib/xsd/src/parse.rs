@@ -225,6 +225,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// be separated by uppercase ASCII `T`; lowercase `t` and space are rejected.
 /// Year, month, and day must be separated by hyphens; compact dates such as
 /// `20261231T12:34:56` are rejected.
+/// Years must not have a leading plus sign.
 /// The time must begin with two-digit hours, minutes, and seconds separated by
 /// colons (`hh:mm:ss`); omitted clock fields are not filled in with zero.
 /// Fractional seconds use a period separator; a comma is rejected.
@@ -240,7 +241,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 ///
 /// Returns an error when the input cannot be parsed by the underlying
 /// civil-dateTime parser, does not use the required uppercase `T` separator,
-/// omits the required date-component hyphens,
+/// omits the required date-component hyphens, uses a leading plus sign on the year,
 /// omits the required `hh:mm:ss` clock fields, uses a comma to separate fractional
 /// seconds, specifies a leap second, contains bracketed annotations, or has a
 /// numeric timezone offset with invalid XSD syntax or a value outside the XSD range.
@@ -251,6 +252,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// assert!(xsd::parse_datetime("2026-12-31 12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31t12:34:56").is_err());
 /// assert!(xsd::parse_datetime("20261231T12:34:56").is_err());
+/// assert!(xsd::parse_datetime("+002026-12-31T12:34:56").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T12:34:56,125").is_err());
 /// assert!(xsd::parse_datetime("2026-12-31T23:59:60").is_err());
@@ -284,6 +286,11 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     {
         return Err(jiff::Error::from_args(format_args!(
             "xsd:dateTime literals require hyphen-separated year, month, and day"
+        )));
+    }
+    if input.starts_with('+') {
+        return Err(jiff::Error::from_args(format_args!(
+            "xsd:dateTime years must not have a leading plus sign"
         )));
     }
     // Jiff validates the digits and ranges; require all three clock fields.
