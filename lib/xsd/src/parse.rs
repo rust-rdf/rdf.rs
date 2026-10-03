@@ -256,12 +256,31 @@ fn is_xsd_floating_point(input: &str) -> bool {
 }
 
 /// Parses an input string containing an `xsd:double` literal.
+///
+/// Uses the same XSD 1.1 lexical grammar and untrimmed-input policy as
+/// [`parse_float`], but converts to binary64. Accepts signed decimal
+/// significands with optional `e`/`E` exponents and exactly `INF`, `+INF`,
+/// `-INF`, or `NaN`. The backend rounds to binary64; overflow and underflow
+/// can yield infinity and zero, respectively.
+///
+/// # Errors
+///
+/// Returns [`ParseFloatError::InvalidLexical`] for invalid lexical forms, and
+/// [`ParseFloatError::Backend`] for backend conversion failures.
+/// [`ParseDoubleError`] aliases [`ParseFloatError`].
+///
+/// ```
+/// assert!(xsd::parse_double("+.5E2").is_ok());
+/// assert!(xsd::parse_double("+INF").is_ok());
+/// assert!(matches!(xsd::parse_double("nan"),
+///     Err(xsd::ParseDoubleError::InvalidLexical)));
+/// ```
 pub fn parse_double(input: impl AsRef<str>) -> Result<Value, ParseDoubleError> {
-    input
-        .as_ref()
-        .parse::<Double>()
-        .map(Value::from)
-        .map_err(Into::into)
+    let input = input.as_ref();
+    if !is_xsd_floating_point(input) {
+        return Err(ParseFloatError::InvalidLexical);
+    }
+    input.parse::<Double>().map(Value::from).map_err(Into::into)
 }
 
 /// Parses an input string containing an `xsd:duration` literal.
