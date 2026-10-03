@@ -65,7 +65,8 @@ it, the exported alias is the unsigned `core::time::Duration`.
   `255`; enforce validation at the representation/serialization boundary,
   building on the checked `PrimitiveValue::g_month`, `g_day`, `g_month_day`, and
   `g_year_month` constructors.
-  Reuse the formatting regressions while adding constructor and parser coverage.
+  Reuse the formatting and `tests/gyear_limits.rs` boundary regressions while
+  adding parser coverage and timezone-aware representations.
 
 ## 4. Enforce numeric lexical rules and exactness — high priority
 
