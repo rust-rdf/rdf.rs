@@ -371,6 +371,9 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// At least one digit is required after the period. Calendar arithmetic uses
 /// the stored year numbering, including year zero. Hour-24 forms with timezone
 /// suffixes are not yet supported.
+/// For hours 00 through 23, fractional seconds require one to nine ASCII digits
+/// (nanosecond precision). Longer fractions, including excess zero digits, are
+/// rejected instead of rounded or truncated.
 /// Fractional seconds use a period separator; a comma is rejected.
 /// Seconds must be less than 60; leap seconds are rejected rather than clamped
 /// to 59 by the underlying parser.
@@ -391,6 +394,7 @@ pub fn parse_duration(input: impl AsRef<str>) -> Result<Value, ParseDurationErro
 /// numeric timezone offset with invalid XSD syntax or a value outside the XSD range.
 /// End-of-day normalization also returns an error if the next day exceeds the
 /// supported year range (for example, `9999-12-31T24:00:00`).
+/// Fractions beyond nanosecond precision return an explicit precision error.
 ///
 /// ```
 /// let value = xsd::parse_datetime("2026-12-31T12:34:56").unwrap();
@@ -425,6 +429,9 @@ pub fn parse_datetime(input: impl AsRef<str>) -> Result<Value, ParseDateTimeErro
     {
         let next = date.tomorrow()?;
         return DateTime::new(next.year(), next.month(), next.day(), 0, 0, 0, 0).map(Value::from);
+    }
+    if let Some((_, clock)) = input.split_once('T') {
+        validate_nanosecond_precision(clock)?;
     }
     // Jiff requires six digits for negative years. Parse four-digit years by
     // magnitude and restore the sign without allocating. Gregorian leap-year
