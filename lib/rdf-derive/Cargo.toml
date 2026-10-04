@@ -28,7 +28,7 @@ unstable = []
 proc-macro2 = { version = "1", default-features = false }
 proc-macro-crate = "3.2"
 quote = { version = "1", default-features = false }
-syn = { version = "2", default-features = true }
+syn = { version = "3", default-features = true }
 
 [dev-dependencies]
 rdf-model.workspace = true
