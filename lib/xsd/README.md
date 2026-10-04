@@ -47,14 +47,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-xsd = { version = "0.4" }
+xsd = { version = "0.5" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-xsd = { version = "0.4", default-features = false, features = ["alloc"] }
+xsd = { version = "0.5", default-features = false, features = ["alloc"] }
 ```
 
 ## 👉 Examples

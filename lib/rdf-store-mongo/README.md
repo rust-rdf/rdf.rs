@@ -50,14 +50,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-mongo = { version = "0.4" }
+rdf-store-mongo = { version = "0.5" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-mongo = { version = "0.4", default-features = false, features = ["tracing"] }
+rdf-store-mongo = { version = "0.5", default-features = false, features = ["tracing"] }
 ```
 
 ## 👉 Examples

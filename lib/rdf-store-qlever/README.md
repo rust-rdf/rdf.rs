@@ -49,14 +49,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-store-qlever = { version = "0.4" }
+rdf-store-qlever = { version = "0.5" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-store-qlever = { version = "0.4", default-features = false, features = ["tracing"] }
+rdf-store-qlever = { version = "0.5", default-features = false, features = ["tracing"] }
 ```
 
 ## 👉 Examples

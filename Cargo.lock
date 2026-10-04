@@ -5672,7 +5672,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-borsh"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "borsh",
  "lz4_flex",
@@ -5688,7 +5688,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-cli"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "clap",
  "clientele",
@@ -5710,7 +5710,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-derive"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -5721,7 +5721,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-format"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "dogma 0.3.0",
  "oxrdfio",
@@ -5733,7 +5733,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-hash"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "blake3",
  "heapless",
@@ -5746,7 +5746,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-id"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-model",
  "tokio",
@@ -5754,7 +5754,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-message"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-model",
  "tokio",
@@ -5762,7 +5762,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-model"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "borsh",
  "bson 3.1.0",
@@ -5792,7 +5792,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-query"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-model",
  "tokio",
@@ -5800,7 +5800,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxrdfio",
@@ -5812,7 +5812,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-cottas"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "arrow-array",
  "arrow-schema",
@@ -5829,7 +5829,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-hdt"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5844,7 +5844,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-jelly"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5860,7 +5860,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-jsonld"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5875,7 +5875,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-nquads"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5890,7 +5890,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-ntriples"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5905,7 +5905,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-rdfxml"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5919,7 +5919,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-trig"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5934,7 +5934,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-reader-turtle"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5949,7 +5949,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "async-stream",
  "futures",
@@ -5960,7 +5960,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-idb"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -5978,7 +5978,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-mongo"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -5996,7 +5996,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-neo4j"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6012,7 +6012,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-oxigraph"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6030,7 +6030,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-postgres"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6047,7 +6047,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-qlever"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6062,7 +6062,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-sqlite"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6077,7 +6077,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-turso"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6093,7 +6093,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-valkey"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6115,7 +6115,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-store-virtuoso"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "aquamarine",
  "async-stream",
@@ -6131,7 +6131,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-stream"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-model",
  "tokio",
@@ -6172,7 +6172,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-vocab"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-model",
  "tokio",
@@ -6180,7 +6180,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "oxrdfio",
  "rdf-format",
@@ -6191,7 +6191,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-cottas"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "arrow-array",
  "arrow-schema",
@@ -6207,7 +6207,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-hdt"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "hdt",
@@ -6221,7 +6221,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-jelly"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "prost",
@@ -6236,7 +6236,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-jsonld"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxjsonld",
@@ -6250,7 +6250,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-nquads"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxttl",
@@ -6264,7 +6264,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-ntriples"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxttl",
@@ -6278,7 +6278,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-rdfxml"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxrdfxml",
@@ -6291,7 +6291,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-trig"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxttl",
@@ -6305,7 +6305,7 @@ dependencies = [
 
 [[package]]
 name = "rdf-writer-turtle"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "futures",
  "oxttl",
@@ -6319,7 +6319,7 @@ dependencies = [
 
 [[package]]
 name = "rdf_rs"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "rdf-derive",
  "rdf-format",
@@ -9125,7 +9125,7 @@ checksum = "b9cc00251562a284751c9973bace760d86c0276c471b4be569fe6b068ee97a56"
 
 [[package]]
 name = "xsd"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "borsh",
  "bson 3.1.0",

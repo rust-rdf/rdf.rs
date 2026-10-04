@@ -49,14 +49,14 @@ Enable all default features:
 
 ```toml
 [dependencies]
-rdf-reader-ntriples = { version = "0.4" }
+rdf-reader-ntriples = { version = "0.5" }
 ```
 
 Enable only specific features:
 
 ```toml
 [dependencies]
-rdf-reader-ntriples = { version = "0.4", default-features = false, features = ["serde"] }
+rdf-reader-ntriples = { version = "0.5", default-features = false, features = ["serde"] }
 ```
 
 ## 👉 Examples

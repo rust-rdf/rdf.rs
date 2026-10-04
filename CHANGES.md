@@ -5,17 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.5.0 - 2026-10-04
+### Added
+- Add validated XSD timezone offsets and timezone-aware calendar values.
+- Add checked calendar constructors, conversions, and validated temporal serialization.
+- Add the `rdf-message` crate scaffold.
+- Complete heap transactions: staged reads, clear/delete, commit/rollback, and lifecycle errors.
+- Tighten XSD numeric, temporal, and duration parsing; preserve detailed parse errors.
+- Preserve XSD numeric precision and lexical formatting in JSON/BSON conversions.
 ### Changed
-- Update Dogma to 0.3.0. The re-exported `MaybeCountable` trait now uses
-  `maybe_count()`, `maybe_is_empty()`, and `maybe_is_nonempty()` in place of
-  `count()`, `is_empty()`, and `is_nonempty()`; `Countable` is unchanged.
-- Raise the minimum supported Rust version to 1.97.
-- Check locked builds on the MSRV, enabled adapters, the CLI, formatting,
-  Clippy, and documentation in CI.
-
+- Update the MSRV to 1.97.
+- Distinguish the default graph singleton from the `urn:rdf:default-graph` IRI;
+  `None` remains a wildcard.
+- Redesign XSD temporal representations and Borsh encodings to retain optional timezones.
+- Isolate `alloc`, `std`, and optional interoperability features across the workspace.
+- Update Dogma to 0.3.0, Clientele to 0.5.0, itertools to 0.15.
 ### Fixed
-- Align `spareval`'s locked SHA-2 dependency with its other hash implementations.
+- Fix transaction defaults, complete-term matching, and default-graph round trips.
+- Correct XSD datatype dispatch, negative years, timezone offsets, and end-of-day values.
 - Preserve the storage traits' `Send` bounds for IndexedDB handles and errors
   when compiling the enabled adapter for browsers.
 
